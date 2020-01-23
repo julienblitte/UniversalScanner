@@ -1,0 +1,32 @@
+# What it is
+A tool with flexible framework to ease implementation of any vanilla discovery IP protocol such as SSDP/UPnP, mDNS, proprietary discovery protocols, etc. 
+
+# Licence
+This application and all the source code is release under licence LGPL 3.0 without any warranty.
+you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+You can refer to the license content at this link: https://www.gnu.org/licenses/lgpl-3.0.html
+
+# Legal notice
+All the implementation is done during my free time and are my own work and released under the above LGPL license.
+All protocols are analysed by reverse engineering on territory of France, by observation of network packet traffic and without any decompilation of code, in to aim of system interoperability.
+All trademarks are the property of their respective owners.
+
+# Warranty
+This tool is delivered as it, without any warranty unless
+
+# Protocols already supported
+* SSDP/UPnP
+* Dahua camera discovery protocol
+
+# Protocols currently in implementation
+* mDNS
+* Bosch discovery protocol
+* Axis discovery protocol
+
+# Protocols in the road map
+* Basler discovery protocol
+* Panasonic discovery protocol
+* Samsung discovery protocol
+* Sanyo discovery protocol
+* Sony discovery protocol
+* Vivotek discovery protocol
