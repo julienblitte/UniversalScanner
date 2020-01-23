@@ -50,9 +50,6 @@
   <PropertyGroup>
     <ApplicationIcon>UniversalScanner.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>UniversalScanner.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bosch.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
     <Compile Include="ScanEngine.cs" />
