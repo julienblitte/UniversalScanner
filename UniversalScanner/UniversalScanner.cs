@@ -91,9 +91,12 @@ namespace UniversalScanner
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
 
             MessageBox.Show(this,
-                String.Format("{0} {1}.{2}\n\nBuild date {3:0000}-{4:00}-{5:00}",
+                String.Format("{0} {1}.{2}\nBuild date {3:0000}-{4:00}-{5:00}\n\nCopyright {6}\n\n{7}",
                     versionInfo.ProductName, versionInfo.FileMajorPart, versionInfo.FileMinorPart,
-                    versionInfo.ProductBuildPart, (versionInfo.ProductPrivatePart / 100), (versionInfo.ProductPrivatePart % 100)), "About");
+                    versionInfo.ProductBuildPart, (versionInfo.ProductPrivatePart / 100), (versionInfo.ProductPrivatePart % 100),
+                    versionInfo.LegalCopyright,
+                    "Program under GNU Lesser General Public License 3.0,\nmore information at https://www.gnu.org/licenses/lgpl-3.0.html"
+                ), "About");
         }
 
         private void ScannerWindow_KeyDown(object sender, KeyEventArgs e)
