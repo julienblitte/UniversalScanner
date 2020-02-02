@@ -22,6 +22,8 @@ namespace UniversalScanner
         protected bool _quirk = false;
         public bool quirk { set { _quirk = value; } }
 
+        private const UInt32 magic = 0x44484950;
+
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
         public struct Dahua2Header
         {
@@ -47,7 +49,7 @@ namespace UniversalScanner
 
             if (_quirk)
             {
-                Trace.WriteLine("Warning: Using quirk mode for Dahua protocol v2");
+                Trace.WriteLine("Data2(): Warning: Using quirk mode for Dahua protocol v2");
                 sendNetScan(port);
             }
         }
@@ -59,10 +61,10 @@ namespace UniversalScanner
             byte[] body;
             byte[] result;
             int headerSize;
-            
+
             header = new Dahua2Header {
                 headerSize = 0x20,
-                headerMagic = (UInt32)IPAddress.NetworkToHostOrder(0x44484950),
+                headerMagic = htonl(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
                 packetSize1 = 0, 
@@ -91,8 +93,9 @@ namespace UniversalScanner
                 Marshal.FreeHGlobal(ptr);
             }
 
-            for (int i = 0; i < body.Length; i++)
-                result[headerSize + i] = body[i];
+            body.CopyTo(result, headerSize);
+            //for (int i = 0; i < body.Length; i++)
+            //    result[headerSize + i] = body[i];
 
             return result;
         }

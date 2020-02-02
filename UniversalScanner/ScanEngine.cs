@@ -35,9 +35,13 @@ namespace UniversalScanner
         public bool isDisposed = false;
 
         [DllImport("wsock32.dll")]
-        private static extern UInt32 ntohl(UInt32 netshort);
+        protected static extern UInt32 ntohl(UInt32 netshort);
         [DllImport("wsock32.dll")]
-        private static extern UInt32 htonl(UInt32 netshort);
+        protected static extern UInt32 htonl(UInt32 netshort);
+        [DllImport("wsock32.dll")]
+        protected static extern UInt16 ntohs(UInt16 netshort);
+        [DllImport("wsock32.dll")]
+        protected static extern UInt16 htons(UInt16 netshort);
 
         protected struct networkBundle
         {
@@ -59,7 +63,7 @@ namespace UniversalScanner
 
         public abstract void scan();
 
-        private void debugWriteText(string text)
+        protected void debugWriteText(string text)
         {
 #if DEBUG
             string[] lines;
@@ -101,11 +105,11 @@ namespace UniversalScanner
 #endif
         }
 
-        public int listenUdpGlobal(int localPort=0)
+        public int listenUdpGlobal(int localPort=0, bool ignoreAlreadyInUse=false)
         {
             if (localPort != 0)
             {
-                if (!isFreeUdpPort(localPort))
+                if (!ignoreAlreadyInUse && !isFreeUdpPort(localPort))
                 {
                     Trace.WriteLine(String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
                     return -1;
@@ -528,9 +532,10 @@ namespace UniversalScanner
     #endif
                     reciever(multicastListener.endPoint, data);
                 }
-                catch
+                catch (Exception e)
                 {
                     Trace.WriteLine(String.Format("Error: ScanEngine.multicastReciever(): error while recieving multicast packet on {0}!", multicastListener.endPoint.ToString()));
+                    Trace.WriteLine(e.StackTrace);
                 }
             }
             multicastListener.udp.Close();

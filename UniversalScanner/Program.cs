@@ -43,7 +43,6 @@ namespace UniversalScanner
             }
 
             Application.Run(viewer);
-
         }
     }
 }
