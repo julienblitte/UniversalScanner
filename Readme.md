@@ -17,12 +17,12 @@ This tool is delivered as it, without any warranty.
 # Protocols already supported
 * SSDP/UPnP
 * Dahua camera discovery protocol
+* Hikvision discovery protocol
 
 # Protocols currently in implementation
 * mDNS
 * Bosch discovery protocol
 * Axis discovery protocol
-* Hikvision discovery protocol
 
 # Protocols in the road map
 * Basler discovery protocol
