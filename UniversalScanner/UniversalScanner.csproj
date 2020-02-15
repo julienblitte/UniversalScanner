@@ -67,6 +67,7 @@
     <Compile Include="Bosch.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
+    <Compile Include="Hikvision.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>

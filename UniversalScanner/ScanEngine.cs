@@ -218,28 +218,45 @@ namespace UniversalScanner
         {
             byte[] data;
 
-            // TODO: change this behavior !!!
-            // TOOD: We should be able to have choice listenUdpInterfaces or listenUdpGlobal !
-            if (interfacesListerner == null)
+            if (interfacesListerner == null && !globalListener.inUse)
+
             {
-                Trace.WriteLine("Error: send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");
+                Trace.WriteLine("Error: send(): no opened sockets.");
+                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
                 return false;
             }
 
             data = sender(endpoint);
-            foreach (networkBundle net in interfacesListerner)
+
+            if (globalListener.inUse)
             {
-                if (net.inUse)
-                {
 #if DEBUG
-                    Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
-                    debugWriteText(Encoding.UTF8.GetString(data));
+                Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", globalListener.endPoint.Address.ToString(), endpoint.ToString()));
+                debugWriteText(Encoding.UTF8.GetString(data));
 #endif
-                    try
+                try
+                {
+                    globalListener.udp.Send(data, data.Length, endpoint);
+                }
+                catch (Exception) { }
+            }
+
+            if (interfacesListerner != null)
+            {
+                foreach (networkBundle net in interfacesListerner)
+                {
+                    if (net.inUse)
                     {
-                        net.udp.Send(data, data.Length, endpoint);
+#if DEBUG
+                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
+                        debugWriteText(Encoding.UTF8.GetString(data));
+#endif
+                        try
+                        {
+                            net.udp.Send(data, data.Length, endpoint);
+                        }
+                        catch (Exception) { }
                     }
-                    catch (Exception) { }
                 }
             }
             return true;
@@ -469,9 +486,10 @@ namespace UniversalScanner
                 unicastUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 unicastUDP.Client.Bind(unicastEP);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Trace.WriteLine(String.Format("Error: unicastReciever(): Unable to bind {0}!", unicastEP.ToString()));
+                Trace.WriteLine(String.Format("Error: unicastReciever(): {0}", ex.StackTrace));
                 return;
             }
 
@@ -516,10 +534,10 @@ namespace UniversalScanner
                 try
                 {
                     data = multicastListener.udp.Receive(ref multicastListener.endPoint);
-    #if DEBUG
+#if DEBUG
                     Debug.WriteLine(String.Format("Recieved multicast from {0}.", multicastListener.endPoint.ToString()));
                     debugWriteText(Encoding.UTF8.GetString(data));
-    #endif
+#endif
                     reciever(multicastListener.endPoint, data);
                 }
                 catch(Exception)
