@@ -24,12 +24,10 @@ namespace UniversalScanner
             Application.SetCompatibleTextRenderingDefault(false);
 
             viewer = new ScannerWindow();
-
             engineDahua1 = new Dahua1();
             engineDahua2 = new Dahua2();
 			// engineDahua1 decides if engineDahua2 use quirk mode or not
             engineDahua2.quirk = engineDahua1.quirk;
-
             engines = new ScanEngine[] {
                 new UPnP(),
                 engineDahua1,

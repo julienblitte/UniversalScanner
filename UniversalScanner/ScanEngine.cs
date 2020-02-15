@@ -218,6 +218,8 @@ namespace UniversalScanner
         {
             byte[] data;
 
+            // TODO: change this behavior !!!
+            // TOOD: We should be able to have choice listenUdpInterfaces or listenUdpGlobal !
             if (interfacesListerner == null)
             {
                 Trace.WriteLine("Error: send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");

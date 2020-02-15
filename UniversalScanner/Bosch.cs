@@ -51,6 +51,10 @@ namespace UniversalScanner
         public Bosch()
         {
             listenUdpGlobal();
+			
+			// TODO: should be only listenUdpGlobal
+			// TODO: we should have to call listenUdpInterfaces
+			listenUdpInterfaces();
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
