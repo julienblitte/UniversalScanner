@@ -105,11 +105,11 @@ namespace UniversalScanner
 #endif
         }
 
-        public int listenUdpGlobal(int localPort=0, bool ignoreAlreadyInUse=false)
+        public int listenUdpGlobal(int localPort=0)
         {
             if (localPort != 0)
             {
-                if (!ignoreAlreadyInUse && !isFreeUdpPort(localPort))
+                if (!isFreeUdpPort(localPort))
                 {
                     Trace.WriteLine(String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
                     return -1;
@@ -137,7 +137,6 @@ namespace UniversalScanner
             }
             catch
             {
-                Trace.WriteLine("Error: ScanEngine.listenUdpGlobal(): Listening failure!");
                 globalListener.inUse = false;
                 return -1;
             }
@@ -177,7 +176,6 @@ namespace UniversalScanner
                 }
                 catch
                 {
-                    Trace.WriteLine(String.Format("Error: ScanEngine.listenUdpInterfaces(): Listening failure on UDP {0}:{1}!", address.ToString(), localPort));
                     interfacesListerner[i].inUse = false;
                 }
                 interfacesListerner[i].thread.Start();
@@ -202,7 +200,6 @@ namespace UniversalScanner
             }
             catch
             {
-                Trace.WriteLine(String.Format("Error: ScanEngine.listenMulticast(): Subscriptiong failure to multicast {0}:{1}!", multicastIP, multicastPort));
                 multicastListener.inUse = false;
                 return false;
             }
@@ -222,30 +219,43 @@ namespace UniversalScanner
         {
             byte[] data;
 
-            if (interfacesListerner == null)
+            if (interfacesListerner == null && !globalListener.inUse)
             {
-                Trace.WriteLine("Error: ScanEngine.send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");
-                return false;
+                Trace.WriteLine("Error: send(): no opened sockets.");
+                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                return false;
             }
 
             data = sender(endpoint);
-            foreach (networkBundle net in interfacesListerner)
+
+            if (globalListener.inUse)
             {
-                if (net.inUse)
-                {
 #if DEBUG
-                    Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
-                    debugWriteText(Encoding.UTF8.GetString(data));
+                Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", globalListener.endPoint.Address.ToString(), endpoint.ToString()));
+                debugWriteText(Encoding.UTF8.GetString(data));
 #endif
-                    try
-                    {
-                        net.udp.Send(data, data.Length, endpoint);
-                    }
-                    catch
-                    {
-                        Trace.WriteLine("Error: ScanEngine.send(): Unable to send the packet over the network!");
-                    }
+                try
+                {
+                    globalListener.udp.Send(data, data.Length, endpoint);
                 }
+                catch (Exception) { }
+            }
+
+            if (interfacesListerner != null)
+            {
+                foreach (networkBundle net in interfacesListerner)
+                {
+                    if (net.inUse)
+                    {
+#if DEBUG
+                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
+                        debugWriteText(Encoding.UTF8.GetString(data));
+#endif
+                        try
+                        {
+                            net.udp.Send(data, data.Length, endpoint);
+                        }
+                        catch (Exception) { }
+                    }                }
             }
             return true;
         }
@@ -274,7 +284,7 @@ namespace UniversalScanner
 
             if (interfacesListerner == null)
             {
-                Trace.WriteLine("Error: ScanEngine.send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");
+                Trace.WriteLine("Error: send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");
                 return false;
             }
             scannerPort = port;
@@ -315,10 +325,7 @@ namespace UniversalScanner
                         {
                             net.udp.Send(data, data.Length, endpoint);
                         }
-                        catch
-                        {
-                            Trace.WriteLine(String.Format("Error: ScanEngine.sendNetScanner(): error sending packet to {0}", endpoint.ToString()));
-                        }
+                        catch (Exception) { }
                     }
                 }
             }
@@ -356,7 +363,7 @@ namespace UniversalScanner
             countFree = portsFree.Count();
             if (countFree == 0)
             {
-                Trace.WriteLine("Error: ScanEngine.UdpFreePortProvider(): No free UDP port!");
+                Trace.WriteLine("Error: UdpFreePortProvider(): No free UDP port!");
                 throw new System.OverflowException();
             }
 
@@ -477,7 +484,8 @@ namespace UniversalScanner
                 unicastUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 unicastUDP.Client.Bind(unicastEP);
             }
-            catch (Exception)
+            catch
+
             {
                 Trace.WriteLine(String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", unicastEP.ToString()));
                 return;
@@ -495,9 +503,7 @@ namespace UniversalScanner
                     reciever(unicastEP, data);
                 }
                 catch
-                {
-                    Trace.WriteLine("Error: ScanEngine.unicastReciever(): error while revieve unicast packet!");
-                }
+                { }
             }
         }
 
@@ -517,7 +523,7 @@ namespace UniversalScanner
             }
             catch (Exception)
             {
-                Trace.WriteLine(String.Format("Error: ScanEngine.multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
+                Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
                 return;
             }
 
@@ -526,17 +532,14 @@ namespace UniversalScanner
                 try
                 {
                     data = multicastListener.udp.Receive(ref multicastListener.endPoint);
-    #if DEBUG
+#if DEBUG
                     Debug.WriteLine(String.Format("Recieved multicast from {0}.", multicastListener.endPoint.ToString()));
                     debugWriteText(Encoding.UTF8.GetString(data));
-    #endif
+#endif
                     reciever(multicastListener.endPoint, data);
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(String.Format("Error: ScanEngine.multicastReciever(): error while recieving multicast packet on {0}!", multicastListener.endPoint.ToString()));
-                    Trace.WriteLine(e.StackTrace);
-                }
+                catch
+                { }
             }
             multicastListener.udp.Close();
         }

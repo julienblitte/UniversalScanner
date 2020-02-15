@@ -46,7 +46,7 @@ namespace UniversalScanner
         public mDNS()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpGlobal(port, true);
+            listenUdpGlobal();
 
             resolutionTable = new Dictionary<string, mDNSAnswerTypeA_Action>();
         }
