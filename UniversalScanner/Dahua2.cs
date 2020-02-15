@@ -38,7 +38,7 @@ namespace UniversalScanner
         public Dahua2()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpInterfaces();
+            listenUdpGlobal();
         }
 
         public override void scan()

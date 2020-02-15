@@ -18,7 +18,7 @@ namespace UniversalScanner
         public Hikvision()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpInterfaces();
+            listenUdpGlobal();
         }
         
         public static string getAssemblyUUID()
