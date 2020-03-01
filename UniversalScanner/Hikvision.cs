@@ -15,6 +15,21 @@ namespace UniversalScanner
         protected new string multicastIP = "239.255.255.250";
         protected int port = 37020;
 
+        public override int color
+        {
+            get
+            {
+                return Color.Red.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "Dahua";
+            }
+        }
+
         public Hikvision()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
@@ -48,7 +63,7 @@ namespace UniversalScanner
             }
             deviceSN = extractXMLString("DeviceSN", xml);
 
-            viewer.deviceFound("Hikvision", deviceIP, deviceType, deviceSN, Color.Red.ToArgb());
+            viewer.deviceFound("Hikvision", deviceIP, deviceType, deviceSN);
         }
 
         public override void scan()

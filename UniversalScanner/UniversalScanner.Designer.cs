@@ -42,10 +42,9 @@
             // 
             // scanButton
             // 
-            this.scanButton.Location = new System.Drawing.Point(16, 15);
-            this.scanButton.Margin = new System.Windows.Forms.Padding(4);
+            this.scanButton.Location = new System.Drawing.Point(12, 12);
             this.scanButton.Name = "scanButton";
-            this.scanButton.Size = new System.Drawing.Size(100, 28);
+            this.scanButton.Size = new System.Drawing.Size(75, 23);
             this.scanButton.TabIndex = 0;
             this.scanButton.Text = "&Scan";
             this.scanButton.UseVisualStyleBackColor = true;
@@ -64,16 +63,17 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.ContextMenuStrip = this.rightClickMenu;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.Window;
-            this.dataGridView1.Location = new System.Drawing.Point(17, 50);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 41);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(553, 193);
+            this.dataGridView1.Size = new System.Drawing.Size(415, 157);
             this.dataGridView1.TabIndex = 30;
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
+            this.dataGridView1.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_ColumnHeaderMouseClick);
+            this.dataGridView1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView1_RowPrePaint);
             // 
             // rightClickMenu
             // 
@@ -81,23 +81,22 @@
             this.rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportListToolStripMenuItem});
             this.rightClickMenu.Name = "rightClickMenu";
-            this.rightClickMenu.Size = new System.Drawing.Size(195, 28);
+            this.rightClickMenu.Size = new System.Drawing.Size(167, 26);
             // 
             // exportListToolStripMenuItem
             // 
             this.exportListToolStripMenuItem.Name = "exportListToolStripMenuItem";
             this.exportListToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.exportListToolStripMenuItem.Size = new System.Drawing.Size(194, 24);
+            this.exportListToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.exportListToolStripMenuItem.Text = "&Export list";
             this.exportListToolStripMenuItem.Click += new System.EventHandler(this.exportListToolStripMenuItem_Click);
             // 
             // aboutButton
             // 
             this.aboutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.aboutButton.Location = new System.Drawing.Point(471, 15);
-            this.aboutButton.Margin = new System.Windows.Forms.Padding(4);
+            this.aboutButton.Location = new System.Drawing.Point(353, 12);
             this.aboutButton.Name = "aboutButton";
-            this.aboutButton.Size = new System.Drawing.Size(100, 28);
+            this.aboutButton.Size = new System.Drawing.Size(75, 23);
             this.aboutButton.TabIndex = 20;
             this.aboutButton.Text = "&About";
             this.aboutButton.UseVisualStyleBackColor = true;
@@ -109,15 +108,14 @@
             // 
             // ScannerWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(587, 258);
+            this.ClientSize = new System.Drawing.Size(440, 210);
             this.Controls.Add(this.aboutButton);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.scanButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ScannerWindow";
             this.Text = "Universal Scanner";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScannerWindow_FormClosed);
