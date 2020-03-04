@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,21 @@ namespace UniversalScanner
     {
         protected new string multicastIP = "224.0.0.251";
         protected int port = 5353;
+
+        public override int color
+        {
+            get
+            {
+                return Color.Black.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "mDNS";
+            }
+        }
 
         public delegate void mDNSAnswerTypeA_Action(string domainFilter, IPAddress address);
         protected Dictionary<string, mDNSAnswerTypeA_Action> resolutionTable;

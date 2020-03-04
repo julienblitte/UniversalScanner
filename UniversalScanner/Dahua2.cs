@@ -23,8 +23,22 @@ namespace UniversalScanner
         public bool quirk { set { _quirk = value; } }
 
         private const UInt32 magic = 0x44484950;
+        public override int color
+        {
+            get
+            {
+                return Color.DarkRed.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "Dahua";
+            }
+        }
 
-        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
+        private const UInt32 magic = 0x44484950;        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
         public struct Dahua2Header
         {
             [FieldOffset(0)] public UInt32 headerSize;
@@ -40,7 +54,7 @@ namespace UniversalScanner
         public Dahua2()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpGlobal();
+            listenUdpInterfaces();
         }
 
         public override void scan()
@@ -49,7 +63,7 @@ namespace UniversalScanner
 
             if (_quirk)
             {
-                Trace.WriteLine("Data2(): Warning: Using quirk mode for Dahua protocol v2");
+                Trace.WriteLine("scan(): Warning: Using quirk mode for Dahua protocol v2");
                 sendNetScan(port);
             }
         }
@@ -94,8 +108,6 @@ namespace UniversalScanner
             }
 
             body.CopyTo(result, headerSize);
-            //for (int i = 0; i < body.Length; i++)
-            //    result[headerSize + i] = body[i];
 
             return result;
         }
@@ -166,7 +178,7 @@ namespace UniversalScanner
                     deviceDesc = "Dahua device";
                 }
 
-                viewer.deviceFound("Dahua", deviceIP, deviceType, deviceDesc, Color.DarkRed.ToArgb());
+                viewer.deviceFound(name, deviceIP, deviceType, deviceDesc);
             }
         }
 

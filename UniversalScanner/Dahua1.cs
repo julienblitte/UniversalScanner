@@ -18,7 +18,22 @@ namespace UniversalScanner
         protected int port = 5050;
 
         protected bool _quirk = false;
-        public bool quirk { get { return _quirk;  }  }
+        public bool quirk { get { return _quirk; } }
+
+        public override int color
+        {
+            get
+            {
+                return Color.DarkRed.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "Dahua";
+            }
+        }
 
         [StructLayout(LayoutKind.Explicit, Size = 16, CharSet = CharSet.Ansi)]
         public struct String16bytes
@@ -91,9 +106,7 @@ namespace UniversalScanner
             {
                 Trace.WriteLine("Warning: Dahua protocol v1: Failback to quirk mode");
                 _quirk = true;
-            }
-            if (_quirk)
-            {
+
                 listenUdpInterfaces();
             }
         }
@@ -189,7 +202,7 @@ namespace UniversalScanner
                 deviceTypeStr = Encoding.UTF8.GetString(deviceTypeArray);
             }
 
-            viewer.deviceFound("Dahua", deviceIPStr, deviceTypeStr, deviceMac, Color.DarkRed.ToArgb());
+            viewer.deviceFound(name, deviceIPStr, deviceTypeStr, deviceMac);
         }
     }
 }

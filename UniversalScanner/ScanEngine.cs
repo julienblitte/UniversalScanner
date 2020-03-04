@@ -16,8 +16,9 @@ namespace UniversalScanner
     public delegate void scan();
     public interface ScannerViewer
     {
-        void deviceFound(string protocol, string deviceIP, string deviceType, string serial, int color);
+        void deviceFound(string protocol, string deviceIP, string deviceType, string serial);
         event scan scanEvent;
+        void formatProtocol(string protocol, int color);
     }
 
 
@@ -54,6 +55,9 @@ namespace UniversalScanner
         protected networkBundle globalListener;
         protected networkBundle multicastListener;
         protected networkBundle[] interfacesListerner;
+
+        public abstract int color { get; }
+        public abstract string name { get; }
 
         public ScanEngine()
         {
@@ -213,6 +217,8 @@ namespace UniversalScanner
         public void registerViewer(ScannerViewer viewer)
         {
             this.viewer = viewer;
+            viewer.scanEvent += this.scan;
+            viewer.formatProtocol(name, color);
         }
 
         public bool send(IPEndPoint endpoint)
@@ -282,21 +288,63 @@ namespace UniversalScanner
                 scannerThread.Abort();
             }
 
-            if (interfacesListerner == null)
+            if (!globalListener.inUse && interfacesListerner == null)
             {
-                Trace.WriteLine("Error: send(): no interface-distributed sockets, you must call listenUdpInterfaces() before!");
+                Trace.WriteLine("Error: sendNetScan(): no opened sockets.");
+                Trace.WriteLine("Error: sendNetScan(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
                 return false;
             }
             scannerPort = port;
 
-            scannerThread = new Thread(sendNetScanner);
+            if (globalListener.inUse)
+            {
+                scannerThread = new Thread(sendNetScannerGlobal);
+            }
+            else
+            {
+                scannerThread = new Thread(sendNetScannerInterfaces);
+            }
+
             scannerThread.IsBackground = true;
             scannerThread.Start();
 
             return true;
         }
 
-        private void sendNetScanner()
+        private void sendNetScannerGlobal()
+        {
+            IPAddress[] addresses;
+            byte[] data;
+
+            addresses = listActiveAddresses(AddressFamily.InterNetwork);
+
+            foreach(var net in addresses)
+            {
+                if (isPrivateIPv4Network(net))
+                {
+                    IPAddress mask = getMaskOfAddressIPv4(net);
+                    IPAddress[] subNetAddresses;
+
+                    subNetAddresses = subNetListIPv4Addresses(net, mask, 254);
+                    foreach (IPAddress local in subNetAddresses)
+                    {
+                        IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
+                        data = sender(endpoint);
+#if DEBUG
+                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
+                        debugWriteText(Encoding.UTF8.GetString(data));
+#endif
+                        try
+                        {
+                            globalListener.udp.Send(data, data.Length, endpoint);
+                        }
+                        catch (Exception) { }
+                    }
+                }
+            }            
+        }
+
+        private void sendNetScannerInterfaces()
         {
             byte[] data;
 
@@ -320,7 +368,6 @@ namespace UniversalScanner
                         Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
                         debugWriteText(Encoding.UTF8.GetString(data));
 #endif
-
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
@@ -437,19 +484,19 @@ namespace UniversalScanner
 
             addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
 
-            subNetPrivate = 0xC0A80000;
+            subNetPrivate = 0xC0A80000; // 192.168.0.0/16
             maskPrivate = 0xFFFF0000;
             if ((addr & maskPrivate) == subNetPrivate) return true;
 
-            subNetPrivate = 0xAC100000;
+            subNetPrivate = 0xAC100000; // 172.16.0.0/12
             maskPrivate = 0xFFF00000;
             if ((addr & maskPrivate) == subNetPrivate) return true;
 
-            subNetPrivate = 0x0A000000;
+            subNetPrivate = 0x0A000000; // 10.0.0.0/8
             maskPrivate = 0xFF000000;
             if ((addr & maskPrivate) == subNetPrivate) return true;
 
-            subNetPrivate = 0xA9FE0000;
+            subNetPrivate = 0xA9FE0000; // 169.254.0.0/16
             maskPrivate = 0xFFFF0000;
             if ((addr & maskPrivate) == subNetPrivate) return true;
 
