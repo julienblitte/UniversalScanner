@@ -38,7 +38,6 @@ namespace UniversalScanner
             foreach(var engine in engines)
             {
                 engine.registerViewer(viewer);
-                viewer.scanEvent += engine.scan;
             }
 
             Application.Run(viewer);

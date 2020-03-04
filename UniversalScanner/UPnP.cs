@@ -16,6 +16,21 @@ namespace UniversalScanner
         protected new string multicastIP = "239.255.255.250";
         protected int port = 1900;
 
+        public override int color
+        {
+            get
+            {
+                return Color.DarkGreen.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "UPnP";
+            }
+        }
+
         public UPnP()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
@@ -51,7 +66,7 @@ namespace UniversalScanner
             deviceID = extractHttpVar(body, "USN");
 
             if (viewer != null && deviceIP != "" && deviceType != "" && deviceID != "")
-                viewer.deviceFound("SSDP", deviceIP, extractDeviceDetail(deviceType, deviceDetailSection.DeviceType), extractUUID(deviceID), Color.DarkGreen.ToArgb());
+                viewer.deviceFound(name, deviceIP, extractDeviceDetail(deviceType, deviceDetailSection.DeviceType), extractUUID(deviceID));
         }
 
         private enum deviceDetailSection {OS=0, UPnPVersion=1, DeviceType=2};

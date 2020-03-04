@@ -22,6 +22,21 @@ namespace UniversalScanner
         protected bool _quirk = false;
         public bool quirk { set { _quirk = value; } }
 
+        public override int color
+        {
+            get
+            {
+                return Color.DarkRed.ToArgb();
+            }
+        }
+        public override string name
+        {
+            get
+            {
+                return "Dahua";
+            }
+        }
+
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
         public struct Dahua2Header
         {
@@ -38,7 +53,7 @@ namespace UniversalScanner
         public Dahua2()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpGlobal();
+            listenUdpInterfaces();
         }
 
         public override void scan()
@@ -163,7 +178,7 @@ namespace UniversalScanner
                     deviceDesc = "Dahua device";
                 }
 
-                viewer.deviceFound("Dahua", deviceIP, deviceType, deviceDesc, Color.DarkRed.ToArgb());
+                viewer.deviceFound(name, deviceIP, deviceType, deviceDesc);
             }
         }
 
