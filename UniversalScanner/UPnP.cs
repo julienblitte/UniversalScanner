@@ -34,7 +34,7 @@ namespace UniversalScanner
         public UPnP()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpGlobal();
+            listenUdpInterfaces();
         }
 
         public override void scan()
