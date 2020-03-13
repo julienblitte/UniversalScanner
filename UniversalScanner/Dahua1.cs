@@ -63,7 +63,7 @@ namespace UniversalScanner
             /* not 4-bytes aligned */
             [FieldOffset(2)] public Byte section2Len;
             /* not 4-bytes aligned */
-            [FieldOffset(3)] public Byte _02_value;
+            [FieldOffset(3)] public Byte _03_value;
             [FieldOffset(4)] public UInt32 _04_value;      // 0x58 for answer, 0x00 for discovery
             [FieldOffset(8)] public UInt32 _08_reserved;
             [FieldOffset(12)] public UInt32 _0C_reserved;
