@@ -26,7 +26,7 @@ namespace UniversalScanner
         {
             get
             {
-                return "Dahua";
+                return "Hikvision";
             }
         }
 
@@ -63,7 +63,7 @@ namespace UniversalScanner
             }
             deviceSN = extractXMLString("DeviceSN", xml);
 
-            viewer.deviceFound("Hikvision", deviceIP, deviceType, deviceSN);
+            viewer.deviceFound(name, deviceIP, deviceType, deviceSN);
         }
 
         public override void scan()
