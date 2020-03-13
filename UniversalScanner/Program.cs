@@ -34,7 +34,8 @@ namespace UniversalScanner
                 new UPnP(),
                 engineDahua1,
                 engineDahua2,
-                new Hikvision()
+                new Hikvision(),
+                new Hanwha()
             };
             foreach(var engine in engines)
             {

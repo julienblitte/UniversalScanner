@@ -333,7 +333,7 @@ namespace UniversalScanner
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
 #if DEBUG
-                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
+                        Debug.WriteLine(string.Format("Sending from interface {0} to {1}...", net.ToString(), endpoint.ToString()));
                         debugWriteText(Encoding.UTF8.GetString(data));
 #endif
                         try
