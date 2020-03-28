@@ -21,7 +21,6 @@ namespace UniversalScanner
         void formatProtocol(string protocol, int color);
     }
 
-
     public abstract class ScanEngine : IDisposable
     {
         protected IPAddress multicastIP;
@@ -35,14 +34,16 @@ namespace UniversalScanner
         protected bool closing = false;
         public bool isDisposed = false;
 
+        // NetworkToHostOrder and HostToNetworkOrder are unsafe due type overload
+        // UInt64 ntohll(UInt64) and UInt64 htonll(UInt64) defined bellow
         [DllImport("wsock32.dll")]
-        protected static extern UInt32 ntohl(UInt32 netshort);
+        public static extern UInt32 ntohl(UInt32 value);
         [DllImport("wsock32.dll")]
-        protected static extern UInt32 htonl(UInt32 netshort);
+        public static extern UInt32 htonl(UInt32 value);
         [DllImport("wsock32.dll")]
-        protected static extern UInt16 ntohs(UInt16 netshort);
+        public static extern UInt16 ntohs(UInt16 value);
         [DllImport("wsock32.dll")]
-        protected static extern UInt16 htons(UInt16 netshort);
+        public static extern UInt16 htons(UInt16 value);
 
         protected struct networkBundle
         {
@@ -59,10 +60,38 @@ namespace UniversalScanner
         public abstract int color { get; }
         public abstract string name { get; }
 
+        public static UInt64 htonll(UInt64 value)
+        {
+            if (htonl(1) != 1)
+            {
+                UInt32 high_part = htonl((UInt32)(value >> 32));
+                UInt32 low_part = htonl((UInt32)(value & 0xFFFFFFFF));
+                value = low_part;
+                value <<= 32;
+                value |= high_part;
+            }
+            return value;
+        }
+        public static UInt64 ntohll(UInt64 value)
+        {
+            if (ntohl(1) != 1)
+            {
+                UInt32 high_part = ntohl((UInt32)(value >> 32));
+                UInt32 low_part = ntohl((UInt32)(value & 0xFFFFFFFF));
+                value = low_part;
+                value <<= 32;
+                value |= high_part;
+            }
+            return value;
+        }
+
         public ScanEngine()
         {
             globalListener.inUse = false;
             multicastListener.inUse = false;
+
+            Debug.WriteLine("NetworkToHostOrder(1)=" + IPAddress.NetworkToHostOrder(1));
+            Debug.WriteLine("HostToNetworkOrder(1)=" + IPAddress.HostToNetworkOrder(1));
         }
 
         public abstract void scan();
@@ -226,6 +255,7 @@ namespace UniversalScanner
             byte[] data;
 
             if (interfacesListerner == null && !globalListener.inUse)
+
             {
                 Trace.WriteLine("Error: send(): no opened sockets.");
                 Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                return false;
@@ -558,13 +588,29 @@ namespace UniversalScanner
         private void multicastReciever()
         {
             byte[] data;
+            IPAddress[] interfaces;
+            int interfaceCount;
+            MulticastOption[] multicastOption;
+
+            interfaces = listActiveAddresses(AddressFamily.InterNetwork);
+            interfaceCount = interfaces.Length;
+
+            multicastOption = new MulticastOption[interfaceCount];
 
             multicastListener.udp = new UdpClient();
             multicastListener.endPoint = new IPEndPoint(IPAddress.Any, multicastPort);
+            for(int i= 0; i < interfaceCount; i++)
+            {
+                multicastOption[i] = new MulticastOption(multicastIP, interfaces[i]);
+            }
+
             try
             {
-                multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(multicastIP));
                 multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                for (int i = 0; i < interfaceCount; i++)
+                {
+                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multicastOption[i]);
+                }
 
                 multicastListener.udp.Client.Bind(multicastListener.endPoint);
             }
@@ -588,7 +634,17 @@ namespace UniversalScanner
                 catch
                 { }
             }
-            multicastListener.udp.Close();
+            try
+            {
+                for (int i = 0; i < interfaceCount; i++)
+                {
+                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, multicastOption[i]);
+                }
+            }
+            finally
+            {
+                multicastListener.udp.Close();
+            }
         }
 
         public void Dispose()

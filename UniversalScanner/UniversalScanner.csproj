@@ -50,9 +50,6 @@
   <PropertyGroup>
     <ApplicationIcon>UniversalScanner.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>UniversalScanner.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
