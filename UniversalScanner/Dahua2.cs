@@ -39,7 +39,7 @@ namespace UniversalScanner
             }
         }
 
-        private const UInt32 magic = 0x44484950;        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
         public struct Dahua2Header
         {
             [FieldOffset(0)] public UInt32 headerSize;

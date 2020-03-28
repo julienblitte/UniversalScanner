@@ -89,9 +89,6 @@ namespace UniversalScanner
         {
             globalListener.inUse = false;
             multicastListener.inUse = false;
-
-            Debug.WriteLine("NetworkToHostOrder(1)=" + IPAddress.NetworkToHostOrder(1));
-            Debug.WriteLine("HostToNetworkOrder(1)=" + IPAddress.HostToNetworkOrder(1));
         }
 
         public abstract void scan();
@@ -224,8 +221,6 @@ namespace UniversalScanner
 
             try
             {
-                Trace.WriteLine(String.Format("Subscribing to multicast {0}:{1}...", multicastIP, multicastPort));
-
                 multicastListener.inUse = true;
                 multicastListener.thread = new Thread(multicastReciever);
                 multicastListener.thread.IsBackground = true;
@@ -258,7 +253,8 @@ namespace UniversalScanner
 
             {
                 Trace.WriteLine("Error: send(): no opened sockets.");
-                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                return false;
+                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                
+                return false;
             }
 
             data = sender(endpoint);
@@ -609,6 +605,7 @@ namespace UniversalScanner
                 multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 for (int i = 0; i < interfaceCount; i++)
                 {
+                    Trace.WriteLine(String.Format("Joining group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multicastOption[i]);
                 }
 
@@ -626,7 +623,7 @@ namespace UniversalScanner
                 {
                     data = multicastListener.udp.Receive(ref multicastListener.endPoint);
 #if DEBUG
-                    Debug.WriteLine(String.Format("Recieved multicast from {0}.", multicastListener.endPoint.ToString()));
+                    Debug.WriteLine(String.Format("Recieved from {0}.", multicastListener.endPoint.ToString()));
                     debugWriteText(Encoding.UTF8.GetString(data));
 #endif
                     reciever(multicastListener.endPoint, data);
@@ -638,6 +635,7 @@ namespace UniversalScanner
             {
                 for (int i = 0; i < interfaceCount; i++)
                 {
+                    Trace.WriteLine(String.Format("Leaving group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, multicastOption[i]);
                 }
             }

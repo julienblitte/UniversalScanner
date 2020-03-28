@@ -33,7 +33,10 @@ namespace UniversalScanner
         }
 
         public delegate void mDNSAnswerTypeA_Action(string domainFilter, IPAddress address);
-        protected Dictionary<string, mDNSAnswerTypeA_Action> resolutionTable;
+        public delegate void mDNSAnswerTypeAAAA_Action(string domainFilter, IPAddress address);
+
+        protected Dictionary<string, mDNSAnswerTypeA_Action> resolutionTableTypeA;
+        protected Dictionary<string, mDNSAnswerTypeAAAA_Action> resolutionTableTypeAAAA;
 
         private UInt16 mDNSQuestionClass = 0x0001;
 
@@ -64,13 +67,20 @@ namespace UniversalScanner
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpGlobal();
 
-            resolutionTable = new Dictionary<string, mDNSAnswerTypeA_Action>();
+            resolutionTableTypeA = new Dictionary<string, mDNSAnswerTypeA_Action>();
+            resolutionTableTypeAAAA = new Dictionary<string, mDNSAnswerTypeAAAA_Action>();
         }
 
-        public void registerDomain(string domainFilter, mDNSAnswerTypeA_Action onResolve)
+        public void registerDomainTypeA(string domainFilter, mDNSAnswerTypeA_Action onResolve)
         {
-            resolutionTable.Add(domainFilter, onResolve);
+            resolutionTableTypeA.Add(domainFilter, onResolve);
         }
+
+        public void registerDomainTypeAAAA(string domainFilter, mDNSAnswerTypeAAAA_Action onResolve)
+        {
+            resolutionTableTypeAAAA.Add(domainFilter, onResolve);
+        }
+
 
         private byte[] buildQuery(string queryString, mDNSType queryType)
         {
@@ -165,7 +175,7 @@ namespace UniversalScanner
 
             if (data.Length <= headerSize)
             {
-                Trace.WriteLine("mDNS.reciever(): Warning: invlaid packet size.");
+                Trace.WriteLine("mDNS.reciever(): Warning: invalid packet size.");
                 return;
             }
 
@@ -216,7 +226,7 @@ namespace UniversalScanner
             {
                 name = readString(data, ref position);
                 answerType = readUInt16(data, ref position);
-                Trace.WriteLine(String.Format("mDNS Response '{0}', type = {1}:", name, answerType));
+                Trace.WriteLine(String.Format("mDNS Response for '{0}', type = {1}:", name, answerType));
 
                 flushClass = readUInt16(data, ref position);
                 ttl = readUInt32(data, ref position);
@@ -233,33 +243,42 @@ namespace UniversalScanner
                     case (UInt16)mDNSType.TYPE_A:
                         IPAddress ip;
                         ip = readAnswer_A(data, ref position, dataLen);
-                        Trace.WriteLine("mDNS IPv4(A): " + ip.ToString());
+                        Trace.WriteLine("mDNS Response IPv4 (A): " + ip.ToString());
+                        if (resolutionTableTypeA.ContainsKey(name))
+                        {
+                            resolutionTableTypeA[name].Invoke(name, ip);
+                        }
+                        else resolutionTableTypeA[resolutionTableTypeA.Keys.First()].Invoke(name, ip);
                         break;
                     case (UInt16)mDNSType.TYPE_PTR:
                         string domain;
                         domain = readAnswer_PTR(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS domain(PTR): '{0}'", domain));
+                        Trace.WriteLine(String.Format("mDNS Response Domain (PTR): '{0}'", domain));
                         return;
                     case (UInt16)mDNSType.TYPE_TXT:
                         string[] str;
                         str = readAnswer_TXT(data, ref position, dataLen);
                         foreach(string t in str)
                         {
-                            Trace.WriteLine(String.Format("mDNS IPv6(TXT): '{0}'", t));
+                            Trace.WriteLine(String.Format("mDNS Response Text (TXT): '{0}'", t));
                         }
                         return;
                     case (UInt16)mDNSType.TYPE_AAAA:
                         IPAddress ipv6;
                         ipv6 = readAnswer_AAAA(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS IPv6(AAAA): '{0}'", ipv6.ToString()));
+                        Trace.WriteLine(String.Format("mDNS Response IPv6 (AAAA): '{0}'", ipv6.ToString()));
+                        if (resolutionTableTypeAAAA.ContainsKey(name))
+                        {
+                            resolutionTableTypeAAAA[name].Invoke(name, ipv6);
+                        }
                         return;
                     case (UInt16)mDNSType.TYPE_SRV:
                         string srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS server(SRV): '{0}'", srv));
+                        Trace.WriteLine(String.Format("mDNS Response Server (SRV): '{0}'", srv));
                         return;
                     default:
-                        Trace.WriteLine(String.Format("mDNS packet type {0} not implemented, parsing of this packet aborted!", answerType));
+                        Trace.WriteLine(String.Format("mDNS Response packet type {0} not implemented, parsing of this packet aborted!", answerType));
                         return;
                 }
                 expectedAnswers--;
@@ -276,7 +295,7 @@ namespace UniversalScanner
                 return IPAddress.Any;
             }
 
-            ipVal = readUInt32(data, ref position);
+            ipVal = ntohl(readUInt32(data, ref position));
             return (new IPAddress(ipVal));
         }
 
