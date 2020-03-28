@@ -22,6 +22,8 @@ namespace UniversalScanner
         protected bool _quirk = false;
         public bool quirk { set { _quirk = value; } }
 
+        protected UInt32 magic = 0x44484950;
+
         public override int color
         {
             get
@@ -77,7 +79,7 @@ namespace UniversalScanner
             
             header = new Dahua2Header {
                 headerSize = 0x20,
-                headerMagic = (UInt32)IPAddress.NetworkToHostOrder(0x44484950),
+                headerMagic = ntohl(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
                 packetSize1 = 0, 
