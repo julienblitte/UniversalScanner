@@ -151,7 +151,7 @@ namespace UniversalScanner
             }
 
             // build IP Address from section1
-            deviceIP = (UInt32)IPAddress.NetworkToHostOrder((Int32)section1.ip);
+            deviceIP = ntohl(section1.ip);
             deviceIPStr = String.Format("{0}.{1}.{2}.{3}", 
                 (byte)((deviceIP >> 24) & 0xFF),
                 (byte)((deviceIP >> 16) & 0xFF),
