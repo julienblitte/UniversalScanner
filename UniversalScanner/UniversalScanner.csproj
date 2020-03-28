@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Axis.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
     <Compile Include="Hikvision.cs" />
