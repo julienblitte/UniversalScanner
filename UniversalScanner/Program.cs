@@ -19,21 +19,29 @@ namespace UniversalScanner
             ScanEngine[] engines;
             Dahua1 engineDahua1;
             Dahua2 engineDahua2;
+            mDNS engineMDNS;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             viewer = new ScannerWindow();
+            // Dahua1 and Dahua2 must be started together because of quirk mode
             engineDahua1 = new Dahua1();
             engineDahua2 = new Dahua2();
-            // engineDahua1 decides if engineDahua2 use quirk mode or not
+            // if Dahua1 is quirk mode, switch Dahua2 to quirk mode
             engineDahua2.quirk = engineDahua1.quirk;
+            //engineMDNS must be started before as it is used by other engine using mDNS
+            engineMDNS = new mDNS();
+            
+
             engines = new ScanEngine[] {
                 new UPnP(),
                 engineDahua1,
                 engineDahua2,
                 new Hikvision(),
+                engineMDNS,
 				new Bosch()
+                /* new Axis(engineMDNS) */
             };
             foreach(var engine in engines)
             {
@@ -41,7 +49,6 @@ namespace UniversalScanner
             }
 
             Application.Run(viewer);
-
         }
     }
 }

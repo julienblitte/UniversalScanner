@@ -18,16 +18,16 @@ This tool is delivered as it, without any warranty.
 * SSDP/UPnP
 * Dahua camera discovery protocol
 * Hikvision discovery protocol
+* mDNS
 
 # Protocols currently in implementation
-* mDNS
 * Bosch discovery protocol
 * Axis discovery protocol
+* Hanwha discovery protocol
 
 # Protocols in the road map
 * Basler discovery protocol
 * Panasonic discovery protocol
-* Samsung discovery protocol
 * Sanyo discovery protocol
 * Sony discovery protocol
 * Vivotek discovery protocol

@@ -22,7 +22,7 @@ namespace UniversalScanner
         protected bool _quirk = false;
         public bool quirk { set { _quirk = value; } }
 
-        protected UInt32 magic = 0x44484950;
+        protected const UInt32 magic = 0x44484950;
 
         public override int color
         {
@@ -64,7 +64,7 @@ namespace UniversalScanner
 
             if (_quirk)
             {
-                Trace.WriteLine("Warning: Using quirk mode for Dahua protocol v2");
+                Trace.WriteLine("scan(): Warning: Using quirk mode for Dahua protocol v2");
                 sendNetScan(port);
             }
         }
@@ -76,7 +76,7 @@ namespace UniversalScanner
             byte[] body;
             byte[] result;
             int headerSize;
-            
+
             header = new Dahua2Header {
                 headerSize = 0x20,
                 headerMagic = ntohl(magic),
@@ -108,8 +108,7 @@ namespace UniversalScanner
                 Marshal.FreeHGlobal(ptr);
             }
 
-            for (int i = 0; i < body.Length; i++)
-                result[headerSize + i] = body[i];
+            body.CopyTo(result, headerSize);
 
             return result;
         }
