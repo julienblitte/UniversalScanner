@@ -89,14 +89,11 @@ namespace UniversalScanner
         {
             globalListener.inUse = false;
             multicastListener.inUse = false;
-
-            Debug.WriteLine("NetworkToHostOrder(1)=" + IPAddress.NetworkToHostOrder(1));
-            Debug.WriteLine("HostToNetworkOrder(1)=" + IPAddress.HostToNetworkOrder(1));
         }
 
         public abstract void scan();
 
-        private void debugWriteText(string text)
+        protected void debugWriteText(string text)
         {
 #if DEBUG
             string[] lines;
@@ -144,7 +141,7 @@ namespace UniversalScanner
             {
                 if (!isFreeUdpPort(localPort))
                 {
-                    Trace.WriteLine(String.Format("Error: listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
+                    Trace.WriteLine(String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
                     return -1;
                 }
             }
@@ -170,7 +167,6 @@ namespace UniversalScanner
             }
             catch
             {
-                Trace.WriteLine("Error: listenUdpGlobal(): Listening failure!");
                 globalListener.inUse = false;
                 return -1;
             }
@@ -210,7 +206,6 @@ namespace UniversalScanner
                 }
                 catch
                 {
-                    Trace.WriteLine(String.Format("Error: listenUdpInterfaces(): Listening failure on UDP {0}:{1}!", address.ToString(), localPort));
                     interfacesListerner[i].inUse = false;
                 }
                 interfacesListerner[i].thread.Start();
@@ -226,8 +221,6 @@ namespace UniversalScanner
 
             try
             {
-                Trace.WriteLine(String.Format("Subscribing to multicast {0}:{1}...", multicastIP, multicastPort));
-
                 multicastListener.inUse = true;
                 multicastListener.thread = new Thread(multicastReciever);
                 multicastListener.thread.IsBackground = true;
@@ -235,7 +228,6 @@ namespace UniversalScanner
             }
             catch
             {
-                Trace.WriteLine(String.Format("Error: listenMulticast(): Subscriptiong failure to multicast {0}:{1}!", multicastIP, multicastPort));
                 multicastListener.inUse = false;
                 return false;
             }
@@ -261,7 +253,7 @@ namespace UniversalScanner
 
             {
                 Trace.WriteLine("Error: send(): no opened sockets.");
-                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
+                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                
                 return false;
             }
 
@@ -295,8 +287,7 @@ namespace UniversalScanner
                             net.udp.Send(data, data.Length, endpoint);
                         }
                         catch (Exception) { }
-                    }
-                }
+                    }                }
             }
             return true;
         }
@@ -566,10 +557,10 @@ namespace UniversalScanner
                 unicastUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 unicastUDP.Client.Bind(unicastEP);
             }
-            catch (Exception ex)
+            catch
+
             {
-                Trace.WriteLine(String.Format("Error: unicastReciever(): Unable to bind {0}!", unicastEP.ToString()));
-                Trace.WriteLine(String.Format("Error: unicastReciever(): {0}", ex.StackTrace));
+                Trace.WriteLine(String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", unicastEP.ToString()));
                 return;
             }
 
@@ -584,7 +575,7 @@ namespace UniversalScanner
 #endif
                     reciever(unicastEP, data);
                 }
-                catch (Exception)
+                catch
                 { }
             }
         }
@@ -614,6 +605,7 @@ namespace UniversalScanner
                 multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 for (int i = 0; i < interfaceCount; i++)
                 {
+                    Trace.WriteLine(String.Format("Joining group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multicastOption[i]);
                 }
 
@@ -631,18 +623,19 @@ namespace UniversalScanner
                 {
                     data = multicastListener.udp.Receive(ref multicastListener.endPoint);
 #if DEBUG
-                    Debug.WriteLine(String.Format("Recieved multicast from {0}.", multicastListener.endPoint.ToString()));
+                    Debug.WriteLine(String.Format("Recieved from {0}.", multicastListener.endPoint.ToString()));
                     debugWriteText(Encoding.UTF8.GetString(data));
 #endif
                     reciever(multicastListener.endPoint, data);
                 }
-                catch(Exception)
+                catch
                 { }
             }
             try
             {
                 for (int i = 0; i < interfaceCount; i++)
                 {
+                    Trace.WriteLine(String.Format("Leaving group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, multicastOption[i]);
                 }
             }

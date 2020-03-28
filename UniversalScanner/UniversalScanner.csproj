@@ -68,6 +68,7 @@
     <Compile Include="Dahua2.cs" />
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
+    <Compile Include="mDNS.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>
