@@ -41,8 +41,8 @@ namespace UniversalScanner
                 engineDahua1,
                 engineDahua2,
                 new Hikvision(),
-                engineMDNS
-                /* new Axis(engineMDNS) */
+                engineMDNS,
+                new Axis(engineMDNS)
             };
             foreach(var engine in engines)
             {
