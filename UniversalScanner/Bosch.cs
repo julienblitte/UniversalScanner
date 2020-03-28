@@ -17,9 +17,22 @@ namespace UniversalScanner
         protected int port = 1757;
 
         protected byte[] discover = { 0x99, 0x39, 0xa4, 0x27, 0x60, 0x08, 0xad, 0x0a, 0xff, 0x00, 0x06, 0xde };
-        protected UInt64 BoschMagic = 0x9939a4276008ad0a;
+        protected UInt64 magic = 0x0aad086027a43999;
 
-        protected int color = Color.DarkRed.ToArgb();
+        public override string name
+        {
+            get
+            {
+                return "Bosch";
+            }
+        }
+        public override int color
+        {
+            get
+            {
+                return Color.DarkRed.ToArgb();
+            }
+        }
 
         [StructLayout(LayoutKind.Explicit, Size = 6, CharSet = CharSet.Ansi)]
         public struct MacAddress
@@ -41,7 +54,7 @@ namespace UniversalScanner
             [FieldOffset(15)] public byte _14_value;
             [FieldOffset(16)] public UInt32 ip;
             [FieldOffset(20)] public UInt32 mask;
-            [FieldOffset(24)] public UInt32 gatway;
+            [FieldOffset(24)] public UInt32 gateway;
             [FieldOffset(28)] public byte _28_value;
             [FieldOffset(29)] public byte _29_value;
             [FieldOffset(20)] public byte _30_value;
@@ -63,6 +76,7 @@ namespace UniversalScanner
                 BoschBinary binary;
                 IntPtr ptr;
                 int binarySize;
+                UInt32 ip;
 
                 binarySize = Marshal.SizeOf(typeof(BoschBinary));
 
@@ -77,21 +91,28 @@ namespace UniversalScanner
                     Marshal.FreeHGlobal(ptr);
                 }
 
-                if (binary.magic != BoschMagic)
+                if (ntohll(binary.magic) != magic)
                 {
                     Trace.WriteLine("Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
-                deviceIPStr = String.Format("", binary.ip);
+                ip = ntohl(binary.ip);
+                deviceIPStr = String.Format("{0}.{1}.{2}.{3}",
+                    (byte)((ip >> 24) & 0xFF),
+                    (byte)((ip >> 16) & 0xFF),
+                    (byte)((ip >> 8) & 0xFF),
+                    (byte)((ip) & 0xFF)
+                );
+
                 deviceMac = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte0, binary.mac.byte1, binary.mac.byte2,
                                             binary.mac.byte3, binary.mac.byte4, binary.mac.byte5);
 
-                deviceTypeStr = "Bosch binary";
+                deviceTypeStr = name;
 
                 // postpone few seconds to prioritize XML instead binary
                 ThreadPool.QueueUserWorkItem(deviceFoundDelayed, new deviceFoundParameters() {
-                    viewer = viewer, deviceIPStr = deviceIPStr, deviceMac = deviceMac, deviceTypeStr = deviceTypeStr, color = color });
+                    engineName = this.name, viewer = viewer, deviceIPStr = deviceIPStr, deviceMac = deviceMac, deviceTypeStr = deviceTypeStr, color = color });
             }
             else
             {
@@ -125,23 +146,23 @@ namespace UniversalScanner
                     deviceMac = m.Captures[1].Value;
                 }
 
-                viewer.deviceFound("bosh", deviceIPStr, deviceTypeStr, deviceMac, color);
+                viewer.deviceFound(name, deviceIPStr, deviceTypeStr, deviceMac);
             }
         }
 
         public struct deviceFoundParameters
         {
             public ScannerViewer viewer;
-            public string deviceIPStr, deviceTypeStr, deviceMac;
+            public string engineName, deviceIPStr, deviceTypeStr, deviceMac;
             public int color;
         }
-        static void deviceFoundDelayed(Object parameters)
+        private static void deviceFoundDelayed(Object parameters)
         {
             deviceFoundParameters p;
 
             Thread.Sleep(1000);
             p = (deviceFoundParameters)parameters;
-            p.viewer.deviceFound("bosh", p.deviceIPStr, p.deviceTypeStr, p.deviceMac, p.color);
+            p.viewer.deviceFound(p.engineName, p.deviceIPStr, p.deviceTypeStr, p.deviceMac);
 
         }
 

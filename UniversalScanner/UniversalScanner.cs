@@ -11,6 +11,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -202,47 +203,105 @@ namespace UniversalScanner
         private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             DataGridViewColumn column;
-            
-            int order;
+
 
             column = dataGridView1.Columns[e.ColumnIndex];
 
             if (column.SortMode == DataGridViewColumnSortMode.Programmatic)
             {
+                int order;
+                Regex ipFormat;
+                int count;
+                UInt32[] cache;
+                int[] newOrder;
+
+                ipFormat = new Regex("^([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)$", RegexOptions.Compiled);
                 order = (column.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? -1 : 1);
 
-                /*
-                DataTable new_devices;
+                count = found_devices.Rows.Count;
 
-                new_devices = new DataTable();
-                for (int c = 0; c < found_devices.Columns.Count; c++)
+                // caching data
+                cache = new UInt32[count];
+                for (int i=0; i < count; i++)
                 {
-                    new_devices.Columns.Add(found_devices.Columns[c]);
+                    string ip;
+                    Match m;
+
+                    ip = found_devices.Rows[i].Field<string>("IP address");
+                    m = ipFormat.Match(ip);
+
+                    if (m.Success)
+                    {
+                        cache[i] = UInt32.Parse(m.Groups[1].Value) << 24
+                            | UInt32.Parse(m.Groups[2].Value) << 16
+                            | UInt32.Parse(m.Groups[3].Value) << 8
+                            | UInt32.Parse(m.Groups[4].Value);
+                    }
+                    else
+                    {
+                        cache[i] = 0;
+                    }
                 }
-                new_devices.Columns.Add("order");
-                for (int c = 0; c < found_devices.Rows.Count; c++)
+
+                // sorting cache
+                newOrder = new int[count];
+                for (int j=0; j < count; j++)
                 {
-                    new_devices.Rows.Add(found_devices.Rows[c]);
+                    UInt32 extremum;
+                    int extremumIndex;
+
+                    if (order > 0)
+                    {
+                        // find min value
+                        extremum = 0xffffffff;
+                        extremumIndex = 0;
+                        for (int i = 0; i < count - j; i++)
+                        {
+                            if (cache[i] < extremum)
+                            {
+                                extremum = cache[i];
+                                extremumIndex = i;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // find max value
+                        extremum = 0;
+                        extremumIndex = 0;
+                        for (int i = 0; i < count - j; i++)
+                        {
+                            if (cache[i] > extremum)
+                            {
+                                extremum = cache[i];
+                                extremumIndex = i;
+                            }
+                        }
+                    }
+
+                    // move value to the end, shift the rest
+                    for (int i=extremumIndex; i < count-j-1; i++)
+                    {
+                        cache[i] = cache[i + 1];
+                    }
+                    cache[count - j - 1] = extremum;
+
+                    newOrder[j] = extremumIndex;
                 }
-                found_devices = new_devices;
-                */
 
-                //binding.DataSource = binding.OrderBy(p => p, new IPComparer()).
+                // deploying new order
+                for (int i=0; i < count; i++)
+                {
+                    DataRow line = found_devices.Rows[newOrder[i]];
+                    found_devices.ImportRow(line);
+                    found_devices.Rows.RemoveAt(newOrder[i]);
+                }
 
-                binding.Sort = string.Format("{0} {1}", column.DataPropertyName, (order > 0 ? "ASC" : "DESC"));
+                binding.RemoveSort();
 
                 column.HeaderCell.SortGlyphDirection = (order > 0 ? SortOrder.Ascending : SortOrder.Descending);
             }
         }
-    }
 
-    class IPComparer : IComparer<string>
-    {
-        public int Compare(string a, string b)
-        {
-            return Enumerable.Zip(a.Split('.'), b.Split('.'),
-                                 (x, y) => int.Parse(x).CompareTo(int.Parse(y)))
-                             .FirstOrDefault(i => i != 0);
-        }
     }
 }
