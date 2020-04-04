@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace UniversalScanner
@@ -48,11 +49,14 @@ namespace UniversalScanner
             return Encoding.UTF8.GetBytes(string.Format("M-SEARCH * HTTP/1.1\r\nHost: {0}:{1}\r\nST:upnp:rootdevice\r\nMan:\"ssdp:discover\"\r\nMX:2\r\n\r\n",
                     multicastIP, multicastPort));
         }
+
         public override void reciever(IPEndPoint from, byte[] data)
         {
             string NT;
             bool announcement;
             string deviceIP, deviceType, deviceID;
+            string server;
+            string[] serverDetails;
             string body;
 
             body = Encoding.UTF8.GetString(data);
@@ -61,25 +65,50 @@ namespace UniversalScanner
             NT = extractHttpVar(body, "NT");
             announcement = (NT == "upnp:rootdevice");
 
-            deviceIP = from.Address.ToString();
-            deviceType = extractHttpVar(body, "SERVER");
-            deviceID = extractHttpVar(body, "USN");
+            server = extractHttpVar(body, "SERVER");
+            serverDetails = splitServerDetails(server);
 
-            if (viewer != null && deviceIP != "" && deviceType != "" && deviceID != "")
-                viewer.deviceFound(name, deviceIP, extractDeviceDetail(deviceType, deviceDetailSection.DeviceType), extractUUID(deviceID));
+            deviceIP = from.Address.ToString();
+            
+            if (serverDetails.Length > 0)
+            {
+                deviceType = serverDetails[serverDetails.Length - 1];
+            }
+            else
+            {
+                deviceType = "unknow";
+            }
+
+            deviceID = extractHttpVar(body, "USN");
+            if (deviceID == "")
+            {
+                deviceID = "unknown";
+            }
+
+            if (viewer != null)
+            {
+                viewer.deviceFound(name, deviceIP, deviceType, extractUUID(deviceID));
+            }
         }
 
-        private enum deviceDetailSection {OS=0, UPnPVersion=1, DeviceType=2};
-        private string extractDeviceDetail(string device, deviceDetailSection section)
+        private string[] splitServerDetails(string device)
         {
-            var deviceTable = device.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            Regex reg;
+            string[] result;
 
-            
-            if (deviceTable.Length >= Enum.GetNames(typeof(deviceDetailSection)).Length -1)
+            // values can be separated by a comma or a space
+            // values are generally this format: name/version
+            // "/version" can be ommited when comma are used as separator
+            reg = new Regex("[^,/]+(/[^ ,]+)?");
+            var foundComp = reg.Matches(device);
+
+            result = new string[foundComp.Count];
+            for(int i = 0; i< foundComp.Count; i++)
             {
-                return deviceTable[(int)section].Trim();
+                result[i] = foundComp[i].Value.Trim();
             }
-            return device;
+
+            return result;
         }
 
         private string extractUUID(string USN)
