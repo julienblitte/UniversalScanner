@@ -12,6 +12,40 @@ using System.Threading.Tasks;
 
 namespace UniversalScanner
 {
+    public enum mDNSType : UInt16
+    {
+        TYPE_A = 0x0001,     // ipv4
+        TYPE_PTR = 0x000C,   // domain
+        TYPE_TXT = 0x0010,   // string
+        TYPE_AAAA = 0x001C,  // ipv6
+        TYPE_SRV = 0x0021,   // server service
+        TYPE_ANY = 0x00ff    // any
+    };
+
+    public struct mDNSAnswer
+    {
+        public mDNSType Type;
+        public mDNSAnswerData data;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct mDNSAnswerData  /* union struct */
+    {
+        [FieldOffset(0)] public IPAddress typeA;
+        [FieldOffset(0)] public string typePTR;
+        [FieldOffset(0)] public string[] typeTXT;
+        [FieldOffset(0)] public IPAddress typeAAAA;
+        [FieldOffset(0)] public mDNSAnswerDataSVR typeSVR;
+    }
+
+    public struct mDNSAnswerDataSVR
+    {
+        public UInt16 priority;
+        public UInt16 weight;
+        public UInt16 port;
+        public string domain;
+    }
+
     class mDNS : ScanEngine
     {
         protected new string multicastIP = "224.0.0.251";
@@ -32,24 +66,11 @@ namespace UniversalScanner
             }
         }
 
-        public delegate void mDNSAnswerTypeA_Action(string domainFilter, IPAddress address);
-        public delegate void mDNSAnswerTypeAAAA_Action(string domainFilter, IPAddress address);
+        public delegate void mDNSResponse_Action(string domainFilter, mDNSAnswer[] answers);
 
-        protected Dictionary<string, mDNSAnswerTypeA_Action> resolutionTableTypeA;
-        protected Dictionary<string, mDNSAnswerTypeAAAA_Action> resolutionTableTypeAAAA;
+        protected Dictionary<string, mDNSResponse_Action> resolutionTable;
 
         private UInt16 mDNSQuestionClass = 0x0001;
-
-        public enum mDNSType : UInt16
-        {
-            TYPE_A = 0x0001,     // ipv4
-            TYPE_PTR = 0x000C,   // domain
-            TYPE_TXT = 0x0010,   // string
-            TYPE_AAAA = 0x001C,  // ipv6
-            TYPE_SRV = 0x0021,   // server service
-            TYPE_ANY = 0x00ff    // any
-        };
-
 
         [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
         public struct mDNSHeader
@@ -67,20 +88,13 @@ namespace UniversalScanner
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpGlobal();
 
-            resolutionTableTypeA = new Dictionary<string, mDNSAnswerTypeA_Action>();
-            resolutionTableTypeAAAA = new Dictionary<string, mDNSAnswerTypeAAAA_Action>();
+            resolutionTable = new Dictionary<string, mDNSResponse_Action>();
         }
 
-        public void registerDomainTypeA(string domainFilter, mDNSAnswerTypeA_Action onResolve)
+        public void registerDomain(string domainFilter, mDNSResponse_Action onResponse)
         {
-            resolutionTableTypeA.Add(domainFilter, onResolve);
+            resolutionTable.Add(domainFilter, onResponse);
         }
-
-        public void registerDomainTypeAAAA(string domainFilter, mDNSAnswerTypeAAAA_Action onResolve)
-        {
-            resolutionTableTypeAAAA.Add(domainFilter, onResolve);
-        }
-
 
         private byte[] buildQuery(string queryString, mDNSType queryType)
         {
@@ -168,7 +182,7 @@ namespace UniversalScanner
         {
             mDNSHeader header;
             int headerSize;
-            int expectedQueries, expectedResponses;
+            int expectedQueries, expectedAnwers;
             int position;
 
             headerSize = Marshal.SizeOf(typeof(mDNSHeader));
@@ -191,12 +205,12 @@ namespace UniversalScanner
             }
 
             expectedQueries = ntohs(header.questions);
-            expectedResponses = ntohs(header.authorityRRs) + ntohs(header.answerRRs) + ntohs(header.additionalRRs);
-            if (expectedResponses > 0)
+            expectedAnwers = ntohs(header.authorityRRs) + ntohs(header.answerRRs) + ntohs(header.additionalRRs);
+            if (expectedAnwers > 0)
             {
                 position = headerSize;
                 readQueries(data, ref position, expectedQueries);
-                readResponses(data, ref position, expectedResponses);
+                readAnswers(data, ref position, expectedAnwers);
             }
         }
 
@@ -216,72 +230,81 @@ namespace UniversalScanner
             }
         }
 
-        private void readResponses(byte[] data, ref int position, int expectedAnswers)
+        private void readAnswers(byte[] data, ref int position, int expectedAnswers)
         {
             UInt16 answerType, flushClass, dataLen;
             UInt32 ttl;
             string name;
+            mDNSAnswer[] answers;
+            int answerIndex;
+            string triggerName;
 
-            while (position < data.Length && expectedAnswers > 0)
+            answers = new mDNSAnswer[expectedAnswers];
+            answerIndex = 0;
+            triggerName = null;
+            while (position < data.Length && answerIndex < expectedAnswers)
             {
                 name = readString(data, ref position);
                 answerType = readUInt16(data, ref position);
-                Trace.WriteLine(String.Format("mDNS Response for '{0}', type = {1}:", name, answerType));
-
                 flushClass = readUInt16(data, ref position);
                 ttl = readUInt32(data, ref position);
                 dataLen = readUInt16(data, ref position);
 
                 if (position + dataLen > data.Length)
                 {
-                    Trace.WriteLine("Error: readResponses(): packet parsing overflow!");
+                    Trace.WriteLine("Error: readAnswer(): packet parsing overflow!");
                     return;
                 }
 
+                answers[answerIndex].Type = (mDNSType)answerType;
                 switch (answerType)
                 {
                     case (UInt16)mDNSType.TYPE_A:
                         IPAddress ip;
                         ip = readAnswer_A(data, ref position, dataLen);
-                        Trace.WriteLine("mDNS Response IPv4 (A): " + ip.ToString());
-                        if (resolutionTableTypeA.ContainsKey(name))
-                        {
-                            resolutionTableTypeA[name].Invoke(name, ip);
-                        }
-                        else resolutionTableTypeA[resolutionTableTypeA.Keys.First()].Invoke(name, ip);
+                        answers[answerIndex].data.typeA = ip;
+                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': IPv4 (A) = {1}", name, ip.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_PTR:
                         string domain;
                         domain = readAnswer_PTR(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS Response Domain (PTR): '{0}'", domain));
-                        return;
+                        answers[answerIndex].data.typePTR = domain;
+                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': Domain (PTR) = '{1}'", name, domain));
+                        break;
                     case (UInt16)mDNSType.TYPE_TXT:
                         string[] str;
                         str = readAnswer_TXT(data, ref position, dataLen);
-                        foreach(string t in str)
+                        answers[answerIndex].data.typeTXT = str;
+                        foreach (string t in str)
                         {
-                            Trace.WriteLine(String.Format("mDNS Response Text (TXT): '{0}'", t));
+                            Trace.WriteLine(String.Format("* mDNS answer for '{0}': Text (TXT) = '{1}'", name, t));
                         }
-                        return;
+                        break;
                     case (UInt16)mDNSType.TYPE_AAAA:
                         IPAddress ipv6;
                         ipv6 = readAnswer_AAAA(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS Response IPv6 (AAAA): '{0}'", ipv6.ToString()));
-                        if (resolutionTableTypeAAAA.ContainsKey(name))
-                        {
-                            resolutionTableTypeAAAA[name].Invoke(name, ipv6);
-                        }
-                        return;
+                        answers[answerIndex].data.typeAAAA = ipv6;
+                        Trace.WriteLine(String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
+                        break;
                     case (UInt16)mDNSType.TYPE_SRV:
-                        string srv;
+                        mDNSAnswerDataSVR srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
-                        Trace.WriteLine(String.Format("mDNS Response Server (SRV): '{0}'", srv));
-                        return;
+                        answers[answerIndex].data.typeSVR = srv;
+                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
+                        break;
                     default:
-                        Trace.WriteLine(String.Format("mDNS Response packet type {0} not implemented, parsing of this packet aborted!", answerType));
-                        return;
+                        Trace.WriteLine(String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
+                        break;
                 }
-                expectedAnswers--;
+                if (resolutionTable.ContainsKey(name) && triggerName == null)
+                {
+                    triggerName = name;
+                }
+                answerIndex++;
+            }
+            if (triggerName != null)
+            {
+                resolutionTable[triggerName].Invoke(triggerName, answers);
             }
         }
 
@@ -347,21 +370,23 @@ namespace UniversalScanner
             return result.ToArray();
         }
 
-        private string readAnswer_SRV(byte[] data, ref int position, int dataLen)
+        private mDNSAnswerDataSVR readAnswer_SRV(byte[] data, ref int position, int dataLen)
         {
-            UInt16 priority, weight, port;
-
+            mDNSAnswerDataSVR result;
             if (dataLen < 6)
             {
                 Trace.WriteLine("Error: readAnswer_SRV(): packet data size error!");
-                return "";
+                result = new mDNSAnswerDataSVR { priority = 0, weight = 0, port = 0, domain=null };
+                return result;
             }
 
-            priority = readUInt16(data, ref position);
-            weight = readUInt16(data, ref position);
-            port = readUInt16(data, ref position);
+            result = new mDNSAnswerDataSVR();
+            result.priority = readUInt16(data, ref position);
+            result.weight = readUInt16(data, ref position);
+            result.port = readUInt16(data, ref position);
+            result.domain = readString(data, ref position);
 
-            return String.Format("{0}:{1}", readString(data, ref position), port);
+            return result;
         }
 
         private UInt16 readUInt16(byte[] data, ref int position)
@@ -437,28 +462,17 @@ namespace UniversalScanner
 
                 if ((len & 0xC0) == 0xC0)
                 {
-                    int position_temp;
-                    byte len_temp;
+                    int positionPtr;
 
-                    position_temp = ((len << 8) | (data[position])) & 0x03FF;
+                    positionPtr = ((len << 8) | (data[position])) & 0x03FF;
                     position++;
 
-                    if (position_temp > data.Length)
+                    if (positionPtr > data.Length)
                     {
                         break;
                     }
 
-                    len_temp = data[position_temp];
-                    position_temp++;
-
-                    while (len_temp > 0 && data[position_temp] != 0 && position_temp < data.Length)
-                    {
-                        sb.Append(Convert.ToChar(data[position_temp]));
-
-                        len_temp--;
-                        position_temp++;
-                    }
-
+                    sb.Append(readString(data, ref positionPtr));
                     return sb.ToString();
                 }
                 else

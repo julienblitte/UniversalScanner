@@ -17,7 +17,8 @@ namespace UniversalScanner
         {
             get
             {
-                return Color.DarkGoldenrod.ToArgb();
+                //return Color.DarkGoldenrod.ToArgb();
+                return 0x806000;
             }
         }
         public override string name
@@ -34,7 +35,7 @@ namespace UniversalScanner
 
             foreach(var d in domains)
             {
-                dnsBroker.registerDomainTypeA(d, axisDeviceFound);
+                dnsBroker.registerDomain(d, axisDeviceFound);
             }
         }
 
@@ -47,7 +48,7 @@ namespace UniversalScanner
         {
             foreach (var d in domains)
             {
-                dnsBroker.scan(d, mDNS.mDNSType.TYPE_A);
+                dnsBroker.scan(d, mDNSType.TYPE_PTR);
             }
         }
 
@@ -56,9 +57,59 @@ namespace UniversalScanner
             return (new byte[0]);
         }
 
-        public void axisDeviceFound(string domainFilter, IPAddress address)
+        public void axisDeviceFound(string domainFilter, mDNSAnswer[] answers)
         {
-            viewer.deviceFound(name, address.ToString(), "axisType", "axisSN");
+            IPAddress ip;
+            string deviceType, serial;
+
+            ip = null;
+            deviceType = null;
+            serial = null;
+            foreach (var a in answers)
+            {
+                switch (a.Type)
+                {
+                    case mDNSType.TYPE_A:
+                        if (ip == null)
+                        {
+                            ip = a.data.typeA;
+                        }
+                        break;
+                    case mDNSType.TYPE_AAAA:
+                        break;
+                    case mDNSType.TYPE_ANY:
+                        break;
+                    case mDNSType.TYPE_PTR:
+                        if (deviceType == null)
+                        {
+                            deviceType = a.data.typePTR;
+                            if (deviceType.Contains('.'))
+                            {
+                                deviceType = deviceType.Split('.')[0];
+                            }
+                        }
+                        break;
+                    case mDNSType.TYPE_SRV:
+                        break;
+                    case mDNSType.TYPE_TXT:
+                        if (serial == null)
+                        {
+                            serial = a.data.typeTXT[0];
+                            if (serial.Contains('='))
+                            {
+                                serial = serial.Split('=')[1];
+                            }
+                        }
+                        break;
+                }
+            }
+
+            if (ip != null)
+            {
+                if (deviceType == null) deviceType = "unknown";
+                if (serial == null) serial = "unknown";
+                viewer.deviceFound(name, ip.ToString(), deviceType, serial);
+            }
         }
     }
 }
