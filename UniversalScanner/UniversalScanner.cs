@@ -29,6 +29,7 @@ namespace UniversalScanner
         {
             InitializeComponent();
 
+            // TODO: add protocol version column
             found_devices = new DataTable();
             found_devices.Columns.Add(new DataColumn("Protocol", typeof(string)));
             found_devices.Columns.Add(new DataColumn("IP address", typeof(string)));
@@ -50,6 +51,7 @@ namespace UniversalScanner
             scanEvent.Invoke();
         }
 
+        // TODO: change, add protocol version
         public void deviceFound(string protocol, string deviceIP, string deviceType, string serial)
         {
             if (IsDisposed)
@@ -65,8 +67,10 @@ namespace UniversalScanner
             }
         }
 
+        // TODO: change, add protocol version
         private void addDevice(string protocol, string deviceIP, string deviceType, string serial)
         {
+            // TODO: if already exists, replace line with highest protocol version
             if (!found_devices.Select().ToList().Exists(col => (col[0].ToString() == protocol &&
                 col[1].ToString() == deviceIP)))
             {

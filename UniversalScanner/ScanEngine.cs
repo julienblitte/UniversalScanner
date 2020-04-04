@@ -414,7 +414,7 @@ namespace UniversalScanner
                 where used.Port == localPort
                 select used.Port;
 
-            return (portsInUse == null);
+            return (portsInUse.Count() == 0);
         }
 
         protected int getFreeUdpPort()

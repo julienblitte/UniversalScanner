@@ -16,8 +16,8 @@ namespace UniversalScanner
     {
         protected int port = 1757;
 
-        protected byte[] discover = { 0x99, 0x39, 0xa4, 0x27, 0x60, 0x08, 0xad, 0x0a, 0xff, 0x00, 0x06, 0xde };
-        protected UInt64 magic = 0x0aad086027a43999;
+        protected UInt32 magic = 0x9939a427;
+        protected UInt32 requestMagic = 0xff0006de;
 
         public override string name
         {
@@ -46,9 +46,10 @@ namespace UniversalScanner
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
-        public struct BoschBinary
+        public struct BoschBinaryResponse
         {
-            [FieldOffset(0)] public UInt64 magic;
+            [FieldOffset(0)] public UInt32 magic;
+            [FieldOffset(4)] public UInt32 transactionID;
             [FieldOffset(8)] public MacAddress mac;
             [FieldOffset(14)] public byte _13_value;
             [FieldOffset(15)] public byte _14_value;
@@ -61,9 +62,18 @@ namespace UniversalScanner
             [FieldOffset(31)] public byte _31_value;
         };
 
+        [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
+        public struct BoschRequest
+        {
+            [FieldOffset(0)] public UInt32 magic;
+            [FieldOffset(4)] public UInt32 transactionID;
+            [FieldOffset(8)] public UInt32 requestMagic;
+        };
+
         public Bosch()
         {
-            listenUdpGlobal();
+            listenUdpGlobal(1758);
+            listenUdpInterfaces();
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
@@ -71,27 +81,27 @@ namespace UniversalScanner
             string deviceIPStr, deviceTypeStr, deviceMac;
 
             // xml is much bigger
-            if (data.Length == typeof(BoschBinary).StructLayoutAttribute.Size)
+            if (data.Length == typeof(BoschBinaryResponse).StructLayoutAttribute.Size)
             {
-                BoschBinary binary;
+                BoschBinaryResponse binary;
                 IntPtr ptr;
                 int binarySize;
                 UInt32 ip;
 
-                binarySize = Marshal.SizeOf(typeof(BoschBinary));
+                binarySize = Marshal.SizeOf(typeof(BoschBinaryResponse));
 
                 ptr = Marshal.AllocHGlobal(binarySize);
                 try
                 {
                     Marshal.Copy(data, 0, ptr, binarySize);
-                    binary = Marshal.PtrToStructure<BoschBinary>(ptr);
+                    binary = Marshal.PtrToStructure<BoschBinaryResponse>(ptr);
                 }
                 finally
                 {
                     Marshal.FreeHGlobal(ptr);
                 }
 
-                if (ntohll(binary.magic) != magic)
+                if (ntohl(binary.magic) != magic)
                 {
                     Trace.WriteLine("Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
@@ -127,23 +137,23 @@ namespace UniversalScanner
 
                 deviceIPStr = "";
                 m = ip.Match(xml);
-                if (m.Groups.Count >= 2)
+                if (m.Groups.Count == 2)
                 {
-                    deviceIPStr = m.Captures[1].Value;
+                    deviceIPStr = m.Groups[1].Value;
                 }
 
                 deviceTypeStr = "";
                 m = type.Match(xml);
-                if (m.Groups.Count >= 2)
+                if (m.Groups.Count == 2)
                 {
-                    deviceTypeStr = m.Captures[1].Value;
+                    deviceTypeStr = m.Groups[1].Value;
                 }
 
                 deviceMac = "";
                 m = mac.Match(xml);
-                if (m.Groups.Count >= 2)
+                if (m.Groups.Count == 2)
                 {
-                    deviceMac = m.Captures[1].Value;
+                    deviceMac = m.Groups[1].Value;
                 }
 
                 viewer.deviceFound(name, deviceIPStr, deviceTypeStr, deviceMac);
@@ -173,7 +183,37 @@ namespace UniversalScanner
 
         public override byte[] sender(IPEndPoint dest)
         {
-            return discover;
+            BoschRequest request;
+            int size;
+            IntPtr ptr;
+            byte[] result;
+            DateTime date;
+
+            date = DateTime.UtcNow;
+
+            request = new BoschRequest();
+            request.magic = htonl(magic);
+            request.transactionID = htonl((UInt32)
+                ((date.Hour << 24) | (date.Minute << 16) | 
+                (date.Second << 8) | (date.Millisecond / 10)
+                ));
+            request.requestMagic = htonl(requestMagic);
+
+            size = Marshal.SizeOf(request);
+            result = new byte[size];
+
+            ptr = Marshal.AllocHGlobal(size);
+            try
+            {
+                Marshal.StructureToPtr(request, ptr, true);
+                Marshal.Copy(ptr, result, 0, size);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
+
+            return result;
         }
     }
 }

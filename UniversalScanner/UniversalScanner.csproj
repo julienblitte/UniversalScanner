@@ -64,9 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bosch.cs" />
-    <Compile Include="Tools.cs" />
-    <Compile Include="Dahua1.cs" />
+    <Compile Include="Axis.cs" />
+    <Compile Include="Bosch.cs" />    <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
     <Compile Include="Hikvision.cs" />
     <Compile Include="mDNS.cs" />
