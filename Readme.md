@@ -20,9 +20,9 @@ This tool is delivered as it, without any warranty.
 * Hikvision discovery protocol
 * mDNS
 * Axis discovery protocol
+* Bosch discovery protocol
 
 # Protocols currently in implementation
-* Bosch discovery protocol
 * Hanwha discovery protocol
 
 # Protocols in the road map
