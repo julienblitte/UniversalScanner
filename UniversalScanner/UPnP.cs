@@ -76,16 +76,12 @@ namespace UniversalScanner
             }
             else
             {
-                deviceType = "unknow";
+                deviceType = "anonymous";
             }
 
             deviceID = extractHttpVar(body, "USN");
-            if (deviceID == "")
-            {
-                deviceID = "unknown";
-            }
 
-            if (viewer != null)
+            if (viewer != null && deviceID != "")
             {
                 viewer.deviceFound(name, 1, deviceIP, deviceType, extractUUID(deviceID));
             }

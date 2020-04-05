@@ -21,6 +21,7 @@ This tool is delivered as it, without any warranty.
 * mDNS
 * Axis discovery protocol
 * Bosch discovery protocol
+# Google cast discovery protocol
 
 # Protocols currently in implementation
 * Hanwha discovery protocol

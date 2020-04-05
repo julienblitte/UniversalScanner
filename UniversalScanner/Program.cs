@@ -41,7 +41,8 @@ namespace UniversalScanner
                 new Hikvision(),
                 engineMDNS,
                 new Axis(engineMDNS),
-                new Bosch()
+                new Bosch(),
+                new GoogleCast(engineMDNS)
             };
             foreach(var engine in engines)
             {

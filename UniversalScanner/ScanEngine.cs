@@ -110,7 +110,7 @@ namespace UniversalScanner
             if (isBinary.IsMatch(text))
             {
 
-                for (int i=0; i < text.Length; i++)
+                for (int i = 0; i < text.Length; i++)
                 {
                     if (i % 16 == 0)
                     {
@@ -135,7 +135,7 @@ namespace UniversalScanner
 #endif
         }
 
-        public int listenUdpGlobal(int localPort=0)
+        public int listenUdpGlobal(int localPort = 0)
         {
             if (localPort != 0)
             {
@@ -171,18 +171,22 @@ namespace UniversalScanner
                 return -1;
             }
             globalListener.thread.Start();
-            
+
             return localPort;
         }
 
         public void listenUdpInterfaces()
         {
-            IPAddress[] addresses;
             int len;
+            List<IPAddress> addresses;
 
-            addresses = listActiveAddresses(AddressFamily.InterNetwork);
-            len = addresses.Length;
+            addresses = new List<IPAddress>();
+            foreach (var iface in listActiveInterface())
+            {
+                addresses.AddRange(listInterfaceAddresses(iface, AddressFamily.InterNetwork));
+            }
 
+            len = addresses.Count();
             interfacesListerner = new networkBundle[len];
 
             for (int i = 0; i < len; i++)
@@ -253,7 +257,7 @@ namespace UniversalScanner
 
             {
                 Trace.WriteLine("Error: send(): no opened sockets.");
-                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");                
+                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
                 return false;
             }
 
@@ -287,7 +291,7 @@ namespace UniversalScanner
                             net.udp.Send(data, data.Length, endpoint);
                         }
                         catch (Exception) { }
-                    }                }
+                    } }
             }
             return true;
         }
@@ -339,12 +343,16 @@ namespace UniversalScanner
 
         private void sendNetScannerGlobal()
         {
-            IPAddress[] addresses;
+            List<IPAddress> addresses;
             byte[] data;
 
-            addresses = listActiveAddresses(AddressFamily.InterNetwork);
+            addresses = new List<IPAddress>();
+            foreach (var iface in listActiveInterface())
+            {
+                addresses.AddRange(listInterfaceAddresses(iface, AddressFamily.InterNetwork));
+            }
 
-            foreach(var net in addresses)
+            foreach (var net in addresses)
             {
                 if (isPrivateIPv4Network(net))
                 {
@@ -367,7 +375,7 @@ namespace UniversalScanner
                         catch (Exception) { }
                     }
                 }
-            }            
+            }
         }
 
         private void sendNetScannerInterfaces()
@@ -446,27 +454,34 @@ namespace UniversalScanner
             return portsFree.ElementAt(index);
         }
 
-        protected IPAddress[] listActiveAddresses(AddressFamily adressType)
+        protected NetworkInterface[] listActiveInterface()
         {
-            var address_list =
+            var interfaceList =
                 from iface in NetworkInterface.GetAllNetworkInterfaces()
                 where iface.OperationalStatus == OperationalStatus.Up
-                select iface.GetIPProperties() into ifaceProp
-                from addr in ifaceProp.UnicastAddresses
+                select iface;
+
+            return interfaceList.Cast<NetworkInterface>().ToArray();
+        }
+
+        protected IPAddress[] listInterfaceAddresses(NetworkInterface iface, AddressFamily adressType)
+        {
+            var addressList =
+                from addr in iface.GetIPProperties().UnicastAddresses
                 where (addr.Address.AddressFamily == adressType)
                 select addr.Address;
 
-            return address_list.Cast<IPAddress>().ToArray();
+            return addressList.Cast<IPAddress>().ToArray();
         }
 
         protected IPAddress getMaskOfAddressIPv4(IPAddress address)
         {
-            var masks= (from iface in NetworkInterface.GetAllNetworkInterfaces()
-                where iface.OperationalStatus == OperationalStatus.Up
-                select iface.GetIPProperties() into ifaceProp
-                from addr in ifaceProp.UnicastAddresses
-                where (addr.Address.AddressFamily == AddressFamily.InterNetwork && addr.Address.Equals(address))
-                select addr.IPv4Mask);
+            var masks = (from iface in NetworkInterface.GetAllNetworkInterfaces()
+                         where iface.OperationalStatus == OperationalStatus.Up
+                         select iface.GetIPProperties() into ifaceProp
+                         from addr in ifaceProp.UnicastAddresses
+                         where (addr.Address.AddressFamily == AddressFamily.InterNetwork && addr.Address.Equals(address))
+                         select addr.IPv4Mask);
 
             if (masks.Count() == 1)
             {
@@ -485,7 +500,7 @@ namespace UniversalScanner
             mask = ntohl(BitConverter.ToUInt32(subNetMask.GetAddressBytes(), 0));
 
             first = (addr & mask) + 1;
-            last = (addr | ~mask) -1;
+            last = (addr | ~mask) - 1;
 
             len = last - first + 1;
             if (len > maxLen)
@@ -493,10 +508,10 @@ namespace UniversalScanner
                 len = maxLen;
             }
             result = new IPAddress[len];
-            for (i=0; i < len; i++)
+            for (i = 0; i < len; i++)
             {
                 current = first + i;
-                
+
                 result[i] = new IPAddress(
                 BitConverter.ToUInt32(new byte[] { (byte)(current >> 24), (byte)(current >> 16), (byte)(current >> 8), (byte)current }, 0));
             }
@@ -584,36 +599,55 @@ namespace UniversalScanner
         private void multicastReciever()
         {
             byte[] data;
-            IPAddress[] interfaces;
-            int interfaceCount;
-            MulticastOption[] multicastOption;
+            List<MulticastOption> multicastOption;
 
-            interfaces = listActiveAddresses(AddressFamily.InterNetwork);
-            interfaceCount = interfaces.Length;
-
-            multicastOption = new MulticastOption[interfaceCount];
+            multicastOption = new List<MulticastOption>();
 
             multicastListener.udp = new UdpClient();
             multicastListener.endPoint = new IPEndPoint(IPAddress.Any, multicastPort);
-            for(int i= 0; i < interfaceCount; i++)
+            foreach (var iface in listActiveInterface())
             {
-                multicastOption[i] = new MulticastOption(multicastIP, interfaces[i]);
+                IPAddress[] ifaceAddrs;
+
+                ifaceAddrs = listInterfaceAddresses(iface, AddressFamily.InterNetwork);
+                if (ifaceAddrs.Length > 0)
+                {
+                    multicastOption.Add(new MulticastOption(multicastIP, ifaceAddrs[0]));
+                }
             }
 
             try
             {
                 multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                for (int i = 0; i < interfaceCount; i++)
-                {
-                    Trace.WriteLine(String.Format("Joining group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
-                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multicastOption[i]);
-                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to enable option ReuseAddress for socket {0}!", multicastListener.endPoint.ToString()));
+                Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+            }
 
+            foreach (var opt in multicastOption)
+            {
+                Trace.WriteLine(String.Format("Joining group {0} on interface {1}...", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                try
+                {
+                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, opt);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to join group {0} on interface {1}!", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                    Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+                }
+            }
+
+            try
+            {
                 multicastListener.udp.Client.Bind(multicastListener.endPoint);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
+                Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
                 return;
             }
 
@@ -628,21 +662,22 @@ namespace UniversalScanner
 #endif
                     reciever(multicastListener.endPoint, data);
                 }
-                catch
-                { }
+                catch { }
+            }
+            foreach (var opt in multicastOption)
+            {
+                try
+                {
+                    Trace.WriteLine(String.Format("Leaving group {0} on interface {1}...", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, opt);
+                }
+                catch (Exception) { }
             }
             try
             {
-                for (int i = 0; i < interfaceCount; i++)
-                {
-                    Trace.WriteLine(String.Format("Leaving group {0} on interface {1}...", multicastOption[i].Group.ToString(), multicastOption[i].LocalAddress.ToString()));
-                    multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, multicastOption[i]);
-                }
-            }
-            finally
-            {
                 multicastListener.udp.Close();
             }
+            catch (Exception) {}
         }
 
         public void Dispose()
