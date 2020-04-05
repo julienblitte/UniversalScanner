@@ -63,7 +63,7 @@ namespace UniversalScanner
             }
             deviceSN = extractXMLString("DeviceSN", xml);
 
-            viewer.deviceFound(name, deviceIP, deviceType, deviceSN);
+            viewer.deviceFound(name, 1, deviceIP, deviceType, deviceSN);
         }
 
         public override void scan()

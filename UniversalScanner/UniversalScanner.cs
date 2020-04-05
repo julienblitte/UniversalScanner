@@ -21,27 +21,45 @@ namespace UniversalScanner
     {
         public event scan scanEvent;
 
-        private DataTable found_devices;
+        private DataTable foundDeviceList;
         private BindingSource binding;
         private Dictionary<string, int> protocolFormat;
+
+        enum Columns
+        { 
+            Protocol = 0,
+            Version = 1,
+            IPAddress = 2,
+            Type = 3,
+            UniqueId = 4
+        };
+        private readonly string[] ColumnNames =
+        {
+            "Protocol",
+            "Version",
+            "IP address",
+            "Type", 
+            "Unique ID"
+        };
 
         public ScannerWindow()
         {
             InitializeComponent();
 
-            // TODO: add protocol version column
-            found_devices = new DataTable();
-            found_devices.Columns.Add(new DataColumn("Protocol", typeof(string)));
-            found_devices.Columns.Add(new DataColumn("IP address", typeof(string)));
-            found_devices.Columns.Add(new DataColumn("Type", typeof(string)));
-            found_devices.Columns.Add(new DataColumn("Unique ID", typeof(string)));
+            foundDeviceList = new DataTable();
+            foundDeviceList.Columns.Add(new DataColumn(ColumnNames[(int)Columns.Protocol], typeof(string)));
+            foundDeviceList.Columns.Add(new DataColumn(ColumnNames[(int)Columns.Version], typeof(int)));
+            foundDeviceList.Columns.Add(new DataColumn(ColumnNames[(int)Columns.IPAddress], typeof(string)));
+            foundDeviceList.Columns.Add(new DataColumn(ColumnNames[(int)Columns.Type], typeof(string)));
+            foundDeviceList.Columns.Add(new DataColumn(ColumnNames[(int)Columns.UniqueId], typeof(string)));
 
             binding = new BindingSource();
-            binding.DataSource = found_devices;
+            binding.DataSource = foundDeviceList;
 
             dataGridView1.DataSource = binding;
 
-            dataGridView1.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
+            dataGridView1.Columns[(int)Columns.IPAddress].SortMode = DataGridViewColumnSortMode.Programmatic;
+            dataGridView1.Columns[(int)Columns.Version].Visible = false;
 
             protocolFormat = new Dictionary<string, int>();
         }
@@ -51,30 +69,46 @@ namespace UniversalScanner
             scanEvent.Invoke();
         }
 
-        // TODO: change, add protocol version
-        public void deviceFound(string protocol, string deviceIP, string deviceType, string serial)
+        public void deviceFound(string protocol, int version, string deviceIP, string deviceType, string deviceUUID)
         {
             if (IsDisposed)
                 return;
 
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(() => addDevice(protocol, deviceIP, deviceType, serial)));
+                Invoke(new MethodInvoker(() => addDevice(protocol, version, deviceIP, deviceType, deviceUUID)));
             }
             else
             {
-                addDevice(protocol, deviceIP, deviceType, serial);
+                addDevice(protocol, version, deviceIP, deviceType, deviceUUID);
             }
         }
 
-        // TODO: change, add protocol version
-        private void addDevice(string protocol, string deviceIP, string deviceType, string serial)
+        private void addDevice(string protocol, int version, string deviceIP, string deviceType, string deviceUUID)
         {
-            // TODO: if already exists, replace line with highest protocol version
-            if (!found_devices.Select().ToList().Exists(col => (col[0].ToString() == protocol &&
-                col[1].ToString() == deviceIP)))
+            DataRow[] existingRow;
+
+            existingRow = foundDeviceList.Select(String.Format("`{0}` = '{1}' AND `{2}` = '{3}'", ColumnNames[(int)Columns.Protocol], protocol, ColumnNames[(int)Columns.IPAddress], deviceIP));
+            if (existingRow.Length == 0)
             {
-                found_devices.Rows.Add(protocol, deviceIP, deviceType, serial);
+                foundDeviceList.Rows.Add(protocol, version, deviceIP, deviceType, deviceUUID);
+            }
+            else
+            {
+                int existingVersion;
+
+                // device exists but with lower version, update it
+                existingVersion = existingRow[0].Field<int>((int)Columns.Version);
+                if (existingVersion < version)
+                {
+                    // protocol and IP Address already set
+                    // update only Version, Type and UniqueId
+                    existingRow[0].BeginEdit();
+                    existingRow[0][(int)Columns.Version] = version;
+                    existingRow[0][(int)Columns.Type] = deviceType;
+                    existingRow[0][(int)Columns.UniqueId] = deviceUUID;
+                    existingRow[0].EndEdit();
+                }
             }
         }
 
@@ -90,10 +124,10 @@ namespace UniversalScanner
             if (e.RowIndex < 0)
                 return;
 
-            ip = found_devices.Rows[e.RowIndex].ItemArray[1].ToString();
+            ip = foundDeviceList.Rows[e.RowIndex].ItemArray[1].ToString();
             if (ip != "")
             {
-                System.Diagnostics.Process.Start("http://" + ip);
+               Process.Start("http://" + ip);
             }
         }
 
@@ -222,7 +256,7 @@ namespace UniversalScanner
                 ipFormat = new Regex("^([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)$", RegexOptions.Compiled);
                 order = (column.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? -1 : 1);
 
-                count = found_devices.Rows.Count;
+                count = foundDeviceList.Rows.Count;
 
                 // caching data
                 cache = new UInt32[count];
@@ -231,7 +265,7 @@ namespace UniversalScanner
                     string ip;
                     Match m;
 
-                    ip = found_devices.Rows[i].Field<string>("IP address");
+                    ip = foundDeviceList.Rows[i].Field<string>("IP address");
                     m = ipFormat.Match(ip);
 
                     if (m.Success)
@@ -298,9 +332,9 @@ namespace UniversalScanner
                 // deploying new order
                 for (int i=0; i < count; i++)
                 {
-                    DataRow line = found_devices.Rows[newOrder[i]];
-                    found_devices.ImportRow(line);
-                    found_devices.Rows.RemoveAt(newOrder[i]);
+                    DataRow line = foundDeviceList.Rows[newOrder[i]];
+                    foundDeviceList.ImportRow(line);
+                    foundDeviceList.Rows.RemoveAt(newOrder[i]);
                 }
 				// use natural display order as we sorted directly DataTable, not the DataGridView
                 binding.RemoveSort();

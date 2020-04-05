@@ -16,7 +16,7 @@ namespace UniversalScanner
     public delegate void scan();
     public interface ScannerViewer
     {
-        void deviceFound(string protocol, string deviceIP, string deviceType, string serial);
+        void deviceFound(string protocol, int version, string deviceIP, string deviceType, string serial);
         event scan scanEvent;
         void formatProtocol(string protocol, int color);
     }

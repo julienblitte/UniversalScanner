@@ -179,7 +179,7 @@ namespace UniversalScanner
                     deviceDesc = "Dahua device";
                 }
 
-                viewer.deviceFound(name, deviceIP, deviceType, deviceDesc);
+                viewer.deviceFound(name, 2, deviceIP, deviceType, deviceDesc);
             }
         }
 

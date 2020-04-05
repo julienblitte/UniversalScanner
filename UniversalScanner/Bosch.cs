@@ -120,9 +120,7 @@ namespace UniversalScanner
 
                 deviceTypeStr = name;
 
-                // postpone few seconds to prioritize XML instead binary
-                ThreadPool.QueueUserWorkItem(deviceFoundDelayed, new deviceFoundParameters() {
-                    engineName = this.name, viewer = viewer, deviceIPStr = deviceIPStr, deviceMac = deviceMac, deviceTypeStr = deviceTypeStr, color = color });
+                viewer.deviceFound(name, 1, deviceIPStr, deviceTypeStr, deviceMac);
             }
             else
             {
@@ -156,24 +154,8 @@ namespace UniversalScanner
                     deviceMac = m.Groups[1].Value;
                 }
 
-                viewer.deviceFound(name, deviceIPStr, deviceTypeStr, deviceMac);
+                viewer.deviceFound(name, 2, deviceIPStr, deviceTypeStr, deviceMac);
             }
-        }
-
-        public struct deviceFoundParameters
-        {
-            public ScannerViewer viewer;
-            public string engineName, deviceIPStr, deviceTypeStr, deviceMac;
-            public int color;
-        }
-        private static void deviceFoundDelayed(Object parameters)
-        {
-            deviceFoundParameters p;
-
-            Thread.Sleep(1000);
-            p = (deviceFoundParameters)parameters;
-            p.viewer.deviceFound(p.engineName, p.deviceIPStr, p.deviceTypeStr, p.deviceMac);
-
         }
 
         public override void scan()

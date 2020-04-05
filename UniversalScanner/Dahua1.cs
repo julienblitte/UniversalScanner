@@ -202,7 +202,7 @@ namespace UniversalScanner
                 deviceTypeStr = Encoding.UTF8.GetString(deviceTypeArray);
             }
 
-            viewer.deviceFound(name, deviceIPStr, deviceTypeStr, deviceMac);
+            viewer.deviceFound(name, 1, deviceIPStr, deviceTypeStr, deviceMac);
         }
     }
 }

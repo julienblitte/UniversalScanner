@@ -87,7 +87,7 @@ namespace UniversalScanner
 
             if (viewer != null)
             {
-                viewer.deviceFound(name, deviceIP, deviceType, extractUUID(deviceID));
+                viewer.deviceFound(name, 1, deviceIP, deviceType, extractUUID(deviceID));
             }
         }
 
@@ -116,10 +116,10 @@ namespace UniversalScanner
             int s = USN.IndexOf("::");
             if (s >= 0)
             {
-                string a = USN.Substring(0, s);
-                if (a.StartsWith("uuid:"))
+                USN = USN.Substring(0, s);
+                if (USN.StartsWith("uuid:"))
                 {
-                    return a.Substring(5);
+                    USN = USN.Substring(5);
                 }
             }
             return USN;
