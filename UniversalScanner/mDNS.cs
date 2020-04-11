@@ -86,7 +86,7 @@ namespace UniversalScanner
         public mDNS()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
-            listenUdpGlobal();
+            listenUdpInterfaces();
 
             resolutionTable = new Dictionary<string, mDNSResponse_Action>();
         }
@@ -165,15 +165,36 @@ namespace UniversalScanner
             query.CopyTo(data, headerSize);
 
             endpoint = new IPEndPoint(IPAddress.Parse(multicastIP), port);
+
             if (globalListener.inUse)
             {
                 try
                 {
+                    traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
                     globalListener.udp.Send(data, data.Length, endpoint);
                 }
                 catch
                 {
-                    Trace.WriteLine("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString());
+                    traceWriteLine(debugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
+                }
+            }
+
+            if (interfacesListerner != null)
+            {
+                foreach (networkBundle net in interfacesListerner)
+                {
+                    if (net.inUse)
+                    {
+                        traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                        try
+                        {
+                            net.udp.Send(data, data.Length, endpoint);
+                        }
+                        catch
+                        {
+                            traceWriteLine(debugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
+                        }
+                    }
                 }
             }
         }
@@ -189,7 +210,7 @@ namespace UniversalScanner
 
             if (data.Length <= headerSize)
             {
-                Trace.WriteLine("mDNS.reciever(): Warning: invalid packet size.");
+                traceWriteLine(debugLevel.Warn, "Warning: mDNS.reciever(): invalid packet size.");
                 return;
             }
 
@@ -224,7 +245,7 @@ namespace UniversalScanner
                 name = readString(data, ref position);
                 queryType = readUInt16(data, ref position);
                 questionClass = readUInt16(data, ref position);
-                Trace.WriteLine(String.Format("mDNS Query '{0}', type = {1}", name, queryType));
+                traceWriteLine(debugLevel.Debug, String.Format("mDNS Query '{0}', type = {1}", name, queryType));
 
                 expectedQueries--;
             }
@@ -252,7 +273,7 @@ namespace UniversalScanner
 
                 if (position + dataLen > data.Length)
                 {
-                    Trace.WriteLine("Error: readAnswer(): packet parsing overflow!");
+                    traceWriteLine(debugLevel.Warn, "Warning: readAnswer(): packet parsing overflow!");
                     return;
                 }
 
@@ -263,13 +284,13 @@ namespace UniversalScanner
                         IPAddress ip;
                         ip = readAnswer_A(data, ref position, dataLen);
                         answers[answerIndex].data.typeA = ip;
-                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': IPv4 (A) = {1}", name, ip.ToString()));
+                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': IPv4 (A) = {1}", name, ip.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_PTR:
                         string domain;
                         domain = readAnswer_PTR(data, ref position, dataLen);
                         answers[answerIndex].data.typePTR = domain;
-                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': Domain (PTR) = '{1}'", name, domain));
+                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Domain (PTR) = '{1}'", name, domain));
                         break;
                     case (UInt16)mDNSType.TYPE_TXT:
                         string[] str;
@@ -277,23 +298,23 @@ namespace UniversalScanner
                         answers[answerIndex].data.typeTXT = str;
                         foreach (string t in str)
                         {
-                            Trace.WriteLine(String.Format("* mDNS answer for '{0}': Text (TXT) = '{1}'", name, t));
+                            traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Text (TXT) = '{1}'", name, t));
                         }
                         break;
                     case (UInt16)mDNSType.TYPE_AAAA:
                         IPAddress ipv6;
                         ipv6 = readAnswer_AAAA(data, ref position, dataLen);
                         answers[answerIndex].data.typeAAAA = ipv6;
-                        Trace.WriteLine(String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
+                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_SRV:
                         mDNSAnswerDataSVR srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
                         answers[answerIndex].data.typeSVR = srv;
-                        Trace.WriteLine(String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
+                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
                         break;
                     default:
-                        Trace.WriteLine(String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
+                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
                         break;
                 }
                 if (resolutionTable.ContainsKey(name) && triggerName == null)
@@ -314,7 +335,7 @@ namespace UniversalScanner
 
             if (dataLen != 4)
             {
-                Trace.WriteLine("Error: readAnswer_A(): Invalid address size!");
+                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_A(): Invalid address size!");
                 return IPAddress.Any;
             }
 
@@ -328,7 +349,7 @@ namespace UniversalScanner
 
             if (dataLen != 16)
             {
-                Trace.WriteLine("Error: readAnswer_AAAA(): Invalid address size!");
+                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_AAAA(): Invalid address size!");
                 return IPAddress.Any;
             }
 
@@ -375,7 +396,7 @@ namespace UniversalScanner
             mDNSAnswerDataSVR result;
             if (dataLen < 6)
             {
-                Trace.WriteLine("Error: readAnswer_SRV(): packet data size error!");
+                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_SRV(): packet data size error!");
                 result = new mDNSAnswerDataSVR { priority = 0, weight = 0, port = 0, domain=null };
                 return result;
             }
@@ -396,7 +417,7 @@ namespace UniversalScanner
             result = 0;
             if (position + 2 > data.Length)
             {
-                Trace.WriteLine("Error: readUInt16(): packet parsing overflow!");
+                traceWriteLine(debugLevel.Warn, "Warning: readUInt16(): packet parsing overflow!");
                 return 0;
             }
 
@@ -416,7 +437,7 @@ namespace UniversalScanner
             result = 0;
             if (position + 4 > data.Length)
             {
-                Trace.WriteLine("Error: readUInt32(): packet parsing overflow!");
+                traceWriteLine(debugLevel.Warn, "Warning: readUInt32(): packet parsing overflow!");
                 return 0;
             }
 
@@ -485,7 +506,7 @@ namespace UniversalScanner
                     }
                 }
             }
-            Trace.WriteLine("Error: readString(): packet parsing overflow!");
+            traceWriteLine(debugLevel.Warn, "Warning: readString(): packet parsing overflow!");
             return (sb != null ? sb.ToString() : "");
         }
 

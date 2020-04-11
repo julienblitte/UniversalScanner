@@ -38,22 +38,22 @@ namespace UniversalScanner
         [StructLayout(LayoutKind.Explicit, Size = 16, CharSet = CharSet.Ansi)]
         public struct String16bytes
         {
-            [FieldOffset(0)] public byte byte0;
-            [FieldOffset(1)] public byte byte1;
-            [FieldOffset(2)] public byte byte2;
-            [FieldOffset(3)] public byte byte3;
-            [FieldOffset(4)] public byte byte4;
-            [FieldOffset(5)] public byte byte5;
-            [FieldOffset(6)] public byte byte6;
-            [FieldOffset(7)] public byte byte7;
-            [FieldOffset(8)] public byte byte8;
-            [FieldOffset(9)] public byte byte9;
-            [FieldOffset(10)] public byte byteA;
-            [FieldOffset(11)] public byte byteB;
-            [FieldOffset(12)] public byte byteC;
-            [FieldOffset(13)] public byte byteD;
-            [FieldOffset(14)] public byte byteE;
-            [FieldOffset(15)] public byte byteF;
+            [FieldOffset(0)] public byte byte00;
+            [FieldOffset(1)] public byte byte01;
+            [FieldOffset(2)] public byte byte02;
+            [FieldOffset(3)] public byte byte03;
+            [FieldOffset(4)] public byte byte04;
+            [FieldOffset(5)] public byte byte05;
+            [FieldOffset(6)] public byte byte06;
+            [FieldOffset(7)] public byte byte07;
+            [FieldOffset(8)] public byte byte08;
+            [FieldOffset(9)] public byte byte09;
+            [FieldOffset(10)] public byte byte0A;
+            [FieldOffset(11)] public byte byte0B;
+            [FieldOffset(12)] public byte byte0C;
+            [FieldOffset(13)] public byte byte0D;
+            [FieldOffset(14)] public byte byte0E;
+            [FieldOffset(15)] public byte byte0F;
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 117, CharSet = CharSet.Ansi)]
@@ -104,7 +104,7 @@ namespace UniversalScanner
         {
             if (listenUdpGlobal(port) == -1)
             {
-                Trace.WriteLine("Warning: Dahua protocol v1: Failback to quirk mode");
+                traceWriteLine(debugLevel.Warn, "Warning: Dahua protocol v1: Failback to quirk mode");
                 _quirk = true;
 
                 listenUdpInterfaces();

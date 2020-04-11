@@ -37,12 +37,12 @@ namespace UniversalScanner
         [StructLayout(LayoutKind.Explicit, Size = 6, CharSet = CharSet.Ansi)]
         public struct MacAddress
         {
-            [FieldOffset(0)] public byte byte0;
-            [FieldOffset(1)] public byte byte1;
-            [FieldOffset(2)] public byte byte2;
-            [FieldOffset(3)] public byte byte3;
-            [FieldOffset(4)] public byte byte4;
-            [FieldOffset(5)] public byte byte5;
+            [FieldOffset(0)] public byte byte00;
+            [FieldOffset(1)] public byte byte01;
+            [FieldOffset(2)] public byte byte02;
+            [FieldOffset(3)] public byte byte03;
+            [FieldOffset(4)] public byte byte04;
+            [FieldOffset(5)] public byte byte05;
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
@@ -51,15 +51,15 @@ namespace UniversalScanner
             [FieldOffset(0)] public UInt32 magic;
             [FieldOffset(4)] public UInt32 transactionID;
             [FieldOffset(8)] public MacAddress mac;
-            [FieldOffset(14)] public byte _13_value;
-            [FieldOffset(15)] public byte _14_value;
+            [FieldOffset(14)] public byte _0D_value;
+            [FieldOffset(15)] public byte _0E_value;
             [FieldOffset(16)] public UInt32 ip;
             [FieldOffset(20)] public UInt32 mask;
             [FieldOffset(24)] public UInt32 gateway;
-            [FieldOffset(28)] public byte _28_value;
-            [FieldOffset(29)] public byte _29_value;
-            [FieldOffset(20)] public byte _30_value;
-            [FieldOffset(31)] public byte _31_value;
+            [FieldOffset(28)] public byte _1C_value;
+            [FieldOffset(29)] public byte _1D_value;
+            [FieldOffset(20)] public byte _1E_value;
+            [FieldOffset(31)] public byte _1F_value;
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
@@ -103,7 +103,7 @@ namespace UniversalScanner
 
                 if (ntohl(binary.magic) != magic)
                 {
-                    Trace.WriteLine("Warning: Bosch.reciever(): Packet with wrong header.");
+                    traceWriteLine(debugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
@@ -115,8 +115,8 @@ namespace UniversalScanner
                     (byte)((ip) & 0xFF)
                 );
 
-                deviceMac = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte0, binary.mac.byte1, binary.mac.byte2,
-                                            binary.mac.byte3, binary.mac.byte4, binary.mac.byte5);
+                deviceMac = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
+                                            binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
 
                 deviceTypeStr = name;
 

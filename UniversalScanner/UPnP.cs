@@ -52,8 +52,6 @@ namespace UniversalScanner
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            string NT;
-            bool announcement;
             string deviceIP, deviceType, deviceID;
             string server;
             string[] serverDetails;
@@ -61,9 +59,6 @@ namespace UniversalScanner
 
             body = Encoding.UTF8.GetString(data);
 
-            // multicast
-            NT = extractHttpVar(body, "NT");
-            announcement = (NT == "upnp:rootdevice");
 
             server = extractHttpVar(body, "SERVER");
             serverDetails = splitServerDetails(server);
@@ -113,11 +108,12 @@ namespace UniversalScanner
             if (s >= 0)
             {
                 USN = USN.Substring(0, s);
-                if (USN.StartsWith("uuid:"))
-                {
-                    USN = USN.Substring(5);
-                }
             }
+            if (USN.StartsWith("uuid:"))
+            {
+                USN = USN.Substring(5);
+            }
+
             return USN;
         }
 

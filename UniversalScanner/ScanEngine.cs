@@ -34,6 +34,13 @@ namespace UniversalScanner
         protected bool closing = false;
         public bool isDisposed = false;
 
+        protected enum debugLevel { Fatal = 0, Error = 1, Warn = 2, Info = 3, Debug = 4 };
+#if DEBUG
+        protected readonly debugLevel currentDebugLevel = debugLevel.Debug;
+#else
+        protected readonly debugLevel currentDebugLevel = debugLevel.Info;
+#endif
+
         // NetworkToHostOrder and HostToNetworkOrder are unsafe due type overload
         // UInt64 ntohll(UInt64) and UInt64 htonll(UInt64) defined bellow
         [DllImport("wsock32.dll")]
@@ -93,46 +100,57 @@ namespace UniversalScanner
 
         public abstract void scan();
 
-        protected void debugWriteText(string text)
+        protected void traceWriteData(debugLevel level, string data, int threadId = 0)
         {
 #if DEBUG
             string[] lines;
-            Thread thread;
-            string splitter;
             StringBuilder result;
             Regex isBinary;
 
             isBinary = new Regex("[^\x20-\x7E\t\r\n]");
-            thread = Thread.CurrentThread;
-            splitter = new string('-', 16);
-            result = new StringBuilder(splitter);
+            result = new StringBuilder();
 
-            if (isBinary.IsMatch(text))
+            if (threadId == 0)
+            {
+                threadId = Thread.CurrentThread.ManagedThreadId;
+            }
+
+            if (isBinary.IsMatch(data))
             {
 
-                for (int i = 0; i < text.Length; i++)
+                for (int i = 0; i < data.Length; i++)
                 {
-                    if (i % 16 == 0)
+                    if (i % 16 == 0 && i > 0)
                     {
-                        result.AppendFormat("\n[{0,4}] ", thread.ManagedThreadId);
+                        result.AppendFormat("\n[{0,4}] ", threadId);
                     }
-                    result.AppendFormat(" {0:X02}", (byte)text[i]);
+                    result.AppendFormat(" {0:X02}", (byte)data[i]);
                 }
             }
             else
             {
-                lines = Regex.Split(text, "\r\n|\r|\n");
+                lines = Regex.Split(data, "\r\n|\r|\n");
 
                 foreach (string line in lines)
                 {
-                    result.AppendFormat("\n[{0,4}] {1}", thread.ManagedThreadId, line);
+                    result.AppendFormat("\n[{0,4}] {1}", threadId, line);
                 }
 
             }
-            result.Append("\n").Append(splitter);
+            result.Append("\n");
 
-            Debug.WriteLine(result.ToString());
+            Trace.WriteLineIf(level <= currentDebugLevel, String.Format("[{0,4}] {1}", threadId, result.ToString()));
 #endif
+        }
+
+        protected void traceWriteLine(debugLevel level, string line, int threadId = 0)
+        {
+            if (threadId == 0)
+            {
+                threadId = Thread.CurrentThread.ManagedThreadId;
+            }
+
+            Trace.WriteLineIf(level <= currentDebugLevel, String.Format("[{0,4}] {1}", threadId, line));
         }
 
         public int listenUdpGlobal(int localPort = 0)
@@ -141,7 +159,7 @@ namespace UniversalScanner
             {
                 if (!isFreeUdpPort(localPort))
                 {
-                    Trace.WriteLine(String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
+                    traceWriteLine(debugLevel.Info, String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
                     return -1;
                 }
             }
@@ -152,8 +170,6 @@ namespace UniversalScanner
 
             try
             {
-                Trace.WriteLine(String.Format("Listening on UDP {0}:{1}...", IPAddress.Any.ToString(), localPort));
-
                 /* configure UdpClient and EndPoint */
                 globalListener.udp = new UdpClient();
                 globalListener.udp.EnableBroadcast = true;
@@ -164,6 +180,8 @@ namespace UniversalScanner
                 globalListener.thread.IsBackground = true;
 
                 globalListener.inUse = true;
+
+                traceWriteLine(debugLevel.Info, String.Format("Listening on {0}...", globalListener.endPoint.ToString()), globalListener.thread.ManagedThreadId);
             }
             catch
             {
@@ -195,8 +213,6 @@ namespace UniversalScanner
                 IPAddress address = addresses[i];
                 try
                 {
-                    Trace.WriteLine(String.Format("Listening on UDP {0}:{1}...", address.ToString(), localPort));
-
                     // configure UdpClient and EndPoint
                     interfacesListerner[i].udp = new UdpClient();
                     interfacesListerner[i].udp.EnableBroadcast = true;
@@ -207,6 +223,8 @@ namespace UniversalScanner
                     interfacesListerner[i].thread.IsBackground = true;
 
                     interfacesListerner[i].inUse = true;
+
+                    traceWriteLine(debugLevel.Info, String.Format("Listening on {0}...", interfacesListerner[i].endPoint.ToString()), interfacesListerner[i].thread.ManagedThreadId);
                 }
                 catch
                 {
@@ -254,26 +272,23 @@ namespace UniversalScanner
             byte[] data;
 
             if (interfacesListerner == null && !globalListener.inUse)
-
             {
-                Trace.WriteLine("Error: send(): no opened sockets.");
-                Trace.WriteLine("Error: send(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
-                return false;
+                traceWriteLine(debugLevel.Fatal, "Error: send(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+                throw new InvalidOperationException("No opened sockets");
+                //return false;
             }
 
             data = sender(endpoint);
 
             if (globalListener.inUse)
             {
-#if DEBUG
-                Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", globalListener.endPoint.Address.ToString(), endpoint.ToString()));
-                debugWriteText(Encoding.UTF8.GetString(data));
-#endif
+                traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
                 try
                 {
                     globalListener.udp.Send(data, data.Length, endpoint);
                 }
-                catch (Exception) { }
+                catch { }
             }
 
             if (interfacesListerner != null)
@@ -282,15 +297,13 @@ namespace UniversalScanner
                 {
                     if (net.inUse)
                     {
-#if DEBUG
-                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
-                        debugWriteText(Encoding.UTF8.GetString(data));
-#endif
+                        traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
                         }
-                        catch (Exception) { }
+                        catch { }
                     } }
             }
             return true;
@@ -320,9 +333,9 @@ namespace UniversalScanner
 
             if (!globalListener.inUse && interfacesListerner == null)
             {
-                Trace.WriteLine("Error: sendNetScan(): no opened sockets.");
-                Trace.WriteLine("Error: sendNetScan(): you must call listenUdpInterfaces() for interface-distributed socket or listenUdpGlobal() for global socket before.");
-                return false;
+                traceWriteLine(debugLevel.Fatal, "Error: sendNetScan(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+                throw new InvalidOperationException("No opened sockets");
+                //return false;
             }
             scannerPort = port;
 
@@ -364,15 +377,15 @@ namespace UniversalScanner
                     {
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
-#if DEBUG
-                        Debug.WriteLine(string.Format("Sending from interface {0} to {1}...", net.ToString(), endpoint.ToString()));
-                        debugWriteText(Encoding.UTF8.GetString(data));
-#endif
+
+                        traceWriteLine(debugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+
                         try
                         {
                             globalListener.udp.Send(data, data.Length, endpoint);
                         }
-                        catch (Exception) { }
+                        catch { }
                     }
                 }
             }
@@ -398,15 +411,15 @@ namespace UniversalScanner
 
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
-#if DEBUG
-                        Debug.WriteLine(String.Format("Sending from interface {0} to {1}...", net.endPoint.Address.ToString(), endpoint.ToString()));
-                        debugWriteText(Encoding.UTF8.GetString(data));
-#endif
+
+                        traceWriteLine(debugLevel.Fatal, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
                         }
-                        catch (Exception) { }
+                        catch { }
                     }
                 }
             }
@@ -444,8 +457,8 @@ namespace UniversalScanner
             countFree = portsFree.Count();
             if (countFree == 0)
             {
-                Trace.WriteLine("Error: UdpFreePortProvider(): No free UDP port!");
-                throw new System.OverflowException();
+                traceWriteLine(debugLevel.Fatal, "Error: UdpFreePortProvider(): No free UDP port!");
+                throw new OverflowException();
             }
 
             rand = new Random();
@@ -548,12 +561,12 @@ namespace UniversalScanner
         {
             byte[] data;
             UdpClient unicastUDP;
-            IPEndPoint unicastEP;
+            IPEndPoint localEP;
 
             if (Thread.CurrentThread == globalListener.thread)
             {
                 unicastUDP = globalListener.udp;
-                unicastEP = globalListener.endPoint;
+                localEP = globalListener.endPoint;
             }
             else
             {
@@ -561,7 +574,7 @@ namespace UniversalScanner
                     (from thread in interfacesListerner
                      where thread.thread == Thread.CurrentThread
                      select thread.udp).First();
-                unicastEP =
+                localEP =
                     (from thread in interfacesListerner
                      where thread.thread == Thread.CurrentThread
                      select thread.endPoint).First();
@@ -570,25 +583,28 @@ namespace UniversalScanner
             try
             {
                 unicastUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                unicastUDP.Client.Bind(unicastEP);
+                unicastUDP.Client.Bind(localEP);
             }
             catch
 
             {
-                Trace.WriteLine(String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", unicastEP.ToString()));
+                traceWriteLine(debugLevel.Error, String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", localEP.ToString()));
                 return;
             }
 
             while (!closing)
             {
+                IPEndPoint distantEP;
+
+                distantEP = null;
                 try
                 {
-                    data = unicastUDP.Receive(ref unicastEP);
-#if DEBUG
-                    Debug.WriteLine(String.Format("Recieved unicast from {0}.", unicastEP.ToString()));
-                    debugWriteText(Encoding.UTF8.GetString(data));
-#endif
-                    reciever(unicastEP, data);
+                    data = unicastUDP.Receive(ref distantEP);
+
+                    traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", localEP.ToString(), distantEP.ToString()));
+                    traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+
+                    reciever(distantEP, data);
                 }
                 catch
                 { }
@@ -622,21 +638,21 @@ namespace UniversalScanner
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to enable option ReuseAddress for socket {0}!", multicastListener.endPoint.ToString()));
-                Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to enable option ReuseAddress for socket {0}!", multicastListener.endPoint.ToString()));
+                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
             }
 
             foreach (var opt in multicastOption)
             {
-                Trace.WriteLine(String.Format("Joining group {0} on interface {1}...", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                traceWriteLine(debugLevel.Info, String.Format("Joining group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
                 try
                 {
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, opt);
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to join group {0} on interface {1}!", opt.Group.ToString(), opt.LocalAddress.ToString()));
-                    Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+                    traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to join group {0} on interface {1}!", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                    traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
                 }
             }
 
@@ -646,21 +662,24 @@ namespace UniversalScanner
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
-                Trace.WriteLine(String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
+                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
                 return;
             }
 
             while (!closing)
             {
+                IPEndPoint distantEP;
+
+                distantEP = null;
                 try
                 {
-                    data = multicastListener.udp.Receive(ref multicastListener.endPoint);
-#if DEBUG
-                    Debug.WriteLine(String.Format("Recieved from {0}.", multicastListener.endPoint.ToString()));
-                    debugWriteText(Encoding.UTF8.GetString(data));
-#endif
-                    reciever(multicastListener.endPoint, data);
+                    data = multicastListener.udp.Receive(ref distantEP);
+
+                    traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", multicastListener.endPoint.ToString(), distantEP.ToString()));
+                    traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+
+                    reciever(distantEP, data);
                 }
                 catch { }
             }
@@ -668,16 +687,16 @@ namespace UniversalScanner
             {
                 try
                 {
-                    Trace.WriteLine(String.Format("Leaving group {0} on interface {1}...", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                    traceWriteLine(debugLevel.Info, String.Format("Leaving group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, opt);
                 }
-                catch (Exception) { }
+                catch { }
             }
             try
             {
                 multicastListener.udp.Close();
             }
-            catch (Exception) {}
+            catch {}
         }
 
         public void Dispose()
