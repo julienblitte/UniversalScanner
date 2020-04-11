@@ -1,8 +1,9 @@
+#define ApplicationVersion GetFileVersion('UniversalScanner.exe')
+
 [Setup]
 AppName=UniversalScanner
-;GetFileVersion(UniversalScanner.exe)
-AppVersion=0.1
-VersionInfoVersion=0.1
+AppVersion={#ApplicationVersion}
+VersionInfoVersion={#ApplicationVersion}
 VersionInfoCopyright=Julien Blitte
 DefaultDirName={pf}\Universal Scanner
 DefaultGroupName=Universal Scanner

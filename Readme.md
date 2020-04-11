@@ -15,14 +15,15 @@ All trademarks are the property of their respective owners.
 This tool is delivered as it, without any warranty.
 
 # Protocols already supported
-* SSDP/UPnP
+* UPnP (SSDP)
 * Dahua camera discovery protocol
 * Hikvision discovery protocol
 * mDNS
+* Axis discovery protocol
+* Bosch discovery protocol
+* Google cast discovery protocol
 
 # Protocols currently in implementation
-* Bosch discovery protocol
-* Axis discovery protocol
 * Hanwha discovery protocol
 
 # Protocols in the road map

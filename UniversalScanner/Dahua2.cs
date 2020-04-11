@@ -64,7 +64,7 @@ namespace UniversalScanner
 
             if (_quirk)
             {
-                Trace.WriteLine("scan(): Warning: Using quirk mode for Dahua protocol v2");
+                traceWriteLine(debugLevel.Warn, "Warning: Using quirk mode for Dahua protocol v2");
                 sendNetScan(port);
             }
         }
@@ -136,13 +136,13 @@ namespace UniversalScanner
 
             if (header.headerSize != headerSize)
             {
-                Trace.WriteLine(String.Format("Error: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
+                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
             if (header.packetSize1 != header.packetSize2 || header.packetSize1 != packetSize)
             {
-                Trace.WriteLine(String.Format("Error: reciever(): recieved invalid frame (packetSize={0} and {1}, expected {2})!", header.packetSize1, header.packetSize2, packetSize));
+                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0} and {1}, expected {2})!", header.packetSize1, header.packetSize2, packetSize));
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace UniversalScanner
                     deviceDesc = "Dahua device";
                 }
 
-                viewer.deviceFound(name, deviceIP, deviceType, deviceDesc);
+                viewer.deviceFound(name, 2, deviceIP, deviceType, deviceDesc);
             }
         }
 

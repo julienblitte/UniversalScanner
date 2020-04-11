@@ -50,6 +50,9 @@
   <PropertyGroup>
     <ApplicationIcon>UniversalScanner.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>UniversalScanner.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,6 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Axis.cs" />
+    <Compile Include="Bosch.cs" />
+    <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
     <Compile Include="Hanwha.cs" />
@@ -101,7 +107,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="UniversalScanner.iss" />
+    <None Include="UniversalScanner.iss">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
