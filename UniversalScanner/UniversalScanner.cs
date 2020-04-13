@@ -124,7 +124,7 @@ namespace UniversalScanner
             if (e.RowIndex < 0)
                 return;
 
-            ip = foundDeviceList.Rows[e.RowIndex].ItemArray[1].ToString();
+            ip = foundDeviceList.Rows[e.RowIndex].ItemArray[(int)Columns.IPAddress].ToString();
             if (ip != "")
             {
                Process.Start("http://" + ip);
@@ -282,8 +282,8 @@ namespace UniversalScanner
                 }
 
                 // sorting cache O(n^2)
-				// find extermum item (min or max) and move it to the end of the list
-				// repeat operation, search the new extremum in the list except the moved item at the end
+                // find extermum item (min or max) and move it to the end of the list
+                // repeat operation, search the new extremum in the list except the moved item at the end
                 newOrder = new int[count];
                 for (int j=0; j < count; j++)
                 {
@@ -336,12 +336,11 @@ namespace UniversalScanner
                     foundDeviceList.ImportRow(line);
                     foundDeviceList.Rows.RemoveAt(newOrder[i]);
                 }
-				// use natural display order as we sorted directly DataTable, not the DataGridView
+                // use natural display order as we sorted directly DataTable, not the DataGridView
                 binding.RemoveSort();
 
                 column.HeaderCell.SortGlyphDirection = (order > 0 ? SortOrder.Ascending : SortOrder.Descending);
             }
         }
-
     }
 }

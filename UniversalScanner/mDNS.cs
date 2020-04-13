@@ -211,6 +211,7 @@ namespace UniversalScanner
             if (data.Length <= headerSize)
             {
                 traceWriteLine(debugLevel.Warn, "Warning: mDNS.reciever(): invalid packet size.");
+                traceWriteData(debugLevel.Warn, data);
                 return;
             }
 
@@ -230,8 +231,17 @@ namespace UniversalScanner
             if (expectedAnwers > 0)
             {
                 position = headerSize;
-                readQueries(data, ref position, expectedQueries);
-                readAnswers(data, ref position, expectedAnwers);
+                try
+                {
+                    readQueries(data, ref position, expectedQueries);
+                    readAnswers(data, ref position, expectedAnwers);
+                }
+                catch (OverflowException ex)
+                {
+                    traceWriteLine(debugLevel.Warn, String.Format("Warning: mDNS.reciever(): packet parsing overflow at position 0x{0:X}!", position));
+                    traceWriteLine(debugLevel.Warn, ex.ToString());
+                    traceWriteData(debugLevel.Warn, data);
+                }
             }
         }
 
@@ -273,8 +283,7 @@ namespace UniversalScanner
 
                 if (position + dataLen > data.Length)
                 {
-                    traceWriteLine(debugLevel.Warn, "Warning: readAnswer(): packet parsing overflow!");
-                    return;
+                    throw new OverflowException(String.Format("mDNS answer parsing overflow"));
                 }
 
                 answers[answerIndex].Type = (mDNSType)answerType;
@@ -315,7 +324,8 @@ namespace UniversalScanner
                         break;
                     default:
                         traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
-                        break;
+                        Array.Resize<mDNSAnswer>(ref answers, answerIndex);
+                        goto readAnswers_abort;
                 }
                 if (resolutionTable.ContainsKey(name) && triggerName == null)
                 {
@@ -323,6 +333,7 @@ namespace UniversalScanner
                 }
                 answerIndex++;
             }
+        readAnswers_abort:
             if (triggerName != null)
             {
                 resolutionTable[triggerName].Invoke(triggerName, answers);
@@ -355,6 +366,7 @@ namespace UniversalScanner
 
             ipAddressBytes = new byte[16];
             Array.Copy(data, position, ipAddressBytes, 0, 16);
+            position += 16;
             return (new IPAddress(ipAddressBytes));
         }
 
@@ -417,8 +429,7 @@ namespace UniversalScanner
             result = 0;
             if (position + 2 > data.Length)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: readUInt16(): packet parsing overflow!");
-                return 0;
+                throw new OverflowException(String.Format("mDNS UInt16 parsing overflow"));
             }
 
             result |= data[position];
@@ -437,8 +448,7 @@ namespace UniversalScanner
             result = 0;
             if (position + 4 > data.Length)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: readUInt32(): packet parsing overflow!");
-                return 0;
+                throw new OverflowException(String.Format("mDNS UInt32 parsing overflow"));
             }
 
             result |= data[position];
@@ -506,19 +516,17 @@ namespace UniversalScanner
                     }
                 }
             }
-            traceWriteLine(debugLevel.Warn, "Warning: readString(): packet parsing overflow!");
-            return (sb != null ? sb.ToString() : "");
+            throw new OverflowException(String.Format("mDNS string parsing overflow"));
         }
 
         public override void scan()
         {
-            // do nothing, different packet should be sent by each plugin
-            return;
+            throw new NotImplementedException();
         }
 
         public override byte[] sender(IPEndPoint dest)
         {
             throw new NotImplementedException();
-        } 
+        }
     }
 }
