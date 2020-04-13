@@ -100,22 +100,38 @@ namespace UniversalScanner
 
         public abstract void scan();
 
-        protected void traceWriteData(debugLevel level, string data, int threadId = 0)
+        protected void traceWriteData(debugLevel level, byte[] data, int threadId = 0)
         {
-#if DEBUG
+            string textFromData;
+            bool isBinary;
             string[] lines;
             StringBuilder result;
-            Regex isBinary;
+            Regex binaryCharacters;
 
-            isBinary = new Regex("[^\x20-\x7E\t\r\n]");
-            result = new StringBuilder();
+            if (level > currentDebugLevel)
+            {
+                return;
+            }
 
             if (threadId == 0)
             {
                 threadId = Thread.CurrentThread.ManagedThreadId;
             }
 
-            if (isBinary.IsMatch(data))
+            textFromData = "";
+            try
+            {
+                textFromData = Encoding.UTF8.GetString(data);
+                binaryCharacters = new Regex("[^\x20-\x7E\t\r\n]");
+                isBinary = binaryCharacters.IsMatch(textFromData);
+            }
+            catch
+            {
+                isBinary = true;
+            }
+
+            result = new StringBuilder();
+            if (isBinary)
             {
 
                 for (int i = 0; i < data.Length; i++)
@@ -129,7 +145,7 @@ namespace UniversalScanner
             }
             else
             {
-                lines = Regex.Split(data, "\r\n|\r|\n");
+                lines = Regex.Split(textFromData, "\r\n|\r|\n");
 
                 foreach (string line in lines)
                 {
@@ -137,10 +153,8 @@ namespace UniversalScanner
                 }
 
             }
-            result.Append("\n");
 
             Trace.WriteLineIf(level <= currentDebugLevel, String.Format("[{0,4}] {1}", threadId, result.ToString()));
-#endif
         }
 
         protected void traceWriteLine(debugLevel level, string line, int threadId = 0)
@@ -283,7 +297,7 @@ namespace UniversalScanner
             if (globalListener.inUse)
             {
                 traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
-                traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                traceWriteData(debugLevel.Debug, data);
                 try
                 {
                     globalListener.udp.Send(data, data.Length, endpoint);
@@ -298,7 +312,7 @@ namespace UniversalScanner
                     if (net.inUse)
                     {
                         traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                        traceWriteData(debugLevel.Debug, data);
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
@@ -379,7 +393,7 @@ namespace UniversalScanner
                         data = sender(endpoint);
 
                         traceWriteLine(debugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                        traceWriteData(debugLevel.Debug, data);
 
                         try
                         {
@@ -413,7 +427,7 @@ namespace UniversalScanner
                         data = sender(endpoint);
 
                         traceWriteLine(debugLevel.Fatal, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                        traceWriteData(debugLevel.Debug, data);
 
                         try
                         {
@@ -602,7 +616,7 @@ namespace UniversalScanner
                     data = unicastUDP.Receive(ref distantEP);
 
                     traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", localEP.ToString(), distantEP.ToString()));
-                    traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                    traceWriteData(debugLevel.Debug, data);
 
                     reciever(distantEP, data);
                 }
@@ -677,7 +691,7 @@ namespace UniversalScanner
                     data = multicastListener.udp.Receive(ref distantEP);
 
                     traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", multicastListener.endPoint.ToString(), distantEP.ToString()));
-                    traceWriteData(debugLevel.Debug, Encoding.UTF8.GetString(data));
+                    traceWriteData(debugLevel.Debug, data);
 
                     reciever(distantEP, data);
                 }
