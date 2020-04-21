@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=UniversalScanner
-AppVersion={#ApplicationVersion}
+AppVersion=0.1
 VersionInfoVersion={#ApplicationVersion}
 VersionInfoCopyright=Julien Blitte
 DefaultDirName={pf}\Universal Scanner
