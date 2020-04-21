@@ -12,6 +12,7 @@ namespace UniversalScanner
     class Hanwha : ScanEngine
     {
         protected int port = 7701;
+        protected int answerPort = 7711;
 
         public override int color
         {
@@ -225,92 +226,52 @@ namespace UniversalScanner
             [FieldOffset(250)] public UInt32 _padding20;
             [FieldOffset(254)] public UInt32 _padding21;
             [FieldOffset(258)] public UInt32 _padding22;
-
         }
-
-        /*
-        Request 1:
-        packet_type  [01]
-                     [ad 2c da 75 c6 6e e0 fa a8 5d 6c b7 98 fa 9b 81 4f 11]
-        mac_adress   [00 01 00 00 00 00 00 00 00 01 00 00 00 4c f8 40 00 00]
-        ip_address   [00 00 00 00 00 00 00 10 60 00 80 01 00 00 00 1c]
-        ip_mask      [00 12 00 b0 6d 5f 02 42 00 00 00 98 ef 19 00 e0]
-        ip_gw        [00 ab 76 c8 18 5f 02 fe ff ff ff 00 00 5f 02 6d]
-                     [00 a9 76 0c ef 19 00 16 dc 06 77 00 00 00 00 00 00 00 00 70 e2 88 13 00]
-        device_name  [00 45 00 ec 7a 45 00 10 ef 19]
-        url          [00 88 13 10 27 2e 27 24 27 1a 27 42 27 ec 7a 45 00 00 00 00 00 c4 7a 45 00 01 00 00 00 54 ef 19 00 a5 96 41 00 c5 96 41 00 e2 0b cc af 00 00 00 00 00 00 00 00]
-                     [58 ef 19 00 dc 66 40 00 78 ef 19 00 e8 03 00 00 58 fe 19 00 d8 f7 19 00 a4 ef]
-                     [19 00 3f ea 40 00 5a ea 40 00 12 0b cc af 10 60 00 80 82 0a 21 00 01 00 00 00 c8 18 5f 02 01 00
-                     [00 00 d8 f7 19 00 00 00 00 00 a4 ef 19 00 56 90 40 00 70 e2 65 00 00 00 00 00 64 ef 19 00 e4 ef
-
-        Request 2:
-        packet_type  [01]
-                     [68 79 fc 58 f3 b4 e8 97 51 a3 9c a9 98 fa 9b 81 4f 11]
-        mac_adress   [00 00 00 00 00 00 00 00 00 11 60 00 80 01 00 00 00 6e]
-        ip_address   [00 03 00 ff ff ff ff db 4d b3 75 f0 eb 19 00 a0]
-        ip_mask      [00 b5 75 ee 91 95 18 fe ff ff ff 50 eb 19 00 3d]
-        ip_gw        [00 b3 75 fc 38 41 00 00 00 00 00 f0 00 00 00 00]
-                     [00 00 00 00 00 00 00 00 60 3c 00 01 00 00 00 c0 a1 fb 00 6e 07 88 13 00]
-        device_name  [00 00 00 d0 eb 19 00 00 00 00]
-        url          [00 88 13 10 27 2e 27 24 27 1a 27 42 27 01 00 00 00 6e 07 03 00 00 00 00 00 aa eb 36 6d 00 00 00 40 00 00 00 00 fc 38 41 00 08 00 00 c0 80 eb 19 00 6d 9d b4 75]
-        c0 a1 fb 00
-        00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
-        60 f4 19 00 01 00 00 00 84 eb 19 00 c6 6c 41 00
-        00 68 3c 00 98 eb 19 00 76 78 41 00 6e 07 03 00
-        f0 00 00 00 00 00 00 00 01 00 00 00 b0 eb 19 00
-        0e 7f 40 00 d0 eb 19 00 09 04 00 00 38 fe 19 00
-        60 f4 19 00 fc eb
-
-        Answer:
-        packet_type [0b]
-                    [ad 2c da 75 c6 6e e0 fa a8 5d 6c b7 98 fa 9b 81 4f 11]
-        mac_adress  [30 30 3a 31 36 3a 36 43 3a 37 44 3a 37 35 3a 36 45 00]
-        ip_address  [31 37 32 2e 31 36 2e 31 32 35 2e 35 35 00 00 00]
-        ip_mask     [32 35 35 2e 32 35 35 2e 30 2e 30 00 00 00 00 00]
-        ip_gw       [31 37 32 2e 31 36 2e 30 2e 31 00 00 00 00 00 00]
-                    [00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 e2 50 00 00]
-        device_name [53 4e 44 2d 36 30 38 33 00 00]
-                    [00 50 00 a8 11 2e 27 24 27 1a 27 42 27 00]
-        url         [68 74 74 70 3a 2f 2f 31 37 32 2e 31 36 2e 31 32 35 2e 35 35 2f 69 6e 64 65 78 2e 68 74 6d 00 00 00 00 00 00 00 00 00]
-                    [58 ef 19 00 dc 66 40 00 78 ef 19 00 e8 03 00 00 58 fe 19 00 d8 f7 19 00 a4 ef]
-                    [19 00 3f ea 40 00 5a ea 40 00 12 0b cc af 10 60 00 80 82 0a 21 00 01 00 00 00 c8 18 5f 02 01 00]
-                    [00 00 d8 f7 19 00 00 00 00 00 a4 ef 19 00 56 90 40 00 70 e2 65 00 00 00 00 00 64 ef 19 00 e4 ef]
-
-
-        */
 
         public Hanwha()
         {
+            listenUdpGlobal(answerPort);
             listenUdpInterfaces();
         }
 
         private string extractString(object source, int size)
         {
             IntPtr ptr;
-            byte [] stringArray;
-            StringBuilder builder;
+            byte[] byteArray;
+            int stringSize;
 
             ptr = Marshal.AllocHGlobal(size);
-            stringArray = new byte[size];
+            byteArray = new byte[size];
             try
             {
                 Marshal.StructureToPtr(source, ptr, false);
-                Marshal.Copy(ptr, stringArray, 0, size);
+                Marshal.Copy(ptr, byteArray, 0, size);
+            }
+            catch(Exception e)
+            {
+                traceWriteLine(debugLevel.Error, "Hanwa.extractString() memory error");
+                traceWriteLine(debugLevel.Error, e.ToString());
             }
             finally
             {
                 Marshal.FreeHGlobal(ptr);
             }
 
-            // deviceType from section1
-            builder = new StringBuilder();
-            for (int i = 0; i < stringArray.Length; i++)
+            stringSize = byteArray.Length;
+            for (int i = 0; i < byteArray.Length; i++)
             {
-                if (stringArray[i] == 0)
+                if (byteArray[i] == 0)
+                {
+                    stringSize = i;
                     break;
-                builder.Append(stringArray[i]);
+                }
             }
-            return builder.ToString();
+            if (stringSize > 0)
+            {
+                return Encoding.UTF8.GetString(byteArray, 0, stringSize);
+            }
+
+            return "";
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
@@ -333,14 +294,17 @@ namespace UniversalScanner
             }
 
             deviceIP = extractString(header.ip_address, Marshal.SizeOf(header.ip_address));
-            deviceType = extractString(header.device_type, Marshal.SizeOf(header.ip_address));
-            deviceSN = extractString(header.mac_address, Marshal.SizeOf(header.ip_address));
+            deviceType = extractString(header.device_type, Marshal.SizeOf(header.device_type));
+            deviceSN = extractString(header.mac_address, Marshal.SizeOf(header.mac_address));
 
-            viewer.deviceFound(name, deviceIP, deviceType, deviceSN);
+            viewer.deviceFound(name, 1, deviceIP, deviceType, deviceSN);
         }
 
         public override void scan()
         {
+#if DEBUG
+            selfTest();
+#endif
             sendBroadcast(port);
         }
 
@@ -370,6 +334,5 @@ namespace UniversalScanner
 
             return result;
         }
-
     }
 }

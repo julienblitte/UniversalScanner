@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -439,6 +440,31 @@ namespace UniversalScanner
             }
         }
 
+        public void selfTest(string filename=null)
+        {
+            if (filename == null)
+            {
+                filename = String.Format("{0}.selftest", name);
+            }
+
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    var content = File.ReadAllBytes(filename);
+                    reciever(new IPEndPoint(IPAddress.Loopback, 1024), content);
+                }
+                catch (Exception e)
+                {
+                    traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Error while performing self test for protocol {0}", name));
+                    traceWriteLine(debugLevel.Debug, e.ToString());
+                }
+            }
+            else
+            {
+                traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Self test file not found for protocol {1}: '{0}' is missing", name, filename));
+            }
+        }
 
         protected bool isFreeUdpPort(int localPort)
         {
