@@ -22,13 +22,13 @@ This tool is delivered as it, without any warranty.
 * Axis discovery protocol
 * Bosch discovery protocol
 * Google cast discovery protocol
+* Hanwha (Samsung) discovery protocol
 
 # Protocols currently in implementation
-* Hanwha discovery protocol
+* Panasonic discovery protocol
+* Vivotek discovery protocol
+* Sony discovery protocol
 
 # Protocols in the road map
 * Basler discovery protocol
-* Panasonic discovery protocol
 * Sanyo discovery protocol
-* Sony discovery protocol
-* Vivotek discovery protocol
