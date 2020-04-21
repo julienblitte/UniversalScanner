@@ -113,6 +113,7 @@
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="UPnP.selftest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -40,6 +40,9 @@ namespace UniversalScanner
 
         public override void scan()
         {
+#if DEBUG
+            selfTest();
+#endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
             sendBroadcast(port);
         }
