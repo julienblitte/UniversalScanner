@@ -76,6 +76,7 @@
     <Compile Include="Hikvision.cs" />
     <Compile Include="mDNS.cs" />
     <Compile Include="ScanEngine.cs" />
+    <Compile Include="Sony.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +111,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Sony.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

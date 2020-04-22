@@ -42,7 +42,8 @@ namespace UniversalScanner
                 new Axis(engineMDNS),
                 new Bosch(),
                 new GoogleCast(engineMDNS),
-                new Hanwha()
+                new Hanwha(),
+                new Sony()
             };
             foreach(var engine in engines)
             {

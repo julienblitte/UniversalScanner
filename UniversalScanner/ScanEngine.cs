@@ -462,7 +462,7 @@ namespace UniversalScanner
             }
             else
             {
-                traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Self test file not found for protocol {1}: '{0}' is missing", name, filename));
+                traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Self test file not found for protocol {0}: '{1}' is missing", name, filename));
             }
         }
 
