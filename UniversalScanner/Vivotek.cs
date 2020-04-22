@@ -111,7 +111,7 @@ namespace UniversalScanner
                         traceWriteData(debugLevel.Debug, value);
                         break;
                     case (byte)VivotekValue.macAddress:
-                        mac = String.Format("{0:x2}:{1:x2}:{2:x2}:{3:x2}:{4:x2}:{5:x2}", value[0], value[1], value[2], value[3], value[4], value[5]);
+                        mac = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}", value[0], value[1], value[2], value[3], value[4], value[5]);
                         break;
                     case (byte)VivotekValue.shortName:
                         model = Encoding.UTF8.GetString(value);
