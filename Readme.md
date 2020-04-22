@@ -23,10 +23,10 @@ This tool is delivered as it, without any warranty.
 * Bosch discovery protocol
 * Google cast discovery protocol
 * Hanwha (Samsung) discovery protocol
+* Vivotek discovery protocol
 
 # Protocols currently in implementation
 * Panasonic discovery protocol
-* Vivotek discovery protocol
 * Sony discovery protocol
 
 # Protocols in the road map
