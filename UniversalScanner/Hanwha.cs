@@ -136,7 +136,7 @@ namespace UniversalScanner
             [FieldOffset(38)] public byte byte26;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 172, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 262, CharSet = CharSet.Ansi)]
         public struct HanwhaHeader
         {
             [FieldOffset(0)] public byte packet_type;   // 0x01 for request, 0x0b for answer
