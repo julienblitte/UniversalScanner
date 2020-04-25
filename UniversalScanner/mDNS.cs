@@ -35,10 +35,10 @@ namespace UniversalScanner
         [FieldOffset(0)] public string typePTR;
         [FieldOffset(0)] public string[] typeTXT;
         [FieldOffset(0)] public IPAddress typeAAAA;
-        [FieldOffset(0)] public mDNSAnswerDataSVR typeSVR;
+        [FieldOffset(0)] public mDNSAnswerDataSRV typeSRV;
     }
 
-    public struct mDNSAnswerDataSVR
+    public struct mDNSAnswerDataSRV
     {
         public UInt16 priority;
         public UInt16 weight;
@@ -144,25 +144,17 @@ namespace UniversalScanner
             byte[] data;
             byte[] query;
             mDNSHeader header;
-            int headerSize;
+            byte[] headerBytes;
             IPEndPoint endpoint;
 
             header = new mDNSHeader() { transactionID = 0, flags = 0, questions = ntohs(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
             query = buildQuery(queryString, queryType);
 
-            headerSize = Marshal.SizeOf(header);
-            data = new byte[headerSize + query.Length];
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.StructureToPtr<mDNSHeader>(header, ptr, false);
-                Marshal.Copy(ptr, data, 0, headerSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-            query.CopyTo(data, headerSize);
+            headerBytes = header.GetBytes();
+
+            data = new byte[headerBytes.Length + query.Length];
+            headerBytes.CopyTo(data, 0);
+            query.CopyTo(data, headerBytes.Length);
 
             endpoint = new IPEndPoint(IPAddress.Parse(multicastIP), port);
 
@@ -206,7 +198,7 @@ namespace UniversalScanner
             int expectedQueries, expectedAnwers;
             int position;
 
-            headerSize = Marshal.SizeOf(typeof(mDNSHeader));
+            headerSize = typeof(mDNSHeader).StructLayoutAttribute.Size;
 
             if (data.Length <= headerSize)
             {
@@ -215,16 +207,7 @@ namespace UniversalScanner
                 return;
             }
 
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.Copy(data, 0, ptr, headerSize);
-                header = Marshal.PtrToStructure<mDNSHeader>(ptr);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            header = data.GetStruct<mDNSHeader>();
 
             expectedQueries = ntohs(header.questions);
             expectedAnwers = ntohs(header.authorityRRs) + ntohs(header.answerRRs) + ntohs(header.additionalRRs);
@@ -317,9 +300,9 @@ namespace UniversalScanner
                         traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_SRV:
-                        mDNSAnswerDataSVR srv;
+                        mDNSAnswerDataSRV srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
-                        answers[answerIndex].data.typeSVR = srv;
+                        answers[answerIndex].data.typeSRV = srv;
                         traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
                         break;
                     default:
@@ -403,17 +386,17 @@ namespace UniversalScanner
             return result.ToArray();
         }
 
-        private mDNSAnswerDataSVR readAnswer_SRV(byte[] data, ref int position, int dataLen)
+        private mDNSAnswerDataSRV readAnswer_SRV(byte[] data, ref int position, int dataLen)
         {
-            mDNSAnswerDataSVR result;
+            mDNSAnswerDataSRV result;
             if (dataLen < 6)
             {
                 traceWriteLine(debugLevel.Warn, "Warning: readAnswer_SRV(): packet data size error!");
-                result = new mDNSAnswerDataSVR { priority = 0, weight = 0, port = 0, domain=null };
+                result = new mDNSAnswerDataSRV { priority = 0, weight = 0, port = 0, domain=null };
                 return result;
             }
 
-            result = new mDNSAnswerDataSVR();
+            result = new mDNSAnswerDataSRV();
             result.priority = readUInt16(data, ref position);
             result.weight = readUInt16(data, ref position);
             result.port = readUInt16(data, ref position);

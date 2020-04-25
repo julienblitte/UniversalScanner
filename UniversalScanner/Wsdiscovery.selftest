@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<e:Envelope xmlns:e="http://www.w3.org/2003/05/soap-envelope" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:d="http://schemas.xmlsoap.org/ws/2005/04/discovery">
+<e:Header>
+<a:MessageID>urn:uuid:11223344-5566-7788-9900-000000000000</a:MessageID>
+<a:RelatesTo>urn:uuid:11223344-5566-7788-9900-000000000001</a:RelatesTo>
+<a:To e:mustUnderstand="1">http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+<a:Action e:mustUnderstand="1">http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches</a:Action>
+<d:AppSequence InstanceId="2" MessageNumber="135"></d:AppSequence>
+</e:Header>
+<e:Body>
+<d:ProbeMatches>
+<d:ProbeMatch>
+<a:EndpointReference>
+<a:Address>urn:uuid:11223344-5566-7788-9900-000000000002</a:Address>
+</a:EndpointReference>
+<d:Types>Virtual tds:Device</d:Types>
+<d:Scopes></d:Scopes>
+<d:XAddrs>http://127.0.01/ http://[::1]/</d:XAddrs>
+<d:MetadataVersion>2</d:MetadataVersion>
+</d:ProbeMatch>
+</d:ProbeMatches>
+</e:Body>
+</e:Envelope>

@@ -75,6 +75,7 @@
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
     <Compile Include="mDNS.cs" />
+    <Compile Include="MemoryUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
     <Compile Include="UniversalScanner.cs">
@@ -86,6 +87,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UPnP.cs" />
+    <Compile Include="Vivotek.cs" />
+    <Compile Include="Wsdiscovery.cs" />
     <EmbeddedResource Include="UniversalScanner.resx">
       <DependentUpon>UniversalScanner.cs</DependentUpon>
     </EmbeddedResource>
@@ -99,7 +102,25 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Axis.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Bosch.bin.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Dahua1.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Dahua2.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Hanwha.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Hikvision.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
@@ -117,7 +138,15 @@
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UPnP.selftest" />
+    <None Include="UPnP.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Vivotek.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Wsdiscovery.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

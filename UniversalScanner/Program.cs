@@ -36,13 +36,16 @@ namespace UniversalScanner
 
             engines = new ScanEngine[] {
                 new UPnP(),
+                new Wsdiscovery(),
                 engineDahua1,
                 engineDahua2,
                 new Hikvision(),
                 new Axis(engineMDNS),
                 new Bosch(),
                 new GoogleCast(engineMDNS),
+
                 new Hanwha(),
+                new Vivotek(),
                 new Sony()
             };
             foreach(var engine in engines)

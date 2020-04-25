@@ -30,7 +30,7 @@ namespace UniversalScanner
         {
             get
             {
-                return Color.DarkRed.ToArgb();
+                return Color.Red.ToArgb();
             }
         }
 
@@ -78,28 +78,15 @@ namespace UniversalScanner
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            string deviceIPStr, deviceTypeStr, deviceMac;
+            string deviceIPStr, deviceModel, deviceSerial;
 
             // xml is much bigger
             if (data.Length == typeof(BoschBinaryResponse).StructLayoutAttribute.Size)
             {
                 BoschBinaryResponse binary;
-                IntPtr ptr;
-                int binarySize;
                 UInt32 ip;
 
-                binarySize = Marshal.SizeOf(typeof(BoschBinaryResponse));
-
-                ptr = Marshal.AllocHGlobal(binarySize);
-                try
-                {
-                    Marshal.Copy(data, 0, ptr, binarySize);
-                    binary = Marshal.PtrToStructure<BoschBinaryResponse>(ptr);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(ptr);
-                }
+                binary = data.GetStruct<BoschBinaryResponse>();
 
                 if (ntohl(binary.magic) != magic)
                 {
@@ -115,59 +102,70 @@ namespace UniversalScanner
                     (byte)((ip) & 0xFF)
                 );
 
-                deviceMac = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
+                deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
                                             binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
 
-                deviceTypeStr = name;
+                deviceModel = name;
 
-                viewer.deviceFound(name, 1, deviceIPStr, deviceTypeStr, deviceMac);
+                viewer.deviceFound(name, 1, deviceIPStr, deviceModel, deviceSerial);
             }
             else
             {
                 string xml;
-                Regex type, ip, mac;
+                Regex type, ip, mac, serial;
                 Match m;
 
                 xml = Encoding.UTF8.GetString(data);
                 type = new Regex("<friendlyName>([^<]*)</friendlyName>");
                 ip = new Regex("<unitIPAddress>([^<]*)</unitIPAddress>");
                 mac = new Regex("<physAddress>([^<]*)</physAddress>");
+                serial = new Regex("<serialNumber>([^<]*)</serialNumber>");
 
                 deviceIPStr = "";
                 m = ip.Match(xml);
-                if (m.Groups.Count == 2)
+                if (m.Success)
                 {
                     deviceIPStr = m.Groups[1].Value;
                 }
 
-                deviceTypeStr = "";
+                deviceModel = "";
                 m = type.Match(xml);
-                if (m.Groups.Count == 2)
+                if (m.Success)
                 {
-                    deviceTypeStr = m.Groups[1].Value;
+                    deviceModel = m.Groups[1].Value;
                 }
 
-                deviceMac = "";
-                m = mac.Match(xml);
-                if (m.Groups.Count == 2)
+                deviceSerial = "";
+                m = serial.Match(xml);
+                if (m.Success)
                 {
-                    deviceMac = m.Groups[1].Value;
+                    deviceSerial = m.Groups[1].Value;
+                }
+                else
+                {
+                    m = mac.Match(xml);
+                    if (m.Success)
+                    {
+                        deviceSerial = m.Groups[1].Value;
+                    }
                 }
 
-                viewer.deviceFound(name, 2, deviceIPStr, deviceTypeStr, deviceMac);
+                viewer.deviceFound(name, 2, deviceIPStr, deviceModel, deviceSerial);
             }
         }
 
         public override void scan()
         {
+#if DEBUG
+            selfTest("Bosch.bin.selftest");
+            selfTest("Bosch.xml.selftest");
+#endif
             sendBroadcast(port);
         }
 
         public override byte[] sender(IPEndPoint dest)
         {
             BoschRequest request;
-            int size;
-            IntPtr ptr;
             byte[] result;
             DateTime date;
 
@@ -181,19 +179,7 @@ namespace UniversalScanner
                 ));
             request.requestMagic = htonl(requestMagic);
 
-            size = Marshal.SizeOf(request);
-            result = new byte[size];
-
-            ptr = Marshal.AllocHGlobal(size);
-            try
-            {
-                Marshal.StructureToPtr(request, ptr, true);
-                Marshal.Copy(ptr, result, 0, size);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            result = request.GetBytes();
 
             return result;
         }

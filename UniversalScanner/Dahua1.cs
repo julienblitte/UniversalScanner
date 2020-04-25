@@ -15,7 +15,10 @@ namespace UniversalScanner
 {
     class Dahua1 : ScanEngine
     {
-        protected int port = 5050;
+        protected const UInt16 magicQuery = 0x01a3;
+        protected const UInt16 magicResponse = 0x00b3;
+
+        protected const int port = 5050;
 
         protected bool _quirk = false;
         public bool quirk { get { return _quirk; } }
@@ -56,14 +59,12 @@ namespace UniversalScanner
             [FieldOffset(15)] public byte byte0F;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 117, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 120, CharSet = CharSet.Ansi)]
         public struct Dahua1Section1
         {
             [FieldOffset(0)] public UInt16 headerMagic;   // 0x00b3 for answer, 0x01a3 fo discovery
             /* not 4-bytes aligned */
-            [FieldOffset(2)] public Byte section2Len;
-            /* not 4-bytes aligned */
-            [FieldOffset(3)] public Byte _03_value;
+            [FieldOffset(2)] public UInt16 section2Len;
             [FieldOffset(4)] public UInt32 _04_value;      // 0x58 for answer, 0x00 for discovery
             [FieldOffset(8)] public UInt32 _08_reserved;
             [FieldOffset(12)] public UInt32 _0C_reserved;
@@ -113,6 +114,9 @@ namespace UniversalScanner
 
         public override void scan()
         {
+#if DEBUG
+            selfTest("Dahua1.selftest");
+#endif
             sendBroadcast(port);
         }
 
@@ -121,36 +125,56 @@ namespace UniversalScanner
             return discover;
         }
 
+        private UInt32 dtohl(UInt32 value)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                value = value << 24
+                    | ((value << 8) & 0x00ff0000)
+                    | ((value >> 8) & 0x0000ff00)
+                    | (value  >> 24);
+            }
+
+            return value;
+        }
+
+        private UInt16 dtohs(UInt16 value)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                value = (UInt16)((value << 8) | (value  >> 8));
+            }
+
+            return value;
+        }
+
         public override void reciever(IPEndPoint from, byte[] data)
         {
             Dahua1Section1 section1;
-            int section1Size, deviceMacSize;
-            IntPtr ptr;
+            UInt16 section2Len;
+            UInt16 section3Len;
+
+            int deviceMacSize;
 
             UInt32 deviceIP;
-            Byte section2Len;
 
-            string deviceIPStr, deviceTypeStr, deviceMac;
+            string deviceIPStr, deviceModel, deviceSerial;
             byte[] deviceTypeArray, deviceMacArray;
-            StringBuilder stringBuilder;
+            byte[] section3Array;
 
-            int macAddressSize = 17;
+            int index;
+
+            deviceMacSize = 17; // "00:11:22:33:44:55".Length()
 
             // section 1:
-            section1Size = Marshal.SizeOf(typeof(Dahua1Section1));
+            section1 = data.GetStruct<Dahua1Section1>();
 
-            ptr = Marshal.AllocHGlobal(section1Size);
-            try
+            if (dtohl(section1.headerMagic) != magicResponse)
             {
-                Marshal.Copy(data, 0, ptr, section1Size);
-                section1 = Marshal.PtrToStructure<Dahua1Section1>(ptr);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
+                return;
             }
 
-            // build IP Address from section1
+            // IP Address
             deviceIP = ntohl(section1.ip);
             deviceIPStr = String.Format("{0}.{1}.{2}.{3}", 
                 (byte)((deviceIP >> 24) & 0xFF),
@@ -159,50 +183,72 @@ namespace UniversalScanner
                 (byte)((deviceIP) & 0xFF)
             );
 
-            // build device name from section1
-            int deviceTypeSize = Marshal.SizeOf(typeof(String16bytes));
+            // device type
+            deviceModel = Encoding.UTF8.GetString(section1.deviceType);
 
-            ptr = Marshal.AllocHGlobal(deviceTypeSize);
-            deviceTypeArray = new byte[deviceTypeSize];
-            try
-            {
-                Marshal.StructureToPtr<String16bytes>(section1.deviceType, ptr, false);
-                Marshal.Copy(ptr, deviceTypeArray, 0, deviceTypeSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            // deviceType from section1
-            stringBuilder = new StringBuilder();
-            for (int i=0; i < deviceTypeArray.Length; i++)
-            {
-                if (deviceTypeArray[i] == 0)
-                    break;
-                stringBuilder.Append(deviceTypeArray[i]);
-            }
-            deviceTypeStr = stringBuilder.ToString();
-
+            section2Len = dtohs(section1.section2Len);
+            section3Len = dtohs(section1.section3Len);
 
             // section 2:
-            // retrieve mac from section 2
-            section2Len = section1.section2Len;
-            deviceMacSize = Math.Min(macAddressSize, section2Len);
+            // mac Address
+            deviceMacSize = Math.Min(deviceMacSize, section2Len);
             deviceMacArray = new byte[deviceMacSize];
-            Array.Copy(data, section1Size, deviceMacArray, 0, deviceMacSize);
-            deviceMac = Encoding.UTF8.GetString(deviceMacArray);
+            index = typeof(Dahua1Section1).StructLayoutAttribute.Size;
+            Array.Copy(data, index, deviceMacArray, 0, deviceMacSize);
+            index += deviceMacArray.Length;
+            deviceSerial = Encoding.UTF8.GetString(deviceMacArray);
 
-
-            // if deviceType from section2, replace deviceType with this one
+            // we still have more data in section 2
             if (section2Len > deviceMacSize)
             {
+                // if deviceType from section2, replace deviceType with this one
                 deviceTypeArray = new byte[section2Len - deviceMacSize];
-                Array.Copy(data, section1Size + deviceMacSize, deviceTypeArray, 0, deviceTypeArray.Length);
-                deviceTypeStr = Encoding.UTF8.GetString(deviceTypeArray);
+                Array.Copy(data, index, deviceTypeArray, 0, deviceTypeArray.Length);
+                index += deviceTypeArray.Length;
+                deviceModel = Encoding.UTF8.GetString(deviceTypeArray);
             }
 
-            viewer.deviceFound(name, 1, deviceIPStr, deviceTypeStr, deviceMac);
+            // section 3:
+            if (section3Len > 0)
+            {
+                Dictionary<string, string> values;
+
+                section3Array = new byte[section3Len];
+                Array.Copy(data, index, section3Array, 0, section3Array.Length);
+                index += section3Array.Length;
+
+                values = parseSection3(data);
+                if (values.ContainsKey("SerialNo"))
+                {
+                    deviceSerial = values["SerialNo"];
+                }
+            }
+
+            viewer.deviceFound(name, 1, deviceIPStr, deviceModel, deviceSerial);
+        }
+
+        Dictionary<string, string>parseSection3(byte[] data)
+        {
+            Dictionary<string, string> result;
+            string str;
+            string[] lines;
+
+            result = new Dictionary<string, string>();
+            str = Encoding.UTF8.GetString(data);
+
+            lines = str.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(var l in lines)
+            {
+                int s;
+
+                s = l.IndexOf(':');
+                if (s >= 0)
+                {
+                    result.Add(l.Substring(0, s), l.Substring(s+1));
+                }
+            }
+
+            return result;
         }
     }
 }

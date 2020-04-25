@@ -42,10 +42,10 @@ namespace UniversalScanner
 
             answerStringList = readPacket(data);
 
-            model = "";
-            serial = "";
-            mac = "";
-            ip = "";
+            model = null;
+            serial = null;
+            mac = null;
+            ip = null;
 
             foreach (var line in answerStringList)
             {
@@ -73,9 +73,17 @@ namespace UniversalScanner
                 }
             }
 
-            if (ip != "" && model != "")
+            if (ip != null && model != null)
             {
-                viewer.deviceFound(name, 1, ip, model, String.Format("{0} / {1}", mac, serial));
+                if (serial == null)
+                {
+                    serial = mac;
+                }
+                if (serial == null)
+                {
+                    serial = "unkonwn";
+                }
+                viewer.deviceFound(name, 1, ip, model, serial);
             }
         }
 
@@ -120,17 +128,17 @@ namespace UniversalScanner
             result = new List<string>();
             if (binary.Length < 2)
             {
-                traceWriteLine(debugLevel.Warn, "Sony.readPacket(): Error: Invalid packet size!");
+                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet size!");
                 return result.ToArray();
             }
             if (binary[0] != marker_start)
             {
-                traceWriteLine(debugLevel.Warn, "Sony.readPacket(): Error: Invalid packet start marker!");
+                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet start marker!");
                 return result.ToArray();
             }
             if (binary[binary.Length-1] != marker_end)
             {
-                traceWriteLine(debugLevel.Warn, "Sony.readPacket(): Error: Invalid packet end marker!");
+                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet end marker!");
                 return result.ToArray();
             }
             lastMarker = 0; 

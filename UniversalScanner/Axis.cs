@@ -17,7 +17,6 @@ namespace UniversalScanner
         {
             get
             {
-                //return Color.DarkGoldenrod.ToArgb();
                 return 0x806000;
             }
         }
@@ -46,6 +45,9 @@ namespace UniversalScanner
 
         public override void scan()
         {
+#if DEBUG
+            dnsBroker.selfTest("Axis.selftest");
+#endif
             foreach (var d in domains)
             {
                 dnsBroker.scan(d, mDNSType.TYPE_PTR);
@@ -60,10 +62,10 @@ namespace UniversalScanner
         public void axisDeviceFound(string domainFilter, mDNSAnswer[] answers)
         {
             IPAddress ip;
-            string deviceType, serial;
+            string deviceModel, serial;
 
             ip = null;
-            deviceType = null;
+            deviceModel = null;
             serial = null;
             foreach (var a in answers)
             {
@@ -80,12 +82,12 @@ namespace UniversalScanner
                     case mDNSType.TYPE_ANY:
                         break;
                     case mDNSType.TYPE_PTR:
-                        if (deviceType == null)
+                        if (deviceModel == null)
                         {
-                            deviceType = a.data.typePTR;
-                            if (deviceType.Contains('.'))
+                            deviceModel = a.data.typePTR;
+                            if (deviceModel.Contains('.'))
                             {
-                                deviceType = deviceType.Split('.')[0];
+                                deviceModel = deviceModel.Split('.')[0];
                             }
                         }
                         break;
@@ -106,9 +108,20 @@ namespace UniversalScanner
 
             if (ip != null)
             {
-                if (deviceType == null) deviceType = "unknown";
+                if (deviceModel == null) deviceModel = "unknown";
+
+                int modelMacSplitter = deviceModel.IndexOf(" - ");
+                if (modelMacSplitter >= 0)
+                {
+                    if (serial == null)
+                    {
+                        serial = deviceModel.Substring(modelMacSplitter + 3);
+                    }
+                    deviceModel = deviceModel.Substring(0, modelMacSplitter);
+                }
+
                 if (serial == null) serial = "unknown";
-                viewer.deviceFound(name, 1, ip.ToString(), deviceType, serial);
+                viewer.deviceFound(name, 1, ip.ToString(), deviceModel, serial);
             }
         }
     }

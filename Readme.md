@@ -14,21 +14,21 @@ All trademarks are the property of their respective owners.
 # Warranty
 This tool is delivered as it, without any warranty.
 
-# Protocols already supported
+# Protocols supported
+## Generic protocols
 * UPnP (SSDP)
+* WS-Discovery (ONVIF)
+* mDNS
+
+## Proprietary
 * Dahua camera discovery protocol
 * Hikvision discovery protocol
-* mDNS
 * Axis discovery protocol
 * Bosch discovery protocol
 * Google cast discovery protocol
 * Hanwha (Samsung) discovery protocol
+* Vivotek discovery protocol
 
 # Protocols currently in implementation
 * Panasonic discovery protocol
-* Vivotek discovery protocol
 * Sony discovery protocol
-
-# Protocols in the road map
-* Basler discovery protocol
-* Sanyo discovery protocol

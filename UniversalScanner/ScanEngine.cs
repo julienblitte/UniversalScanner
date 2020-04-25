@@ -456,13 +456,13 @@ namespace UniversalScanner
                 }
                 catch (Exception e)
                 {
-                    traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Error while performing self test for protocol {0}", name));
+                    traceWriteLine(debugLevel.Debug, String.Format("Error while performing self test for protocol {0}", name));
                     traceWriteLine(debugLevel.Debug, e.ToString());
                 }
             }
             else
             {
-                traceWriteLine(debugLevel.Debug, String.Format("selfTest(): Self test file not found for protocol {0}: '{1}' is missing", name, filename));
+                traceWriteLine(debugLevel.Debug, String.Format("Warning: Self test file not found for protocol {0}: '{1}' is missing", name, filename));
             }
         }
 
