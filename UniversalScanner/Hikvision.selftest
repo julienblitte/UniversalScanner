@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProbeMatch><Uuid>11223344-5566-7788-9900-112233445566</Uuid>
+<Types>inquiry</Types>
+<DeviceType>123456</DeviceType>
+<DeviceDescription>Virtual</DeviceDescription>
+<DeviceSN>Virtual-123456789</DeviceSN>
+<CommandPort>8000</CommandPort>
+<HttpPort>80</HttpPort>
+<MAC>00-11-22-33-44-55</MAC>
+<IPv4Address>127.0.0.1</IPv4Address>
+<IPv4SubnetMask>255.0.0.0</IPv4SubnetMask>
+<IPv4Gateway>127.0.0.1</IPv4Gateway>
+<IPv6Address>::</IPv6Address>
+<IPv6Gateway>::</IPv6Gateway>
+<IPv6MaskLen>64</IPv6MaskLen>
+<DHCP>false</DHCP>
+<AnalogChannelNum>0</AnalogChannelNum>
+<DigitalChannelNum>1</DigitalChannelNum>
+<SoftwareVersion>V1.0build 200101</SoftwareVersion>
+<DSPVersion>V1.0build 200101</DSPVersion>
+<BootTime>1970-01-01 00:00:00</BootTime>
+<ResetAbility>false</ResetAbility>
+<DiskNumber>0</DiskNumber>
+<Activated>true</Activated>
+<PasswordResetAbility>true</PasswordResetAbility>
+<PasswordResetModeSecond>true</PasswordResetModeSecond>
+<SupportHCPlatform>true</SupportHCPlatform>
+<HCPlatformEnable>flase</HCPlatformEnable>
+<IsModifyVerificationCode>true</IsModifyVerificationCode>
+</ProbeMatch>

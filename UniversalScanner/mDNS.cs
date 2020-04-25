@@ -35,10 +35,10 @@ namespace UniversalScanner
         [FieldOffset(0)] public string typePTR;
         [FieldOffset(0)] public string[] typeTXT;
         [FieldOffset(0)] public IPAddress typeAAAA;
-        [FieldOffset(0)] public mDNSAnswerDataSVR typeSVR;
+        [FieldOffset(0)] public mDNSAnswerDataSRV typeSRV;
     }
 
-    public struct mDNSAnswerDataSVR
+    public struct mDNSAnswerDataSRV
     {
         public UInt16 priority;
         public UInt16 weight;
@@ -300,9 +300,9 @@ namespace UniversalScanner
                         traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_SRV:
-                        mDNSAnswerDataSVR srv;
+                        mDNSAnswerDataSRV srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
-                        answers[answerIndex].data.typeSVR = srv;
+                        answers[answerIndex].data.typeSRV = srv;
                         traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
                         break;
                     default:
@@ -386,17 +386,17 @@ namespace UniversalScanner
             return result.ToArray();
         }
 
-        private mDNSAnswerDataSVR readAnswer_SRV(byte[] data, ref int position, int dataLen)
+        private mDNSAnswerDataSRV readAnswer_SRV(byte[] data, ref int position, int dataLen)
         {
-            mDNSAnswerDataSVR result;
+            mDNSAnswerDataSRV result;
             if (dataLen < 6)
             {
                 traceWriteLine(debugLevel.Warn, "Warning: readAnswer_SRV(): packet data size error!");
-                result = new mDNSAnswerDataSVR { priority = 0, weight = 0, port = 0, domain=null };
+                result = new mDNSAnswerDataSRV { priority = 0, weight = 0, port = 0, domain=null };
                 return result;
             }
 
-            result = new mDNSAnswerDataSVR();
+            result = new mDNSAnswerDataSRV();
             result.priority = readUInt16(data, ref position);
             result.weight = readUInt16(data, ref position);
             result.port = readUInt16(data, ref position);

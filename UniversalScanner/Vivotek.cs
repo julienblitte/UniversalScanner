@@ -73,7 +73,7 @@ namespace UniversalScanner
 
             if (ntohl(header.magic) != magic)
             {
-                traceWriteLine(debugLevel.Warn, "Vivotek.reciever(): Error: Wrong packet magic value");
+                traceWriteLine(debugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace UniversalScanner
                 switch (variable)
                 {
                     case (byte)VivotekValue.invalid:
-                        traceWriteLine(debugLevel.Warn, "Vivotek.reciever(): Error: Invalid packet");
+                        traceWriteLine(debugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet");
                         return;
                     case (byte)VivotekValue.IPAddress:
                         ip = String.Format("{0}.{1}.{2}.{3}", value[0], value[1], value[2], value[3]);
