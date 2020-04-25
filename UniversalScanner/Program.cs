@@ -36,6 +36,7 @@ namespace UniversalScanner
 
             engines = new ScanEngine[] {
                 new UPnP(),
+                new Wsdiscovery(),
                 engineDahua1,
                 engineDahua2,
                 new Hikvision(),

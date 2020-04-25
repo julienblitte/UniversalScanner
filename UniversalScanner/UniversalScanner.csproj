@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Vivotek.cs" />
+    <Compile Include="Wsdiscovery.cs" />
     <EmbeddedResource Include="UniversalScanner.resx">
       <DependentUpon>UniversalScanner.cs</DependentUpon>
     </EmbeddedResource>
@@ -137,6 +138,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Vivotek.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Wsdiscovery.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -17,6 +17,7 @@ This tool is delivered as it, without any warranty.
 # Protocols supported
 ## Generic protocols
 * UPnP (SSDP)
+* WS-Discovery (ONVIF)
 * mDNS
 
 ## Proprietary
@@ -29,6 +30,5 @@ This tool is delivered as it, without any warranty.
 * Vivotek discovery protocol
 
 # Protocols currently in implementation
-* WS-Discovery (ONVIF)
 * Panasonic discovery protocol
 * Sony discovery protocol
