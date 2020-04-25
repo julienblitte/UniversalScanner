@@ -234,68 +234,16 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
-        private string extractString(object source, int size)
-        {
-            IntPtr ptr;
-            byte[] byteArray;
-            int stringSize;
-
-            ptr = Marshal.AllocHGlobal(size);
-            byteArray = new byte[size];
-            try
-            {
-                Marshal.StructureToPtr(source, ptr, false);
-                Marshal.Copy(ptr, byteArray, 0, size);
-            }
-            catch(Exception e)
-            {
-                traceWriteLine(debugLevel.Error, "Hanwa.extractString() memory error");
-                traceWriteLine(debugLevel.Error, e.ToString());
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            stringSize = byteArray.Length;
-            for (int i = 0; i < byteArray.Length; i++)
-            {
-                if (byteArray[i] == 0)
-                {
-                    stringSize = i;
-                    break;
-                }
-            }
-            if (stringSize > 0)
-            {
-                return Encoding.UTF8.GetString(byteArray, 0, stringSize);
-            }
-
-            return "";
-        }
-
         public override void reciever(IPEndPoint from, byte[] data)
         {
             HanwhaHeader header;
-            int headerSize;
             string deviceIP, deviceType, deviceSN;
 
-            headerSize = Marshal.SizeOf(typeof(HanwhaHeader));
+            header = data.GetStruct<HanwhaHeader>();
 
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.Copy(data, 0, ptr, headerSize);
-                header = Marshal.PtrToStructure<HanwhaHeader>(ptr);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-
-            deviceIP = extractString(header.ip_address, Marshal.SizeOf(header.ip_address));
-            deviceType = extractString(header.device_type, Marshal.SizeOf(header.device_type));
-            deviceSN = extractString(header.mac_address, Marshal.SizeOf(header.mac_address));
+            deviceIP = Encoding.UTF8.GetString(header.ip_address);
+            deviceType = Encoding.UTF8.GetString(header.device_type);
+            deviceSN = Encoding.UTF8.GetString(header.mac_address);
 
             viewer.deviceFound(name, 1, deviceIP, deviceType, deviceSN);
         }
@@ -311,26 +259,12 @@ namespace UniversalScanner
         public override byte[] sender(IPEndPoint dest)
         {
             HanwhaHeader header;
-            int headerSize;
             byte[] result;
-            IntPtr ptr;
 
             header = new HanwhaHeader();
             header.packet_type = packet_type_request;
 
-            headerSize = Marshal.SizeOf(header);
-            result = new byte[headerSize];
-
-            ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.StructureToPtr<HanwhaHeader>(header, ptr, false);
-                Marshal.Copy(ptr, result, 0, headerSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            result = header.GetBytes();
 
             return result;
         }

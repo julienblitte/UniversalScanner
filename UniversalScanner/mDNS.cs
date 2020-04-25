@@ -144,25 +144,17 @@ namespace UniversalScanner
             byte[] data;
             byte[] query;
             mDNSHeader header;
-            int headerSize;
+            byte[] headerBytes;
             IPEndPoint endpoint;
 
             header = new mDNSHeader() { transactionID = 0, flags = 0, questions = ntohs(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
             query = buildQuery(queryString, queryType);
 
-            headerSize = Marshal.SizeOf(header);
-            data = new byte[headerSize + query.Length];
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.StructureToPtr<mDNSHeader>(header, ptr, false);
-                Marshal.Copy(ptr, data, 0, headerSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-            query.CopyTo(data, headerSize);
+            headerBytes = header.GetBytes();
+
+            data = new byte[headerBytes.Length + query.Length];
+            headerBytes.CopyTo(data, 0);
+            query.CopyTo(data, headerBytes.Length);
 
             endpoint = new IPEndPoint(IPAddress.Parse(multicastIP), port);
 
@@ -206,7 +198,7 @@ namespace UniversalScanner
             int expectedQueries, expectedAnwers;
             int position;
 
-            headerSize = Marshal.SizeOf(typeof(mDNSHeader));
+            headerSize = typeof(mDNSHeader).StructLayoutAttribute.Size;
 
             if (data.Length <= headerSize)
             {
@@ -215,16 +207,7 @@ namespace UniversalScanner
                 return;
             }
 
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.Copy(data, 0, ptr, headerSize);
-                header = Marshal.PtrToStructure<mDNSHeader>(ptr);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            header = data.GetStruct<mDNSHeader>();
 
             expectedQueries = ntohs(header.questions);
             expectedAnwers = ntohs(header.authorityRRs) + ntohs(header.answerRRs) + ntohs(header.additionalRRs);

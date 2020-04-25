@@ -75,6 +75,7 @@
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
     <Compile Include="mDNS.cs" />
+    <Compile Include="MemoryUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>
@@ -99,6 +100,18 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Bosch.bin.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Dahua1.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Dahua2.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Hanwha.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -114,7 +127,9 @@
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UPnP.selftest" />
+    <None Include="UPnP.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Vivotek.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

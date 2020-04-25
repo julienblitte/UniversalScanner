@@ -60,6 +60,9 @@ namespace UniversalScanner
 
         public override void scan()
         {
+#if DEBUG
+            selfTest("Dahua2.selftest");
+#endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
 
             if (_quirk)
@@ -69,16 +72,40 @@ namespace UniversalScanner
             }
         }
 
+        private UInt32 dtohl(UInt32 value)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                value = value << 24
+                    | ((value << 8) & 0x00ff0000)
+                    | ((value >> 8) & 0x0000ff00)
+                    | (value >> 24);
+            }
+
+            return value;
+        }
+
+        private UInt16 dtohs(UInt16 value)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                value = (UInt16)((value << 8) | (value >> 8));
+            }
+
+            return value;
+        }
+
         public override byte[] sender(IPEndPoint dest)
         {
             Dahua2Header header;
+            byte[] headerArray;
             string bodyStr;
-            byte[] body;
+            byte[] bodyArray;
             byte[] result;
             int headerSize;
 
             header = new Dahua2Header {
-                headerSize = 0x20,
+                headerSize = dtohl((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
                 headerMagic = ntohl(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
@@ -89,26 +116,18 @@ namespace UniversalScanner
             };
 
             bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\r\n";
-            body = Encoding.UTF8.GetBytes(bodyStr);
+            bodyArray = Encoding.UTF8.GetBytes(bodyStr);
 
-            headerSize = Marshal.SizeOf(header);
+            headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size; 
 
-            result = new byte[headerSize + body.Length];
-            header.packetSize1 = (UInt32)body.Length;
-            header.packetSize2 = (UInt32)body.Length;
+            result = new byte[headerSize + bodyArray.Length];
+            header.packetSize1 = (UInt32)bodyArray.Length;
+            header.packetSize2 = (UInt32)bodyArray.Length;
 
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.StructureToPtr<Dahua2Header>(header, ptr, false);
-                Marshal.Copy(ptr, result, 0, headerSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            headerArray = header.GetBytes();
 
-            body.CopyTo(result, headerSize);
+            headerArray.CopyTo(result, 0);
+            bodyArray.CopyTo(result, headerSize);
 
             return result;
         }
@@ -121,28 +140,19 @@ namespace UniversalScanner
             int headerSize, packetSize;
             string method;
 
-            headerSize = Marshal.SizeOf(typeof(Dahua2Header));
+            headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size;
 
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.Copy(data, 0, ptr, headerSize);
-                header = Marshal.PtrToStructure<Dahua2Header>(ptr);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            header = data.GetStruct<Dahua2Header>();
 
-            if (header.headerSize != headerSize)
+            if (dtohl(header.headerSize) != headerSize)
             {
                 traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
-            if (header.packetSize1 != header.packetSize2 || header.packetSize1 != packetSize)
+            if (dtohl(header.packetSize1) != packetSize)
             {
-                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0} and {1}, expected {2})!", header.packetSize1, header.packetSize2, packetSize));
+                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
                 return;
             }
 
@@ -155,12 +165,12 @@ namespace UniversalScanner
             method = extractJsonString("method", bodyStr);
             if (method == "client.notifyDevInfo")
             {
-                string deviceType, deviceIP, deviceDesc;
+                string deviceModel, deviceIP, deviceSerial;
 
-                deviceType = extractJsonString("DeviceType", bodyStr);
-                if (deviceType == null)
+                deviceModel = extractJsonString("DeviceType", bodyStr);
+                if (deviceModel == null)
                 {
-                    deviceType = "Dahua";
+                    deviceModel = "Dahua";
                 }
 
                 deviceIP = extractJsonString("IPAddress", bodyStr);
@@ -169,17 +179,17 @@ namespace UniversalScanner
                     deviceIP = from.Address.ToString();
                 }
 
-                deviceDesc = extractJsonString("SerialNo", bodyStr);
-                if (deviceDesc == null)
+                deviceSerial = extractJsonString("SerialNo", bodyStr);
+                if (deviceSerial == null)
                 {
-                    deviceDesc = extractJsonString("mac", bodyStr);
+                    deviceSerial = extractJsonString("mac", bodyStr);
                 }
-                if (deviceDesc == null)
+                if (deviceSerial == null)
                 {
-                    deviceDesc = "Dahua device";
+                    deviceSerial = "Dahua device";
                 }
 
-                viewer.deviceFound(name, 2, deviceIP, deviceType, deviceDesc);
+                viewer.deviceFound(name, 2, deviceIP, deviceModel, deviceSerial);
             }
         }
 

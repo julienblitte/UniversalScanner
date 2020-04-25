@@ -63,23 +63,13 @@ namespace UniversalScanner
         {
             VivotekHeader header;
             int headerSize;
-            IntPtr ptr;
             int position;
 
-            string ip, model, mac; 
+            string ip, model, mac;
 
-            headerSize = Marshal.SizeOf(typeof(VivotekHeader));
+            header = data.GetStruct<VivotekHeader>();
 
-            ptr = Marshal.AllocHGlobal(headerSize);
-            try
-            {
-                Marshal.Copy(data, 0, ptr, headerSize);
-                header = (VivotekHeader)Marshal.PtrToStructure(ptr, typeof(VivotekHeader));
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            headerSize = typeof(VivotekHeader).StructLayoutAttribute.Size;
 
             if (ntohl(header.magic) != magic)
             {
@@ -170,24 +160,11 @@ namespace UniversalScanner
         public override byte[] sender(IPEndPoint dest)
         {
             VivotekHeader header;
-            int headerSize;
-            IntPtr ptr;
             byte[] result;
 
             header = new VivotekHeader() { session = sessionCounter++, magic = htonl(magic) };
-            headerSize = Marshal.SizeOf(typeof(VivotekHeader));
 
-            ptr = Marshal.AllocHGlobal(headerSize);
-            result = new byte[headerSize];
-            try
-            {
-                Marshal.StructureToPtr<VivotekHeader>(header, ptr, false);
-                Marshal.Copy(ptr, result, 0, headerSize);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
+            result = header.GetBytes();
 
             return result;
         }
