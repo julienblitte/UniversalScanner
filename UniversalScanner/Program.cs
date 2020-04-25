@@ -44,7 +44,8 @@ namespace UniversalScanner
                 new Bosch(),
                 new GoogleCast(engineMDNS),
                 new Hanwha(),
-                new Vivotek()
+                new Vivotek(),
+                new Panasonic()
             };
             foreach(var engine in engines)
             {
