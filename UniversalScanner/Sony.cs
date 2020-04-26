@@ -128,17 +128,17 @@ namespace UniversalScanner
             result = new List<string>();
             if (binary.Length < 2)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet size!");
+                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet size!");
                 return result.ToArray();
             }
             if (binary[0] != marker_start)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet start marker!");
+                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet start marker!");
                 return result.ToArray();
             }
             if (binary[binary.Length-1] != marker_end)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet end marker!");
+                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet end marker!");
                 return result.ToArray();
             }
             lastMarker = 0; 

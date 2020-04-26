@@ -105,7 +105,7 @@ namespace UniversalScanner
         {
             if (listenUdpGlobal(port) == -1)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Dahua protocol v1: Failback to quirk mode");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Dahua protocol v1: Failback to quirk mode");
                 _quirk = true;
 
                 listenUdpInterfaces();
@@ -175,7 +175,7 @@ namespace UniversalScanner
             }
 
             // IP Address
-            deviceIP = ntohl(section1.ip);
+            deviceIP = NetworkUtils.ntohl(section1.ip);
             deviceIPStr = String.Format("{0}.{1}.{2}.{3}", 
                 (byte)((deviceIP >> 24) & 0xFF),
                 (byte)((deviceIP >> 16) & 0xFF),
