@@ -61,7 +61,7 @@ namespace UniversalScanner
                 payload1 = 0x000d0000;
                 payload2 = 0x00000000;
 
-                headerMagic = htonl(0x00010000);
+                headerMagic = NetworkUtils.htonl(0x00010000);
 
                 mac = macAddress.GetAddressBytes().GetStruct<MacAddress>();
 
@@ -70,16 +70,16 @@ namespace UniversalScanner
                     (ipBytes[1] << 16) |
                     (ipBytes[2] << 8) |
                     (ipBytes[3]));
-                ip = htonl(ipUInt32);
+                ip = NetworkUtils.htonl(ipUInt32);
 
-                payload3 = htonl(0x00012011);
-                payload4 = htonl(0x1e11231f);
-                payload5 = htonl(0x1e191300);
-                payload6 = htonl(0x00020000);
-                payload7 = htonl(0x00000000);
-                payload8 = htonl(0x00000000);
-                payload9 = htonl(0x0000ffff);
-                checksum = htons(0x0000);
+                payload3 = NetworkUtils.htonl(0x00012011);
+                payload4 = NetworkUtils.htonl(0x1e11231f);
+                payload5 = NetworkUtils.htonl(0x1e191300);
+                payload6 = NetworkUtils.htonl(0x00020000);
+                payload7 = NetworkUtils.htonl(0x00000000);
+                payload8 = NetworkUtils.htonl(0x00000000);
+                payload9 = NetworkUtils.htonl(0x0000ffff);
+                checksum = NetworkUtils.htons(0x0000);
             }
         }
 
@@ -132,7 +132,7 @@ namespace UniversalScanner
 
                 if (i + length >= data.Length)
                 {
-                    traceWriteLine(debugLevel.Warn, "Warning: Panasonic.parsePacket(): packet overflow");
+                    Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Panasonic.parsePacket(): packet overflow");
                     return result;
                 }
 
@@ -154,7 +154,7 @@ namespace UniversalScanner
 
             if (data.Length <= 52)
             {
-                traceWriteLine(debugLevel.Warn, String.Format("Warning: Panasonic.reciever(): Invalid packet size: {0}", data.Length));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Panasonic.reciever(): Invalid packet size: {0}", data.Length));
                 return;
             }
 

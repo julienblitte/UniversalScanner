@@ -71,9 +71,9 @@ namespace UniversalScanner
 
             headerSize = typeof(VivotekHeader).StructLayoutAttribute.Size;
 
-            if (ntohl(header.magic) != magic)
+            if (NetworkUtils.ntohl(header.magic) != magic)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
                 return;
             }
 
@@ -91,14 +91,14 @@ namespace UniversalScanner
                 switch (variable)
                 {
                     case (byte)VivotekValue.invalid:
-                        traceWriteLine(debugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet");
+                       Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet");
                         return;
                     case (byte)VivotekValue.IPAddress:
                         ip = String.Format("{0}.{1}.{2}.{3}", value[0], value[1], value[2], value[3]);
                         break;
                     case (byte)VivotekValue.longName:
-                        traceWriteLine(debugLevel.Debug, "longName");
-                        traceWriteData(debugLevel.Debug, value);
+                       Logger.WriteLine(Logger.DebugLevel.Debug, "longName");
+                        Logger.WriteData(Logger.DebugLevel.Debug, value);
                         break;
                     case (byte)VivotekValue.macAddress:
                         mac = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}", value[0], value[1], value[2], value[3], value[4], value[5]);
@@ -162,7 +162,7 @@ namespace UniversalScanner
             VivotekHeader header;
             byte[] result;
 
-            header = new VivotekHeader() { session = sessionCounter++, magic = htonl(magic) };
+            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.htonl(magic) };
 
             result = header.GetBytes();
 

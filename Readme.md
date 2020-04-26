@@ -16,9 +16,9 @@ This tool is delivered as it, without any warranty.
 
 # Protocols supported
 ## Generic protocols
-* UPnP (SSDP)
+* SSDP (UPnP)
 * WS-Discovery (ONVIF)
-* mDNS
+* DNS-SD (Zeroconf)
 
 ## Proprietary
 * Dahua camera discovery protocol
@@ -32,3 +32,4 @@ This tool is delivered as it, without any warranty.
 # Protocols currently in implementation
 * Panasonic discovery protocol
 * Sony discovery protocol
+* Flir discovery protocol

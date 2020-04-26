@@ -51,6 +51,9 @@ namespace UniversalScanner
         protected new string multicastIP = "224.0.0.251";
         protected int port = 5353;
 
+        protected static mDNS globalInstance = null;
+        protected static object locker = new Object();
+
         public override int color
         {
             get
@@ -83,12 +86,25 @@ namespace UniversalScanner
             [FieldOffset(10)] public UInt16 additionalRRs;
         }
 
-        public mDNS()
+        private mDNS()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
 
             resolutionTable = new Dictionary<string, mDNSResponse_Action>();
+        }
+
+        public static mDNS getInstance()
+        {
+            lock(locker) // avoid class instance to run in two threads same time
+            {
+                if (globalInstance == null)
+                {
+                    globalInstance = new mDNS();
+                }
+            }
+
+            return globalInstance;
         }
 
         public void registerDomain(string domainFilter, mDNSResponse_Action onResponse)
@@ -147,7 +163,7 @@ namespace UniversalScanner
             byte[] headerBytes;
             IPEndPoint endpoint;
 
-            header = new mDNSHeader() { transactionID = 0, flags = 0, questions = ntohs(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
+            header = new mDNSHeader() { transactionID = 0, flags = 0, questions = NetworkUtils.ntohs(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
             query = buildQuery(queryString, queryType);
 
             headerBytes = header.GetBytes();
@@ -162,12 +178,12 @@ namespace UniversalScanner
             {
                 try
                 {
-                    traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                   Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
                     globalListener.udp.Send(data, data.Length, endpoint);
                 }
                 catch
                 {
-                    traceWriteLine(debugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
+                   Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
                 }
             }
 
@@ -177,14 +193,14 @@ namespace UniversalScanner
                 {
                     if (net.inUse)
                     {
-                        traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                       Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
                         }
                         catch
                         {
-                            traceWriteLine(debugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
+                           Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: mDNS.scan(): Unable to send data to {0}!", endpoint.ToString()));
                         }
                     }
                 }
@@ -202,15 +218,15 @@ namespace UniversalScanner
 
             if (data.Length <= headerSize)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: mDNS.reciever(): invalid packet size.");
-                traceWriteData(debugLevel.Warn, data);
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: mDNS.reciever(): invalid packet size.");
+                Logger.WriteData(Logger.DebugLevel.Warn, data);
                 return;
             }
 
             header = data.GetStruct<mDNSHeader>();
 
-            expectedQueries = ntohs(header.questions);
-            expectedAnwers = ntohs(header.authorityRRs) + ntohs(header.answerRRs) + ntohs(header.additionalRRs);
+            expectedQueries = NetworkUtils.ntohs(header.questions);
+            expectedAnwers = NetworkUtils.ntohs(header.authorityRRs) + NetworkUtils.ntohs(header.answerRRs) + NetworkUtils.ntohs(header.additionalRRs);
             if (expectedAnwers > 0)
             {
                 position = headerSize;
@@ -221,9 +237,9 @@ namespace UniversalScanner
                 }
                 catch (OverflowException ex)
                 {
-                    traceWriteLine(debugLevel.Warn, String.Format("Warning: mDNS.reciever(): packet parsing overflow at position 0x{0:X}!", position));
-                    traceWriteLine(debugLevel.Warn, ex.ToString());
-                    traceWriteData(debugLevel.Warn, data);
+                   Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: mDNS.reciever(): packet parsing overflow at position 0x{0:X}!", position));
+                   Logger.WriteLine(Logger.DebugLevel.Warn, ex.ToString());
+                    Logger.WriteData(Logger.DebugLevel.Warn, data);
                 }
             }
         }
@@ -238,7 +254,7 @@ namespace UniversalScanner
                 name = readString(data, ref position);
                 queryType = readUInt16(data, ref position);
                 questionClass = readUInt16(data, ref position);
-                traceWriteLine(debugLevel.Debug, String.Format("mDNS Query '{0}', type = {1}", name, queryType));
+               Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("mDNS Query '{0}', type = {1}", name, queryType));
 
                 expectedQueries--;
             }
@@ -276,13 +292,13 @@ namespace UniversalScanner
                         IPAddress ip;
                         ip = readAnswer_A(data, ref position, dataLen);
                         answers[answerIndex].data.typeA = ip;
-                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': IPv4 (A) = {1}", name, ip.ToString()));
+                       Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer for '{0}': IPv4 (A) = {1}", name, ip.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_PTR:
                         string domain;
                         domain = readAnswer_PTR(data, ref position, dataLen);
                         answers[answerIndex].data.typePTR = domain;
-                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Domain (PTR) = '{1}'", name, domain));
+                       Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer for '{0}': Domain (PTR) = '{1}'", name, domain));
                         break;
                     case (UInt16)mDNSType.TYPE_TXT:
                         string[] str;
@@ -290,23 +306,23 @@ namespace UniversalScanner
                         answers[answerIndex].data.typeTXT = str;
                         foreach (string t in str)
                         {
-                            traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Text (TXT) = '{1}'", name, t));
+                           Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer for '{0}': Text (TXT) = '{1}'", name, t));
                         }
                         break;
                     case (UInt16)mDNSType.TYPE_AAAA:
                         IPAddress ipv6;
                         ipv6 = readAnswer_AAAA(data, ref position, dataLen);
                         answers[answerIndex].data.typeAAAA = ipv6;
-                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
+                       Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer for {0}: IPv6 (AAAA) = {1}", name, ipv6.ToString()));
                         break;
                     case (UInt16)mDNSType.TYPE_SRV:
                         mDNSAnswerDataSRV srv;
                         srv = readAnswer_SRV(data, ref position, dataLen);
                         answers[answerIndex].data.typeSRV = srv;
-                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
+                       Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer for '{0}': Server (SRV) = '{1}:{2}'", name, srv.domain, srv.port));
                         break;
                     default:
-                        traceWriteLine(debugLevel.Debug, String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
+                       Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("* mDNS answer packet type {0} not implemented, parsing of this packet aborted!", answerType));
                         Array.Resize<mDNSAnswer>(ref answers, answerIndex);
                         goto readAnswers_abort;
                 }
@@ -329,11 +345,11 @@ namespace UniversalScanner
 
             if (dataLen != 4)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_A(): Invalid address size!");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: readAnswer_A(): Invalid address size!");
                 return IPAddress.Any;
             }
 
-            ipVal = ntohl(readUInt32(data, ref position));
+            ipVal = NetworkUtils.ntohl(readUInt32(data, ref position));
             return (new IPAddress(ipVal));
         }
 
@@ -343,7 +359,7 @@ namespace UniversalScanner
 
             if (dataLen != 16)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_AAAA(): Invalid address size!");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: readAnswer_AAAA(): Invalid address size!");
                 return IPAddress.Any;
             }
 
@@ -391,7 +407,7 @@ namespace UniversalScanner
             mDNSAnswerDataSRV result;
             if (dataLen < 6)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: readAnswer_SRV(): packet data size error!");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: readAnswer_SRV(): packet data size error!");
                 result = new mDNSAnswerDataSRV { priority = 0, weight = 0, port = 0, domain=null };
                 return result;
             }

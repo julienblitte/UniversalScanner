@@ -86,13 +86,13 @@ namespace UniversalScanner
                 m = url.Match(xml);
                 if (m.Success)
                 {
-                    traceWriteLine(debugLevel.Debug, "url: " + m.Groups[1].Value);
+                   Logger.WriteLine(Logger.DebugLevel.Debug, "url: " + m.Groups[1].Value);
                 }
 
             }
             catch (Exception)
             {
-                traceWriteLine(debugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
             }
 
             if (viewer != null && deviceModel != "" && deviceSerial != "")
