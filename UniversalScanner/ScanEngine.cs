@@ -35,23 +35,6 @@ namespace UniversalScanner
         protected bool closing = false;
         public bool isDisposed = false;
 
-        protected enum debugLevel { Fatal = 0, Error = 1, Warn = 2, Info = 3, Debug = 4 };
-#if DEBUG
-        protected readonly debugLevel currentDebugLevel = debugLevel.Debug;
-#else
-        protected readonly debugLevel currentDebugLevel = debugLevel.Info;
-#endif
-
-        // NetworkToHostOrder and HostToNetworkOrder are unsafe due type overload
-        // UInt64 ntohll(UInt64) and UInt64 htonll(UInt64) defined bellow
-        [DllImport("wsock32.dll")]
-        public static extern UInt32 ntohl(UInt32 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt32 htonl(UInt32 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt16 ntohs(UInt16 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt16 htons(UInt16 value);
 
         protected struct networkBundle
         {
@@ -68,31 +51,6 @@ namespace UniversalScanner
         public abstract int color { get; }
         public abstract string name { get; }
 
-        public static UInt64 htonll(UInt64 value)
-        {
-            if (htonl(1) != 1)
-            {
-                UInt32 high_part = htonl((UInt32)(value >> 32));
-                UInt32 low_part = htonl((UInt32)(value & 0xFFFFFFFF));
-                value = low_part;
-                value <<= 32;
-                value |= high_part;
-            }
-            return value;
-        }
-        public static UInt64 ntohll(UInt64 value)
-        {
-            if (ntohl(1) != 1)
-            {
-                UInt32 high_part = ntohl((UInt32)(value >> 32));
-                UInt32 low_part = ntohl((UInt32)(value & 0xFFFFFFFF));
-                value = low_part;
-                value <<= 32;
-                value |= high_part;
-            }
-            return value;
-        }
-
         public ScanEngine()
         {
             globalListener.inUse = false;
@@ -101,72 +59,6 @@ namespace UniversalScanner
 
         public abstract void scan();
 
-        protected void traceWriteData(debugLevel level, byte[] data, int threadId = 0)
-        {
-            string textFromData;
-            bool isBinary;
-            string[] lines;
-            StringBuilder result;
-            Regex binaryCharacters;
-
-            if (level > currentDebugLevel)
-            {
-                return;
-            }
-
-            if (threadId == 0)
-            {
-                threadId = Thread.CurrentThread.ManagedThreadId;
-            }
-
-            textFromData = "";
-            try
-            {
-                textFromData = Encoding.UTF8.GetString(data);
-                binaryCharacters = new Regex("[^\x20-\x7E\t\r\n]");
-                isBinary = binaryCharacters.IsMatch(textFromData);
-            }
-            catch
-            {
-                isBinary = true;
-            }
-
-            result = new StringBuilder();
-            if (isBinary)
-            {
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (i % 16 == 0 && i > 0)
-                    {
-                        result.AppendFormat("\n[{0,4}] ", threadId);
-                    }
-                    result.AppendFormat(" {0:X02}", (byte)data[i]);
-                }
-            }
-            else
-            {
-                lines = Regex.Split(textFromData, "\r\n|\r|\n");
-
-                foreach (string line in lines)
-                {
-                    result.AppendFormat("\n[{0,4}] {1}", threadId, line);
-                }
-
-            }
-
-            Trace.WriteLineIf(level <= currentDebugLevel, String.Format("[{0,4}] {1}", threadId, result.ToString()));
-        }
-
-        protected void traceWriteLine(debugLevel level, string line, int threadId = 0)
-        {
-            if (threadId == 0)
-            {
-                threadId = Thread.CurrentThread.ManagedThreadId;
-            }
-
-            Trace.WriteLineIf(level <= currentDebugLevel, String.Format("[{0,4}] {1}", threadId, line));
-        }
 
         public int listenUdpGlobal(int localPort = 0)
         {
@@ -174,7 +66,7 @@ namespace UniversalScanner
             {
                 if (!isFreeUdpPort(localPort))
                 {
-                    traceWriteLine(debugLevel.Info, String.Format("Error: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
+                   Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
                     return -1;
                 }
             }
@@ -196,7 +88,7 @@ namespace UniversalScanner
 
                 globalListener.inUse = true;
 
-                traceWriteLine(debugLevel.Info, String.Format("Listening on {0}...", globalListener.endPoint.ToString()), globalListener.thread.ManagedThreadId);
+               Logger.WriteLine(Logger.DebugLevel.Info, String.Format("Listening on {0}...", globalListener.endPoint.ToString()), globalListener.thread.ManagedThreadId);
             }
             catch
             {
@@ -239,7 +131,7 @@ namespace UniversalScanner
 
                     interfacesListerner[i].inUse = true;
 
-                    traceWriteLine(debugLevel.Info, String.Format("Listening on {0}...", interfacesListerner[i].endPoint.ToString()), interfacesListerner[i].thread.ManagedThreadId);
+                   Logger.WriteLine(Logger.DebugLevel.Info, String.Format("Listening on {0}...", interfacesListerner[i].endPoint.ToString()), interfacesListerner[i].thread.ManagedThreadId);
                 }
                 catch
                 {
@@ -288,7 +180,7 @@ namespace UniversalScanner
 
             if (interfacesListerner == null && !globalListener.inUse)
             {
-                traceWriteLine(debugLevel.Fatal, "Error: send(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+                Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: send(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
                 throw new InvalidOperationException("No opened sockets");
                 //return false;
             }
@@ -297,8 +189,8 @@ namespace UniversalScanner
 
             if (globalListener.inUse)
             {
-                traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
-                traceWriteData(debugLevel.Debug, data);
+                Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                Logger.WriteData(Logger.DebugLevel.Debug, data);
                 try
                 {
                     globalListener.udp.Send(data, data.Length, endpoint);
@@ -312,8 +204,8 @@ namespace UniversalScanner
                 {
                     if (net.inUse)
                     {
-                        traceWriteLine(debugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, data);
+                        Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                        Logger.WriteData(Logger.DebugLevel.Debug, data);
                         try
                         {
                             net.udp.Send(data, data.Length, endpoint);
@@ -348,7 +240,7 @@ namespace UniversalScanner
 
             if (!globalListener.inUse && interfacesListerner == null)
             {
-                traceWriteLine(debugLevel.Fatal, "Error: sendNetScan(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+               Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: sendNetScan(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
                 throw new InvalidOperationException("No opened sockets");
                 //return false;
             }
@@ -382,7 +274,7 @@ namespace UniversalScanner
 
             foreach (var net in addresses)
             {
-                if (isPrivateIPv4Network(net))
+                if (net.isPrivate())
                 {
                     IPAddress mask = getMaskOfAddressIPv4(net);
                     IPAddress[] subNetAddresses;
@@ -393,8 +285,8 @@ namespace UniversalScanner
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
 
-                        traceWriteLine(debugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, data);
+                       Logger.WriteLine(Logger.DebugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                        Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                         try
                         {
@@ -412,7 +304,7 @@ namespace UniversalScanner
 
             foreach (networkBundle net in interfacesListerner)
             {
-                if (net.inUse && isPrivateIPv4Network(net.endPoint.Address))
+                if (net.inUse && net.endPoint.Address.isPrivate())
                 {
                     IPAddress mask = getMaskOfAddressIPv4(net.endPoint.Address);
                     IPAddress[] subNetAddresses;
@@ -427,8 +319,8 @@ namespace UniversalScanner
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
 
-                        traceWriteLine(debugLevel.Fatal, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
-                        traceWriteData(debugLevel.Debug, data);
+                       Logger.WriteLine(Logger.DebugLevel.Fatal, String.Format("{0} -> {1}", net.endPoint.ToString(), endpoint.ToString()));
+                        Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                         try
                         {
@@ -456,13 +348,13 @@ namespace UniversalScanner
                 }
                 catch (Exception e)
                 {
-                    traceWriteLine(debugLevel.Debug, String.Format("Error while performing self test for protocol {0}", name));
-                    traceWriteLine(debugLevel.Debug, e.ToString());
+                   Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("Error while performing self test for protocol {0}", name));
+                   Logger.WriteLine(Logger.DebugLevel.Debug, e.ToString());
                 }
             }
             else
             {
-                traceWriteLine(debugLevel.Debug, String.Format("Warning: Self test file not found for protocol {0}: '{1}' is missing", name, filename));
+               Logger.WriteLine(Logger.DebugLevel.Debug, String.Format("Warning: Self test file not found for protocol {0}: '{1}' is missing", name, filename));
             }
         }
 
@@ -497,7 +389,7 @@ namespace UniversalScanner
             countFree = portsFree.Count();
             if (countFree == 0)
             {
-                traceWriteLine(debugLevel.Fatal, "Error: UdpFreePortProvider(): No free UDP port!");
+               Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: UdpFreePortProvider(): No free UDP port!");
                 throw new OverflowException();
             }
 
@@ -549,8 +441,8 @@ namespace UniversalScanner
             UInt32 addr, mask, first, last, len, i, current;
             IPAddress[] result;
 
-            addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
-            mask = ntohl(BitConverter.ToUInt32(subNetMask.GetAddressBytes(), 0));
+            addr = NetworkUtils.ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+            mask = NetworkUtils.ntohl(BitConverter.ToUInt32(subNetMask.GetAddressBytes(), 0));
 
             first = (addr & mask) + 1;
             last = (addr | ~mask) - 1;
@@ -570,31 +462,6 @@ namespace UniversalScanner
             }
 
             return result;
-        }
-
-        protected bool isPrivateIPv4Network(IPAddress address)
-        {
-            UInt32 addr, subNetPrivate, maskPrivate;
-
-            addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
-
-            subNetPrivate = 0xC0A80000; // 192.168.0.0/16
-            maskPrivate = 0xFFFF0000;
-            if ((addr & maskPrivate) == subNetPrivate) return true;
-
-            subNetPrivate = 0xAC100000; // 172.16.0.0/12
-            maskPrivate = 0xFFF00000;
-            if ((addr & maskPrivate) == subNetPrivate) return true;
-
-            subNetPrivate = 0x0A000000; // 10.0.0.0/8
-            maskPrivate = 0xFF000000;
-            if ((addr & maskPrivate) == subNetPrivate) return true;
-
-            subNetPrivate = 0xA9FE0000; // 169.254.0.0/16
-            maskPrivate = 0xFFFF0000;
-            if ((addr & maskPrivate) == subNetPrivate) return true;
-
-            return false;
         }
 
         private void unicastReciever()
@@ -625,10 +492,10 @@ namespace UniversalScanner
                 unicastUDP.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 unicastUDP.Client.Bind(localEP);
             }
-            catch
-
+            catch (Exception e)
             {
-                traceWriteLine(debugLevel.Error, String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", localEP.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", localEP.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, e.ToString());
                 return;
             }
 
@@ -641,8 +508,8 @@ namespace UniversalScanner
                 {
                     data = unicastUDP.Receive(ref distantEP);
 
-                    traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", localEP.ToString(), distantEP.ToString()));
-                    traceWriteData(debugLevel.Debug, data);
+                   Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} <- {1}", localEP.ToString(), distantEP.ToString()));
+                    Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                     reciever(distantEP, data);
                 }
@@ -678,21 +545,21 @@ namespace UniversalScanner
             }
             catch (Exception ex)
             {
-                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to enable option ReuseAddress for socket {0}!", multicastListener.endPoint.ToString()));
-                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): Unable to enable option ReuseAddress for socket {0}!", multicastListener.endPoint.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
             }
 
             foreach (var opt in multicastOption)
             {
-                traceWriteLine(debugLevel.Info, String.Format("Joining group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Info, String.Format("Joining group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
                 try
                 {
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, opt);
                 }
                 catch (Exception ex)
                 {
-                    traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to join group {0} on interface {1}!", opt.Group.ToString(), opt.LocalAddress.ToString()));
-                    traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+                   Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): Unable to join group {0} on interface {1}!", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                   Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
                 }
             }
 
@@ -702,8 +569,8 @@ namespace UniversalScanner
             }
             catch (Exception ex)
             {
-                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
-                traceWriteLine(debugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): Unable to bind {0}!", multicastListener.endPoint.ToString()));
+               Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: multicastReciever(): {0}", ex.ToString()));
                 return;
             }
 
@@ -716,8 +583,8 @@ namespace UniversalScanner
                 {
                     data = multicastListener.udp.Receive(ref distantEP);
 
-                    traceWriteLine(debugLevel.Info, String.Format("{0} <- {1}", multicastListener.endPoint.ToString(), distantEP.ToString()));
-                    traceWriteData(debugLevel.Debug, data);
+                   Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} <- {1}", multicastListener.endPoint.ToString(), distantEP.ToString()));
+                    Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                     reciever(distantEP, data);
                 }
@@ -727,7 +594,7 @@ namespace UniversalScanner
             {
                 try
                 {
-                    traceWriteLine(debugLevel.Info, String.Format("Leaving group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
+                   Logger.WriteLine(Logger.DebugLevel.Info, String.Format("Leaving group {0} on interface {1}", opt.Group.ToString(), opt.LocalAddress.ToString()));
                     multicastListener.udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, opt);
                 }
                 catch { }

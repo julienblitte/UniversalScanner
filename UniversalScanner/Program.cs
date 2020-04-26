@@ -19,7 +19,6 @@ namespace UniversalScanner
             ScanEngine[] engines;
             Dahua1 engineDahua1;
             Dahua2 engineDahua2;
-            mDNS engineMDNS;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -30,8 +29,6 @@ namespace UniversalScanner
             engineDahua2 = new Dahua2();
             // if Dahua1 is quirk mode, switch Dahua2 to quirk mode
             engineDahua2.quirk = engineDahua1.quirk;
-            //engineMDNS must be started before as it is used by other engine using mDNS
-            engineMDNS = new mDNS();
             
 
             engines = new ScanEngine[] {
@@ -40,9 +37,9 @@ namespace UniversalScanner
                 engineDahua1,
                 engineDahua2,
                 new Hikvision(),
-                new Axis(engineMDNS),
+                new Axis(),
                 new Bosch(),
-                new GoogleCast(engineMDNS),
+                new GoogleCast(),
                 new Hanwha(),
                 new Vivotek()
             };

@@ -28,9 +28,9 @@ namespace UniversalScanner
             }
         }
 
-        public Axis(mDNS broker)
+        public Axis()
         {
-            dnsBroker = broker;
+            dnsBroker = mDNS.getInstance();
 
             foreach(var d in domains)
             {

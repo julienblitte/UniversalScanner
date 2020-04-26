@@ -67,7 +67,7 @@ namespace UniversalScanner
 
             if (_quirk)
             {
-                traceWriteLine(debugLevel.Warn, "Warning: Using quirk mode for Dahua protocol v2");
+               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Using quirk mode for Dahua protocol v2");
                 sendNetScan(port);
             }
         }
@@ -106,7 +106,7 @@ namespace UniversalScanner
 
             header = new Dahua2Header {
                 headerSize = dtohl((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
-                headerMagic = ntohl(magic),
+                headerMagic = NetworkUtils.ntohl(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
                 packetSize1 = 0, 
@@ -146,13 +146,13 @@ namespace UniversalScanner
 
             if (dtohl(header.headerSize) != headerSize)
             {
-                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
+               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
             if (dtohl(header.packetSize1) != packetSize)
             {
-                traceWriteLine(debugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
+               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
                 return;
             }
 

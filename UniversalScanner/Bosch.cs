@@ -88,13 +88,13 @@ namespace UniversalScanner
 
                 binary = data.GetStruct<BoschBinaryResponse>();
 
-                if (ntohl(binary.magic) != magic)
+                if (NetworkUtils.ntohl(binary.magic) != magic)
                 {
-                    traceWriteLine(debugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
+                   Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
-                ip = ntohl(binary.ip);
+                ip = NetworkUtils.ntohl(binary.ip);
                 deviceIPStr = String.Format("{0}.{1}.{2}.{3}",
                     (byte)((ip >> 24) & 0xFF),
                     (byte)((ip >> 16) & 0xFF),
@@ -172,12 +172,12 @@ namespace UniversalScanner
             date = DateTime.UtcNow;
 
             request = new BoschRequest();
-            request.magic = htonl(magic);
-            request.transactionID = htonl((UInt32)
+            request.magic = NetworkUtils.htonl(magic);
+            request.transactionID = NetworkUtils.htonl((UInt32)
                 ((date.Hour << 24) | (date.Minute << 16) | 
                 (date.Second << 8) | (date.Millisecond / 10)
                 ));
-            request.requestMagic = htonl(requestMagic);
+            request.requestMagic = NetworkUtils.htonl(requestMagic);
 
             result = request.GetBytes();
 

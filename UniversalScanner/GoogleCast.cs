@@ -29,9 +29,9 @@ namespace UniversalScanner
             }
         }
 
-        public GoogleCast(mDNS broker)
+        public GoogleCast()
         {
-            dnsBroker = broker;
+            dnsBroker = mDNS.getInstance();
 
             dnsBroker.registerDomain(domain, googlecastDeviceFound);
         }
@@ -57,7 +57,7 @@ namespace UniversalScanner
             string deviceType, deviceID;
 
             ip = null;
-            deviceType = "Chromecast!";
+            deviceType = "unknown";
             deviceID = "unknown";
             foreach (var a in answers)
             {
