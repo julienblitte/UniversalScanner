@@ -28,8 +28,9 @@ This tool is delivered as it, without any warranty.
 * Google cast discovery protocol
 * Hanwha (Samsung) discovery protocol
 * Vivotek discovery protocol
+* Sony discovery protocol
 
 # Protocols currently in implementation
 * Panasonic discovery protocol
-* Sony discovery protocol
 * Flir discovery protocol
+* Ubiquiti discovery protocol
