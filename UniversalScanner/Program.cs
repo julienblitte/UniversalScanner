@@ -43,7 +43,8 @@ namespace UniversalScanner
 
                 new Hanwha(),
                 new Vivotek(),
-                new Sony()
+                new Sony(),
+                new Ubiquiti()
             };
             foreach(var engine in engines)
             {

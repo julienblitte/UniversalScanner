@@ -80,6 +80,7 @@
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
+    <Compile Include="Ubiquiti.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>
     </Compile>
