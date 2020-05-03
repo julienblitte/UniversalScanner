@@ -117,7 +117,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "ScannerWindow";
-            this.Text = "Universal Scanner";
+            this.Text = "Universal Scanner - debug axis-2020-05-02";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScannerWindow_FormClosed);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScannerWindow_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

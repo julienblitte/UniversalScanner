@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,10 +62,10 @@ namespace UniversalScanner
 
         public void axisDeviceFound(string domainFilter, mDNSAnswer[] answers)
         {
-            IPAddress ip;
+            List <IPAddress> addresses;
             string deviceModel, serial;
 
-            ip = null;
+            addresses = new List<IPAddress>();
             deviceModel = null;
             serial = null;
             foreach (var a in answers)
@@ -72,12 +73,10 @@ namespace UniversalScanner
                 switch (a.Type)
                 {
                     case mDNSType.TYPE_A:
-                        if (ip == null)
-                        {
-                            ip = a.data.typeA;
-                        }
+                        addresses.Add(a.data.typeA);
                         break;
                     case mDNSType.TYPE_AAAA:
+                        addresses.Add(a.data.typeAAAA);
                         break;
                     case mDNSType.TYPE_ANY:
                         break;
@@ -106,7 +105,7 @@ namespace UniversalScanner
                 }
             }
 
-            if (ip != null)
+            if (addresses.Count > 0)
             {
                 if (deviceModel == null) deviceModel = "unknown";
 
@@ -121,7 +120,13 @@ namespace UniversalScanner
                 }
 
                 if (serial == null) serial = "unknown";
-                viewer.deviceFound(name, 1, ip.ToString(), deviceModel, serial);
+                foreach (var ip in addresses)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        viewer.deviceFound(name, 1, ip.ToString(), deviceModel, serial);
+                    }
+                }
             }
         }
     }

@@ -66,6 +66,13 @@ namespace UniversalScanner
 
         private void scanButton_Click(object sender, EventArgs e)
         {
+#if DEBUG
+            if (MessageBox.Show(String.Format("This version is a debug version, it can unstable with lower performances.\n\n"
+                +"You might want to download the release version at:\n{0}\n\n"
+                +"Do you really want to continue?",
+                "https://github.com/julienblitte/UniversalScanner/releases"),"Debug version", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
+                == DialogResult.Yes)
+#endif
             scanEvent.Invoke();
         }
 
