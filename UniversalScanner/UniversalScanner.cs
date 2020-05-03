@@ -66,13 +66,6 @@ namespace UniversalScanner
 
         private void scanButton_Click(object sender, EventArgs e)
         {
-#if DEBUG
-            if (MessageBox.Show(String.Format("This version is a debug version, it can unstable with lower performances.\n\n"
-                +"You might want to download the release version at:\n{0}\n\n"
-                +"Do you really want to continue?",
-                "https://github.com/julienblitte/UniversalScanner/releases"),"Debug version", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
-                == DialogResult.Yes)
-#endif
             scanEvent.Invoke();
         }
 
@@ -348,6 +341,24 @@ namespace UniversalScanner
 
                 column.HeaderCell.SortGlyphDirection = (order > 0 ? SortOrder.Ascending : SortOrder.Descending);
             }
+        }
+
+        private void ScannerWindow_Load(object sender, EventArgs e)
+        {
+#if DEBUG
+            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+
+            if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
+                + "You might want to download the release version at:\n{0}\n\n"
+                + "Do you really want to continue?",
+                "https://github.com/julienblitte/UniversalScanner/releases"), "Debug version", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
+                != DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+
+            this.Text += " - debug " + versionInfo.Comments;
+#endif
         }
     }
 }
