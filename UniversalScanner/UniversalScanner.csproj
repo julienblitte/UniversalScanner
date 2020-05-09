@@ -78,6 +78,7 @@
     <Compile Include="mDNS.cs" />
     <Compile Include="MemoryUtils.cs" />
     <Compile Include="NetworkUtils.cs" />
+    <Compile Include="RegistryUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
     <Compile Include="UniversalScanner.cs">
