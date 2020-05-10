@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -66,21 +67,31 @@ namespace UniversalScanner
 
         private void scanButton_Click(object sender, EventArgs e)
         {
+            if (Config.clearOnRescan)
+            {
+                foundDeviceList.Clear();
+            }
             scanEvent.Invoke();
         }
 
-        public void deviceFound(string protocol, int version, string deviceIP, string deviceType, string deviceUUID)
+        public void deviceFound(string protocol, int version, IPAddress deviceIP, string deviceType, string deviceUUID)
         {
             if (IsDisposed)
                 return;
 
+            if (deviceIP.AddressFamily == AddressFamily.InterNetwork && !Config.enableIPv4)
+                return;
+
+            if (deviceIP.AddressFamily == AddressFamily.InterNetworkV6 && !Config.enableIPv6)
+                return;
+
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(() => addDevice(protocol, version, deviceIP, deviceType, deviceUUID)));
+                Invoke(new MethodInvoker(() => addDevice(protocol, version, deviceIP.ToString(), deviceType, deviceUUID)));
             }
             else
             {
-                addDevice(protocol, version, deviceIP, deviceType, deviceUUID);
+                addDevice(protocol, version, deviceIP.ToString(), deviceType, deviceUUID);
             }
         }
 
@@ -88,7 +99,17 @@ namespace UniversalScanner
         {
             DataRow[] existingRow;
 
-            existingRow = foundDeviceList.Select(String.Format("`{0}` = '{1}' AND `{2}` = '{3}'", ColumnNames[(int)Columns.Protocol], protocol, ColumnNames[(int)Columns.IPAddress], deviceIP));
+            if (Config.forceGenericProtocols)
+            {
+                // find same protocol and same address
+                existingRow = foundDeviceList.Select(String.Format("`{0}` = '{1}' AND `{2}` = '{3}'", ColumnNames[(int)Columns.Protocol], protocol, ColumnNames[(int)Columns.IPAddress], deviceIP));
+            }
+            else
+            {
+                // find only same address
+                existingRow = foundDeviceList.Select(String.Format("`{0}` = '{1}'", ColumnNames[(int)Columns.IPAddress], deviceIP));
+            }
+
             if (existingRow.Length == 0)
             {
                 foundDeviceList.Rows.Add(protocol, version, deviceIP, deviceType, deviceUUID);
@@ -99,12 +120,14 @@ namespace UniversalScanner
 
                 // device exists but with lower version, update it
                 existingVersion = existingRow[0].Field<int>((int)Columns.Version);
-                if (existingVersion < version)
+                if (version > existingVersion)
                 {
                     // protocol and IP Address already set
                     // update only Version, Type and UniqueId
                     existingRow[0].BeginEdit();
+                    existingRow[0][(int)Columns.Protocol] = protocol;
                     existingRow[0][(int)Columns.Version] = version;
+                    //existingRow[0][(int)Columns.IPAddress] = deviceIP;
                     existingRow[0][(int)Columns.Type] = deviceType;
                     existingRow[0][(int)Columns.UniqueId] = deviceUUID;
                     existingRow[0].EndEdit();
@@ -248,12 +271,11 @@ namespace UniversalScanner
             if (column.SortMode == DataGridViewColumnSortMode.Programmatic)
             {
                 int order;
-                Regex ipFormat;
+                IPAddress value;
                 int count;
                 UInt32[] cache;
                 int[] newOrder;
 
-                ipFormat = new Regex("^([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)\\.([0-9 ]+)$", RegexOptions.Compiled);
                 order = (column.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? -1 : 1);
 
                 count = foundDeviceList.Rows.Count;
@@ -263,21 +285,20 @@ namespace UniversalScanner
                 for (int i=0; i < count; i++)
                 {
                     string ip;
-                    Match m;
 
                     ip = foundDeviceList.Rows[i].Field<string>("IP address");
-                    m = ipFormat.Match(ip);
 
-                    if (m.Success)
+                    if (IPAddress.TryParse(ip, out value))
                     {
-                        cache[i] = UInt32.Parse(m.Groups[1].Value) << 24
-                            | UInt32.Parse(m.Groups[2].Value) << 16
-                            | UInt32.Parse(m.Groups[3].Value) << 8
-                            | UInt32.Parse(m.Groups[4].Value);
+                        byte[] valueBytes = value.GetAddressBytes();
+                        cache[i] = (UInt32)(valueBytes[0] << 24
+                            | valueBytes[1] << 16
+                            | valueBytes[2] << 8
+                            | valueBytes[3]);
                     }
                     else
                     {
-                        cache[i] = 0;
+                        cache[i] = 0xffffffff;
                     }
                 }
 
@@ -341,6 +362,27 @@ namespace UniversalScanner
 
                 column.HeaderCell.SortGlyphDirection = (order > 0 ? SortOrder.Ascending : SortOrder.Descending);
             }
+        }
+
+        private void ScannerWindow_Load(object sender, EventArgs e)
+        {
+#if DEBUG
+            if (Config.showDebugWarning)
+            {
+                var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+
+                if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
+                    + "You might want to download the release version at:\n{0}\n\n"
+                    + "Do you really want to continue?",
+                    "https://github.com/julienblitte/UniversalScanner/releases"), "Debug version", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
+                    != DialogResult.Yes)
+                {
+                    Application.Exit();
+                }
+
+                this.Text += " - debug " + versionInfo.Comments;
+            }
+#endif
         }
     }
 }

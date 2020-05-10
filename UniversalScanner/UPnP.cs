@@ -55,18 +55,15 @@ namespace UniversalScanner
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            string deviceIP, deviceType, deviceID;
+            string deviceType, deviceID;
             string server;
             string[] serverDetails;
             string body;
 
             body = Encoding.UTF8.GetString(data);
 
-
             server = extractHttpVar(body, "SERVER");
             serverDetails = splitServerDetails(server);
-
-            deviceIP = from.Address.ToString();
             
             if (serverDetails.Length > 0)
             {
@@ -79,9 +76,9 @@ namespace UniversalScanner
 
             deviceID = extractHttpVar(body, "USN");
 
-            if (viewer != null && deviceID != "")
+            if (viewer != null && deviceID != "" )
             {
-                viewer.deviceFound(name, 1, deviceIP, deviceType, extractUUID(deviceID));
+                viewer.deviceFound(name, 0, from.Address, deviceType, extractUUID(deviceID));
             }
         }
 

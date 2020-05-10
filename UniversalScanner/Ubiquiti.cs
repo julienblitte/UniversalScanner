@@ -38,7 +38,7 @@ namespace UniversalScanner
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            viewer.deviceFound(name, 1, from.Address.ToString(), "unkown", "unkown");
+            viewer.deviceFound(name, 1, from.Address, "unkown", "unkown");
         }
 
         public override void scan()

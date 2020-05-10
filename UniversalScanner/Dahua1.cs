@@ -20,9 +20,6 @@ namespace UniversalScanner
 
         protected const int port = 5050;
 
-        protected bool _quirk = false;
-        public bool quirk { get { return _quirk; } }
-
         public override int color
         {
             get
@@ -105,10 +102,8 @@ namespace UniversalScanner
         {
             if (listenUdpGlobal(port) == -1)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Dahua protocol v1: Failback to quirk mode");
-                _quirk = true;
-
-                listenUdpInterfaces();
+               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
+               listenUdpInterfaces();
             }
         }
 
@@ -158,7 +153,7 @@ namespace UniversalScanner
 
             UInt32 deviceIP;
 
-            string deviceIPStr, deviceModel, deviceSerial;
+            string deviceModel, deviceSerial;
             byte[] deviceTypeArray, deviceMacArray;
             byte[] section3Array;
 
@@ -175,13 +170,7 @@ namespace UniversalScanner
             }
 
             // IP Address
-            deviceIP = NetworkUtils.ntohl(section1.ip);
-            deviceIPStr = String.Format("{0}.{1}.{2}.{3}", 
-                (byte)((deviceIP >> 24) & 0xFF),
-                (byte)((deviceIP >> 16) & 0xFF),
-                (byte)((deviceIP >> 8) & 0xFF),
-                (byte)((deviceIP) & 0xFF)
-            );
+            deviceIP = dtohl(section1.ip);
 
             // device type
             deviceModel = Encoding.UTF8.GetString(section1.deviceType);
@@ -224,7 +213,7 @@ namespace UniversalScanner
                 }
             }
 
-            viewer.deviceFound(name, 1, deviceIPStr, deviceModel, deviceSerial);
+            viewer.deviceFound(name, 1, new IPAddress(deviceIP), deviceModel, deviceSerial);
         }
 
         Dictionary<string, string>parseSection3(byte[] data)

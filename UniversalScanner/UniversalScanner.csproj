@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="mDNS.cs" />
     <Compile Include="MemoryUtils.cs" />
     <Compile Include="NetworkUtils.cs" />
+    <Compile Include="RegistryUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
     <Compile Include="Ubiquiti.cs" />

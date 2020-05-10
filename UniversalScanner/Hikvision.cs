@@ -46,7 +46,8 @@ namespace UniversalScanner
         public override void reciever(IPEndPoint from, byte[] data)
         {
             string xml;
-            string deviceIP, deviceType, deviceSN;
+            string deviceIPv4, deviceIPv6, deviceType, deviceSN;
+            IPAddress ip;
 
             xml = Encoding.UTF8.GetString(data);
 
@@ -56,14 +57,33 @@ namespace UniversalScanner
             }
 
             deviceType = extractXMLString("DeviceDescription", xml);
-            deviceIP = extractXMLString("IPv4Address", xml);
-            if (deviceIP == null)
+            deviceIPv4 = extractXMLString("IPv4Address", xml);
+            deviceIPv6 = extractXMLString("IPv6Address", xml);
+
+            if (deviceIPv4 == null)
             {
-                deviceIP = from.Address.ToString();
+                deviceIPv4 = from.Address.ToString();
             }
             deviceSN = extractXMLString("DeviceSN", xml);
 
-            viewer.deviceFound(name, 1, deviceIP, deviceType, deviceSN);
+            if (!IPAddress.TryParse(deviceIPv4, out ip))
+            {
+                ip = from.Address;
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
+            }
+            viewer.deviceFound(name, 1, ip, deviceType, deviceSN);
+
+            if (deviceIPv6 != null)
+            {
+                if (IPAddress.TryParse(deviceIPv6, out ip))
+                {
+                    viewer.deviceFound(name, 1, ip, deviceType, deviceSN);
+                }
+                else
+                {
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
+                }
+            }
         }
 
         public override void scan()

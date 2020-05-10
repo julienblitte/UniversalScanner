@@ -238,14 +238,20 @@ namespace UniversalScanner
         {
             HanwhaHeader header;
             string deviceIP, deviceType, deviceSN;
+            IPAddress ip;
 
             header = data.GetStruct<HanwhaHeader>();
 
             deviceIP = Encoding.UTF8.GetString(header.ip_address);
             deviceType = Encoding.UTF8.GetString(header.device_type);
             deviceSN = Encoding.UTF8.GetString(header.mac_address);
-
-            viewer.deviceFound(name, 1, deviceIP, deviceType, deviceSN);
+            
+            if (!IPAddress.TryParse(deviceIP, out ip))
+            {
+                ip = from.Address;
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hawha.reciever(): Invalid ipv4 format: {0}", deviceIP));
+            }
+            viewer.deviceFound(name, 1, ip, deviceType, deviceSN);
         }
 
         public override void scan()

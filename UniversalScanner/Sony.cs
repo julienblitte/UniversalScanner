@@ -38,14 +38,14 @@ namespace UniversalScanner
         public override void reciever(IPEndPoint from, byte[] data)
         {
             string[] answerStringList;
-            string model, serial, mac, ip;
+            string model, serial, mac, ipv4;
 
             answerStringList = readPacket(data);
 
             model = null;
             serial = null;
             mac = null;
-            ip = null;
+            ipv4 = null;
 
             foreach (var line in answerStringList)
             {
@@ -68,13 +68,14 @@ namespace UniversalScanner
                     }
                     if (variable == "ipadr")
                     {
-                        ip = value;
+                        ipv4 = value;
                     }
                 }
             }
 
-            if (ip != null && model != null)
+            if (ipv4 != null && model != null)
             {
+                IPAddress ip;
                 if (serial == null)
                 {
                     serial = mac;
@@ -82,6 +83,12 @@ namespace UniversalScanner
                 if (serial == null)
                 {
                     serial = "unkonwn";
+                }
+
+                if (!IPAddress.TryParse(ipv4, out ip))
+                {
+                    ip = from.Address;
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Sony.reciever(): Invalid ipv4 format: {0}", ipv4));
                 }
                 viewer.deviceFound(name, 1, ip, model, serial);
             }

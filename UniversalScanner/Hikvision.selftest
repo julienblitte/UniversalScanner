@@ -7,7 +7,7 @@
 <CommandPort>8000</CommandPort>
 <HttpPort>80</HttpPort>
 <MAC>00-11-22-33-44-55</MAC>
-<IPv4Address>127.0.0.1</IPv4Address>
+<IPv4Address>127.0.72.107</IPv4Address>
 <IPv4SubnetMask>255.0.0.0</IPv4SubnetMask>
 <IPv4Gateway>127.0.0.1</IPv4Gateway>
 <IPv6Address>::</IPv6Address>
