@@ -65,7 +65,8 @@ namespace UniversalScanner
             int headerSize;
             int position;
 
-            string ip, model, mac;
+            string model, mac;
+            IPAddress IPv4;
 
             header = data.GetStruct<VivotekHeader>();
 
@@ -77,9 +78,9 @@ namespace UniversalScanner
                 return;
             }
 
-            ip = "";
             mac = "";
             model = "";
+            IPv4 = null;
 
             position = headerSize;
             while (position < data.Length)
@@ -94,10 +95,10 @@ namespace UniversalScanner
                        Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet");
                         return;
                     case (byte)VivotekValue.IPAddress:
-                        ip = String.Format("{0}.{1}.{2}.{3}", value[0], value[1], value[2], value[3]);
+                        IPv4 = new IPAddress(value);
                         break;
                     case (byte)VivotekValue.longName:
-                       Logger.WriteLine(Logger.DebugLevel.Debug, "longName");
+                        Logger.WriteLine(Logger.DebugLevel.Debug, "longName");
                         Logger.WriteData(Logger.DebugLevel.Debug, value);
                         break;
                     case (byte)VivotekValue.macAddress:
@@ -109,9 +110,9 @@ namespace UniversalScanner
                 }
             }
 
-            if (ip != "")
+            if (IPv4 != null)
             {
-                viewer.deviceFound(name, 1, ip, model, mac);
+                viewer.deviceFound(name, 1, IPv4, model, mac);
             }
         }
 

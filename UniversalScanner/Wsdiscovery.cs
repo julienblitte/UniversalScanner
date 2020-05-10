@@ -100,7 +100,7 @@ namespace UniversalScanner
 
             if (viewer != null && deviceModel != "" && deviceSerial != "")
             {
-                viewer.deviceFound(name, 1, from.Address.ToString(), deviceModel, deviceSerial);
+                viewer.deviceFound(name, 0, from.Address, deviceModel, deviceSerial);
             }
         }
 

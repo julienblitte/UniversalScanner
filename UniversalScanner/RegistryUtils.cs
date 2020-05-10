@@ -23,13 +23,13 @@ namespace UniversalScanner
             return result;
         }
 
-        public static string readString(this RegistryKey key, string variable)
+        public static string readString(this RegistryKey key, string variable, string defaultValue = "")
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(String))
-                return "";
+                return defaultValue;
 
             return (string)result;
         }
@@ -39,13 +39,13 @@ namespace UniversalScanner
             key.SetValue(variable, value, RegistryValueKind.String);
         }
 
-        public static byte[] readBinary(this RegistryKey key, string variable)
+        public static byte[] readBinary(this RegistryKey key, string variable, byte[] defaultValue = null)
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(byte[]))
-                return new byte[0];
+                return (defaultValue != null ? defaultValue : new byte[0]);
 
             return (byte[])result;
         }
@@ -55,29 +55,39 @@ namespace UniversalScanner
             key.SetValue(variable, value, RegistryValueKind.Binary);
         }
 
-        public static int readInteger(this RegistryKey key, string variable)
+        public static int readInt(this RegistryKey key, string variable, int defaultValue = 0)
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(Int32))
-                return 0;
+                return defaultValue;
 
             return (int)result;
         }
 
-        public static void writeInteger(this RegistryKey key, string variable, int value)
+        public static void writeInt(this RegistryKey key, string variable, int value)
         {
             key.SetValue(variable, value, RegistryValueKind.DWord);
         }
 
-        public static bool readBool(this RegistryKey key, string variable)
+        public static uint readUInt(this RegistryKey key, string variable, uint defaultValue = 0)
+        {
+            return (uint)readInt(key, variable, (int)defaultValue);
+        }
+
+        public static void writeUInt(this RegistryKey key, string variable, uint value)
+        {
+            writeInt(key, variable, (int)value);
+        }
+
+        public static bool readBool(this RegistryKey key, string variable, bool defaultValue = false)
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(Int32))
-                return false;
+                return defaultValue;
 
             return ((int)result) != 0;
         }
@@ -87,13 +97,13 @@ namespace UniversalScanner
             key.SetValue(variable, (value ? 1 : 0), RegistryValueKind.DWord);
         }
 
-        public static long readLong(this RegistryKey key, string variable)
+        public static long readLong(this RegistryKey key, string variable, long defaultValue = 0)
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(Int64))
-                return 0;
+                return defaultValue;
 
             return (long)result;
         }
@@ -103,13 +113,23 @@ namespace UniversalScanner
             key.SetValue(variable, value, RegistryValueKind.QWord);
         }
 
-        public static string[] readText(this RegistryKey key, string variable)
+        public static ulong readULong(this RegistryKey key, string variable, ulong defaultValue = 0)
+        {
+            return (ulong)readLong(key, variable, (long)defaultValue);
+        }
+
+        public static void writeULong(this RegistryKey key, string variable, ulong value)
+        {
+            writeLong(key, variable, (long)value);
+        }
+
+        public static string[] readText(this RegistryKey key, string variable, string[] defaultValue = null)
         {
             object result;
 
             result = key.GetValue(variable);
             if (result == null || result.GetType() != typeof(String[]))
-                return new string[0];
+                return (defaultValue == null ? defaultValue : new string[0]);
 
             return (string[])result;
         }

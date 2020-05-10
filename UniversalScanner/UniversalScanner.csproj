@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />

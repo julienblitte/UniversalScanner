@@ -19,9 +19,6 @@ namespace UniversalScanner
         protected new string multicastIP = "239.255.255.251";
         protected int port = 37810;
 
-        protected bool _quirk = false;
-        public bool quirk { set { _quirk = value; } }
-
         protected const UInt32 magic = 0x44484950;
 
         public override int color
@@ -64,12 +61,6 @@ namespace UniversalScanner
             selfTest("Dahua2.selftest");
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
-
-            if (_quirk)
-            {
-               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Using quirk mode for Dahua protocol v2");
-                sendNetScan(port);
-            }
         }
 
         private UInt32 dtohl(UInt32 value)
@@ -139,6 +130,7 @@ namespace UniversalScanner
             byte[] body;
             int headerSize, packetSize;
             string method;
+            IPAddress ip;
 
             headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size;
 
@@ -165,7 +157,8 @@ namespace UniversalScanner
             method = extractJsonString("method", bodyStr);
             if (method == "client.notifyDevInfo")
             {
-                string deviceModel, deviceIP, deviceSerial;
+                string deviceModel, deviceIPv4, deviceIPv6, deviceSerial;
+                string IPv4Section, IPv6Section;
 
                 deviceModel = extractJsonString("DeviceType", bodyStr);
                 if (deviceModel == null)
@@ -173,10 +166,26 @@ namespace UniversalScanner
                     deviceModel = "Dahua";
                 }
 
-                deviceIP = extractJsonString("IPAddress", bodyStr);
-                if (deviceIP == null)
+                IPv4Section = extractJsonSection("IPv4Address", bodyStr);
+                deviceIPv4 = extractJsonString("IPAddress", IPv4Section);
+                if (deviceIPv4 == null)
                 {
-                    deviceIP = from.Address.ToString();
+                    deviceIPv4 = from.Address.ToString();
+                }
+
+                deviceIPv6 = null;
+                IPv6Section = extractJsonSection("IPv6Address", bodyStr);
+                if (IPv6Section != null)
+                {
+                    deviceIPv6 = extractJsonString("IPAddress", IPv6Section);
+                    if (deviceIPv6 != null)
+                    {
+                        int sub = deviceIPv6.IndexOfAny(new char[] { '/', '\\' });
+                        if (sub > 0)
+                        {
+                            deviceIPv6 = deviceIPv6.Substring(0, sub - 1);
+                        }
+                    }
                 }
 
                 deviceSerial = extractJsonString("SerialNo", bodyStr);
@@ -189,8 +198,41 @@ namespace UniversalScanner
                     deviceSerial = "Dahua device";
                 }
 
-                viewer.deviceFound(name, 2, deviceIP, deviceModel, deviceSerial);
+
+                if (!IPAddress.TryParse(deviceIPv4, out ip))
+                {
+                    ip = from.Address;
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
+                }
+                viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
+
+                if (deviceIPv6 != null)
+                {
+                    if (IPAddress.TryParse(deviceIPv6, out ip))
+                    {
+                        viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
+                    }
+                    else
+                    {
+                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv4));
+                    }
+                }
             }
+        }
+
+        private string extractJsonSection(string key, string json)
+        {
+            Regex reg;
+            Match m;
+
+            reg = new Regex(String.Format("\"{0}\" *: *({1}[^{2}]*{2})", key, "\\{", "\\}"));
+            m = reg.Match(json);
+            if (m.Success)
+            {
+                return m.Groups[1].Value;
+            }
+
+            return null;
         }
 
         private string extractJsonString(string key, string json)

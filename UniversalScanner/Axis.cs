@@ -120,11 +120,51 @@ namespace UniversalScanner
                 }
 
                 if (serial == null) serial = "unknown";
-                foreach (var ip in addresses)
+
+                deviceFound(name, 1, addresses, deviceModel, serial);
+            }
+        }
+
+        private void deviceFound(string protocol, int version, List<IPAddress> addresses, string deviceModel, string serial)
+        {
+            bool hasNonAutoIPv4, hasNonAutoIPv6;
+
+            hasNonAutoIPv4 = false;
+            hasNonAutoIPv6 = false;
+            foreach (var ip in addresses)
+            {
+                if (!ip.isAutoConf())
+                {
+                    viewer.deviceFound(protocol, version, ip, deviceModel, serial);
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        hasNonAutoIPv4 = true;
+                    }
+                    if (ip.AddressFamily == AddressFamily.InterNetworkV6)
+                    {
+                        hasNonAutoIPv6 = true;
+                    }
+                }
+            }
+
+            // handle auto-conf addresses
+            foreach (var ip in addresses)
+            {
+                if (ip.isAutoConf())
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
                     {
-                        viewer.deviceFound(name, 1, ip.ToString(), deviceModel, serial);
+                        if (!hasNonAutoIPv4 || Config.forceZeroConf)
+                        {
+                            viewer.deviceFound(protocol, version, ip, deviceModel, serial);
+                        }
+                    }
+                    if (ip.AddressFamily == AddressFamily.InterNetworkV6)
+                    {
+                        if (!hasNonAutoIPv6 || Config.forceLinkLocal)
+                        {
+                            viewer.deviceFound(protocol, version, ip, deviceModel, serial);
+                        }
                     }
                 }
             }

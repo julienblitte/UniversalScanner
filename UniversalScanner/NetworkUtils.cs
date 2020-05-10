@@ -97,5 +97,40 @@ namespace UniversalScanner
             }
             return false;
         }
+
+        // check if zeroconf (ipv4) or link-local (ipv6)
+        public static bool isAutoConf(this IPAddress address)
+        {
+            UInt32 addr, subNetPrivate, maskPrivate;
+            byte[] addr6;
+
+            switch (address.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+                    addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+
+                    subNetPrivate = 0xA9FE0000; // 169.254.0.0/16
+                    maskPrivate = 0xFFFF0000;
+                    if ((addr & maskPrivate) == subNetPrivate) return true;
+                    break;
+                case AddressFamily.InterNetworkV6:
+                    addr6 = address.GetAddressBytes();
+
+                    // let's work only on first 32 bits as masks are very wide
+                    if (addr6.Length != 16)
+                        break;
+
+                    addr = (UInt32)((addr6[0] << 24)
+                         | (addr6[1] << 16)
+                         | (addr6[2] << 8)
+                         | (addr6[3]));
+
+                    subNetPrivate = 0xFE800000;   // fe80::/10
+                    maskPrivate = 0xFFC00000;
+                    if ((addr & maskPrivate) == subNetPrivate) return true;
+                    break;
+            }
+            return false;
+        }
     }
 }
