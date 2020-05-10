@@ -19,7 +19,9 @@ namespace UniversalScanner
             + " xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\""
             + " xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\""
             + " xmlns:d=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\""
-            + " xmlns:p=\"http://schemas.xmlsoap.org/ws/2006/02/devprof\">"
+            + " xmlns:w=\"http://schemas.xmlsoap.org/ws/2006/02/devprof\""
+            + " xmlns:o=\"http://www.onvif.org/ver10/device/wsdl\""
+            + ">"
             + "<s:Header>"
             + "<a:Action s:mustUnderstand=\"1\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</a:Action>"
             + "<a:MessageID>urn:uuid:{0}</a:MessageID>"
@@ -30,7 +32,7 @@ namespace UniversalScanner
             + "</s:Header>"
             + "<s:Body>"
             + "<d:Probe>"
-            + "<d:Types>p:Device</d:Types>"
+            + "<d:Types>w:Device o:Device</d:Types>"
             + "</d:Probe>"
             + "</s:Body>"
             + "</s:Envelope>";
@@ -52,6 +54,7 @@ namespace UniversalScanner
 
         public Wsdiscovery()
         {
+            listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
         }
 
@@ -86,18 +89,18 @@ namespace UniversalScanner
                 m = url.Match(xml);
                 if (m.Success)
                 {
-                   Logger.WriteLine(Logger.DebugLevel.Debug, "url: " + m.Groups[1].Value);
+                    // find all url
                 }
 
             }
             catch (Exception)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
+                Logger.WriteLine(Logger.DebugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
             }
 
             if (viewer != null && deviceModel != "" && deviceSerial != "")
             {
-                viewer.deviceFound(name, 1, from.Address.ToString(), deviceModel, deviceSerial);
+                viewer.deviceFound(name, 0, from.Address, deviceModel, deviceSerial);
             }
         }
 
@@ -124,7 +127,7 @@ namespace UniversalScanner
             {
                 USN = USN.Substring(4);
             }
-           
+            
             if (USN.StartsWith("uuid:"))
             {
                 USN = USN.Substring(5);
@@ -136,10 +139,10 @@ namespace UniversalScanner
         private string removeNameSpace(string value)
         {
             Regex xmlns;
-            
-            xmlns = new Regex("[a-zA-Z_][a-zA-Z_0-9-]+:");
 
-            return xmlns.Replace(value, "");        
+            xmlns = new Regex("[a-zA-Z_][a-zA-Z_0-9-]*:");
+
+            return xmlns.Replace(value, "");
         }
     }
 }

@@ -53,7 +53,7 @@ namespace UniversalScanner
             [FieldOffset(8)] public MacAddress mac;
             [FieldOffset(14)] public byte _0D_value;
             [FieldOffset(15)] public byte _0E_value;
-            [FieldOffset(16)] public UInt32 ip;
+            [FieldOffset(16)] public UInt32 ipv4;
             [FieldOffset(20)] public UInt32 mask;
             [FieldOffset(24)] public UInt32 gateway;
             [FieldOffset(28)] public byte _1C_value;
@@ -76,9 +76,22 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
+        private UInt32 btohl(UInt32 value)
+        {
+            if (!BitConverter.IsLittleEndian)
+            {
+                value = value << 24
+                    | ((value << 8) & 0x00ff0000)
+                    | ((value >> 8) & 0x0000ff00)
+                    | (value >> 24);
+            }
+
+            return value;
+        }
+
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            string deviceIPStr, deviceModel, deviceSerial;
+            string deviceModel, deviceSerial;
 
             // xml is much bigger
             if (data.Length == typeof(BoschBinaryResponse).StructLayoutAttribute.Size)
@@ -94,38 +107,42 @@ namespace UniversalScanner
                     return;
                 }
 
-                ip = NetworkUtils.ntohl(binary.ip);
-                deviceIPStr = String.Format("{0}.{1}.{2}.{3}",
-                    (byte)((ip >> 24) & 0xFF),
-                    (byte)((ip >> 16) & 0xFF),
-                    (byte)((ip >> 8) & 0xFF),
-                    (byte)((ip) & 0xFF)
-                );
+                ip = btohl(binary.ipv4);
 
                 deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
                                             binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
 
                 deviceModel = name;
 
-                viewer.deviceFound(name, 1, deviceIPStr, deviceModel, deviceSerial);
+                viewer.deviceFound(name, 1, new IPAddress(ip), deviceModel, deviceSerial);
             }
             else
             {
                 string xml;
-                Regex type, ip, mac, serial;
+                string deviceIPv4Str, deviceIPv6Str;
+                Regex type, ipv4, ipv6, mac, serial;
                 Match m;
+                IPAddress ip;
 
                 xml = Encoding.UTF8.GetString(data);
                 type = new Regex("<friendlyName>([^<]*)</friendlyName>");
-                ip = new Regex("<unitIPAddress>([^<]*)</unitIPAddress>");
+                ipv4 = new Regex("<unitIPAddress>([^<]*)</unitIPAddress>");
+                ipv6 = new Regex("<unitIPv6Address>([^<]*)</unitIPv6Address>");
                 mac = new Regex("<physAddress>([^<]*)</physAddress>");
                 serial = new Regex("<serialNumber>([^<]*)</serialNumber>");
 
-                deviceIPStr = "";
-                m = ip.Match(xml);
+                deviceIPv4Str = "";
+                m = ipv4.Match(xml);
                 if (m.Success)
                 {
-                    deviceIPStr = m.Groups[1].Value;
+                    deviceIPv4Str = m.Groups[1].Value;
+                }
+
+                deviceIPv6Str = "";
+                m = ipv6.Match(xml);
+                if (m.Success)
+                {
+                    deviceIPv6Str = m.Groups[1].Value;
                 }
 
                 deviceModel = "";
@@ -150,7 +167,21 @@ namespace UniversalScanner
                     }
                 }
 
-                viewer.deviceFound(name, 2, deviceIPStr, deviceModel, deviceSerial);
+                if (!IPAddress.TryParse(deviceIPv4Str, out ip))
+                {
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv4 format: {0}", deviceIPv4Str));
+                    ip = from.Address;
+                }
+                viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
+
+                if (IPAddress.TryParse(deviceIPv6Str, out ip))
+                {
+                    viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
+                }
+                else
+                {
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv6 format: {0}", deviceIPv6Str));
+                }
             }
         }
 

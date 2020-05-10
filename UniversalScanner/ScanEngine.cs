@@ -17,7 +17,7 @@ namespace UniversalScanner
     public delegate void scan();
     public interface ScannerViewer
     {
-        void deviceFound(string protocol, int version, string deviceIP, string deviceType, string serial);
+        void deviceFound(string protocol, int version, IPAddress deviceIP, string deviceType, string serial);
         event scan scanEvent;
         void formatProtocol(string protocol, int color);
     }
@@ -334,6 +334,8 @@ namespace UniversalScanner
 
         public void selfTest(string filename=null)
         {
+            IPAddress source;
+
             if (filename == null)
             {
                 filename = String.Format("{0}.selftest", name);
@@ -341,10 +343,19 @@ namespace UniversalScanner
 
             if (File.Exists(filename))
             {
+                if (filename.Length > 2)
+                {
+                    source = new IPAddress(new byte[] { 127, 0, (byte)filename[0], (byte)filename[1] });
+                }
+                else
+                {
+                    source = IPAddress.Loopback;
+                }
+
                 try
                 {
                     var content = File.ReadAllBytes(filename);
-                    reciever(new IPEndPoint(IPAddress.Loopback, 1024), content);
+                    reciever(new IPEndPoint(source, 1024), content);
                 }
                 catch (Exception e)
                 {

@@ -53,10 +53,11 @@ namespace UniversalScanner
 
         public void googlecastDeviceFound(string domainFilter, mDNSAnswer[] answers)
         {
-            IPAddress ip;
+            IPAddress ipv4, ipv6;
             string deviceType, deviceID;
 
-            ip = null;
+            ipv4 = null;
+            ipv6 = null;
             deviceType = "unknown";
             deviceID = "unknown";
             foreach (var a in answers)
@@ -64,12 +65,16 @@ namespace UniversalScanner
                 switch (a.Type)
                 {
                     case mDNSType.TYPE_A:
-                        if (ip == null)
+                        if (ipv4 == null)
                         {
-                            ip = a.data.typeA;
+                            ipv4 = a.data.typeA;
                         }
                         break;
                     case mDNSType.TYPE_AAAA:
+                        if (ipv6 == null)
+                        {
+                            ipv6 = a.data.typeA;
+                        }
                         break;
                     case mDNSType.TYPE_ANY:
                         break;
@@ -110,9 +115,13 @@ namespace UniversalScanner
                 }
             }
 
-            if (ip != null)
+            if (ipv4 != null)
             {
-                viewer.deviceFound(name, 1, ip.ToString(), deviceType, deviceID);
+                viewer.deviceFound(name, 1, ipv4, deviceType, deviceID);
+            }
+            if (ipv6 != null)
+            {
+                viewer.deviceFound(name, 1, ipv6, deviceType, deviceID);
             }
         }
     }

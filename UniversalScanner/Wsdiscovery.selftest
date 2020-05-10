@@ -15,7 +15,7 @@
 </a:EndpointReference>
 <d:Types>Virtual tds:Device</d:Types>
 <d:Scopes></d:Scopes>
-<d:XAddrs>http://127.0.01/ http://[::1]/</d:XAddrs>
+<d:XAddrs>http://127.0.0.1/ http://[::1]/</d:XAddrs>
 <d:MetadataVersion>2</d:MetadataVersion>
 </d:ProbeMatch>
 </d:ProbeMatches>

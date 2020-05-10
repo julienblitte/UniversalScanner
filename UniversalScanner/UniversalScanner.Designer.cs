@@ -119,6 +119,7 @@
             this.Name = "ScannerWindow";
             this.Text = "Universal Scanner";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScannerWindow_FormClosed);
+            this.Load += new System.EventHandler(this.ScannerWindow_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScannerWindow_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.rightClickMenu.ResumeLayout(false);

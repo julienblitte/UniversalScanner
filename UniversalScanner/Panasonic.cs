@@ -181,7 +181,7 @@ namespace UniversalScanner
 
             if (model != null && ip != null)
             {
-                viewer.deviceFound(name, 1, ip.ToString(), model, String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}",
+                viewer.deviceFound(name, 1, ip, model, String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}",
                     macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]));
             }
         }
