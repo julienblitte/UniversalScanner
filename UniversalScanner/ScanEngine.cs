@@ -62,12 +62,22 @@ namespace UniversalScanner
 
         public int listenUdpGlobal(int localPort = 0)
         {
+            bool reuseAddress = false;
+
             if (localPort != 0)
             {
                 if (!isFreeUdpPort(localPort))
                 {
-                   Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
-                    return -1;
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
+                    if (Config.portSharing)
+                    {
+                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Trying to share the port {0}...", localPort));
+                        reuseAddress = true;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
             }
             else
@@ -81,6 +91,11 @@ namespace UniversalScanner
                 globalListener.udp = new UdpClient();
                 globalListener.udp.EnableBroadcast = true;
                 globalListener.endPoint = new IPEndPoint(IPAddress.Any, localPort);
+
+                if (reuseAddress)
+                {
+                    globalListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                }
 
                 // start unicast reciever on main interface
                 globalListener.thread = new Thread(unicastReciever);
@@ -507,7 +522,7 @@ namespace UniversalScanner
             {
                Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", localEP.ToString()));
                Logger.WriteLine(Logger.DebugLevel.Error, e.ToString());
-                return;
+               return;
             }
 
             while (!closing)

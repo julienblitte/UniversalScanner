@@ -16,6 +16,7 @@ namespace UniversalScanner
         private static readonly string forceGenericProtocolsVariable = "ForceGenericProtocols";
         private static readonly string clearOnRescanVariable = "ClearOnRescan";
         private static readonly string showDebugWarningVariable = "ShowDebugWarning";
+        private static readonly string portSharingVariable = "PortSharing";
 
         public static bool enableIPv6;
         public static bool forceLinkLocal;
@@ -24,6 +25,7 @@ namespace UniversalScanner
         public static bool forceGenericProtocols;
         public static bool clearOnRescan;
         public static bool showDebugWarning;
+        public static bool portSharing;
         
         private static readonly string path = @"Software\UniversalScanner";
 
@@ -39,6 +41,7 @@ namespace UniversalScanner
             forceGenericProtocols = false;
             clearOnRescan = false;
             showDebugWarning = true;
+            portSharing = true;
 
             key = Registry.CurrentUser.openOrCreate(path);
             if (key != null)
@@ -63,6 +66,9 @@ namespace UniversalScanner
                 
                 showDebugWarning = key.readBool(showDebugWarningVariable, showDebugWarning);
                 key.writeBool(showDebugWarningVariable, showDebugWarning);
+
+                portSharing = key.readBool(portSharingVariable, portSharing);
+                key.writeBool(portSharingVariable, portSharing);
             }
         }
     }
