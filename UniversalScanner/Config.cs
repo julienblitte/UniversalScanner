@@ -9,15 +9,6 @@ namespace UniversalScanner
 {
     public static class Config
     {
-        private static readonly string enableIPv6Variable = "EnableIPv6";
-        private static readonly string forceLinkLocalVariable = "ForceLinkLocal";
-        private static readonly string enableIPv4Variable = "EnableIPv4";
-        private static readonly string forceZeroConfVariable = "ForceZeroConf";
-        private static readonly string forceGenericProtocolsVariable = "ForceGenericProtocols";
-        private static readonly string clearOnRescanVariable = "ClearOnRescan";
-        private static readonly string showDebugWarningVariable = "ShowDebugWarning";
-        private static readonly string portSharingVariable = "PortSharing";
-
         public static bool enableIPv6;
         public static bool forceLinkLocal;
         public static bool enableIPv4;
@@ -26,7 +17,8 @@ namespace UniversalScanner
         public static bool clearOnRescan;
         public static bool showDebugWarning;
         public static bool portSharing;
-        
+        public static bool onvifVerbatim;
+
         private static readonly string path = @"Software\UniversalScanner";
 
         static Config()
@@ -42,33 +34,37 @@ namespace UniversalScanner
             clearOnRescan = false;
             showDebugWarning = true;
             portSharing = true;
+            onvifVerbatim = false;
 
             key = Registry.CurrentUser.openOrCreate(path);
             if (key != null)
             {
-                enableIPv6 = key.readBool(enableIPv6Variable, enableIPv6);
-                key.writeBool(enableIPv6Variable, enableIPv6);
+                enableIPv6 = key.readBool(nameof(enableIPv6), enableIPv6);
+                key.writeBool(nameof(enableIPv6), enableIPv6);
 
-                forceLinkLocal = key.readBool(forceLinkLocalVariable, forceLinkLocal);
-                key.writeBool(forceLinkLocalVariable, forceLinkLocal);
+                forceLinkLocal = key.readBool(nameof(forceLinkLocal), forceLinkLocal);
+                key.writeBool(nameof(forceLinkLocal), forceLinkLocal);
                 
-                enableIPv4 = key.readBool(enableIPv4Variable, enableIPv4);
-                key.writeBool(enableIPv4Variable, enableIPv4);
+                enableIPv4 = key.readBool(nameof(enableIPv4), enableIPv4);
+                key.writeBool(nameof(enableIPv4), enableIPv4);
                 
-                forceZeroConf = key.readBool(forceZeroConfVariable, forceZeroConf);
-                key.writeBool(forceZeroConfVariable, forceZeroConf);
+                forceZeroConf = key.readBool(nameof(forceZeroConf), forceZeroConf);
+                key.writeBool(nameof(forceZeroConf), forceZeroConf);
                 
-                forceGenericProtocols = key.readBool(forceGenericProtocolsVariable, forceGenericProtocols);
-                key.writeBool(forceGenericProtocolsVariable, forceGenericProtocols);
+                forceGenericProtocols = key.readBool(nameof(forceGenericProtocols), forceGenericProtocols);
+                key.writeBool(nameof(forceGenericProtocols), forceGenericProtocols);
                 
-                clearOnRescan = key.readBool(clearOnRescanVariable, clearOnRescan);
-                key.writeBool(clearOnRescanVariable, clearOnRescan);
+                clearOnRescan = key.readBool(nameof(clearOnRescan), clearOnRescan);
+                key.writeBool(nameof(clearOnRescan), clearOnRescan);
                 
-                showDebugWarning = key.readBool(showDebugWarningVariable, showDebugWarning);
-                key.writeBool(showDebugWarningVariable, showDebugWarning);
+                showDebugWarning = key.readBool(nameof(showDebugWarning), showDebugWarning);
+                key.writeBool(nameof(showDebugWarning), showDebugWarning);
 
-                portSharing = key.readBool(portSharingVariable, portSharing);
-                key.writeBool(portSharingVariable, portSharing);
+                portSharing = key.readBool(nameof(portSharing), portSharing);
+                key.writeBool(nameof(portSharing), portSharing);
+
+                onvifVerbatim = key.readBool(nameof(onvifVerbatim), onvifVerbatim);
+                key.writeBool(nameof(onvifVerbatim), onvifVerbatim);
             }
         }
     }

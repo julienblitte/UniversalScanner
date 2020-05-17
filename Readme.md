@@ -34,3 +34,14 @@ This tool is delivered as it, without any warranty.
 * Panasonic discovery protocol
 * Flir discovery protocol
 * Ubiquiti discovery protocol
+
+# Advanced tweaking
+Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
+-----------------------------|---------------------------------------------------------------
+value                        | description
+-----------------------------|---------------------------------------------------------------
+```clearOnRescan```          | clear the list of found device each scan
+```enableIPv6```             | enables ipv6 for protocols supporting it
+```forceGenericProtocols```  | shows all protocols found on each device
+```forceZeroConf```          | shows ZeroConf secondary ip address of device 
+```onvifVerbatim```          | failback to ONVIF Device Manager dump for WSDiscovery payload

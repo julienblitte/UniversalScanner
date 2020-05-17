@@ -37,6 +37,21 @@ namespace UniversalScanner
             + "</s:Body>"
             + "</s:Envelope>";
 
+        private string verbatim = "<s:Envelope"
+            + " xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\""
+            + " xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\""
+            + ">"
+            + "<s:Header>"
+            + "<a:Action s:mustUnderstand=\"1\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</a:Action>"
+            + "<a:MessageID>uuid:f686768c-3e60-4f9c-a344-0769929d665c</a:MessageID>"
+            + "<a:ReplyTo><a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address></a:ReplyTo>"
+            + "<a:To s:mustUnderstand=\"1\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</a:To>"
+            + "</s:Header><s:Body><Probe xmlns=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\">"
+            + "<d:Types xmlns:d=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\" xmlns:dp0=\"http://www.onvif.org/ver10/network/wsdl\">dp0:NetworkVideoTransmitter</d:Types>"
+            + "</Probe>"
+            + "</s:Body>"
+            + "</s:Envelope>";
+
         public override int color
         {
             get
@@ -54,6 +69,12 @@ namespace UniversalScanner
 
         public Wsdiscovery()
         {
+            if (Config.onvifVerbatim)
+            {
+                announce = verbatim;
+                Logger.WriteLine(Logger.DebugLevel.Warn, "Using WSDiscovery ONVIF verbatim payload");
+            }
+
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
         }
