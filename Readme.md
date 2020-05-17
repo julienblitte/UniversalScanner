@@ -37,7 +37,7 @@ This tool is delivered as it, without any warranty.
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
------------------------------|---------------------------------------------------------------
+
 value                        | description
 -----------------------------|---------------------------------------------------------------
 ```clearOnRescan```          | clear the list of found device each scan
