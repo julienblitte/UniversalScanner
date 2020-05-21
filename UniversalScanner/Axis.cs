@@ -11,7 +11,7 @@ namespace UniversalScanner
 {
     class Axis : ScanEngine
     {
-        protected mDNS dnsBroker;
+        private mDNS dnsBroker;
         private static readonly string[] domains = { "_axis-nvr._tcp.local", "_axis-video._tcp.local" };
 
         public override int color

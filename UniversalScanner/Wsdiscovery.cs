@@ -12,7 +12,7 @@ namespace UniversalScanner
     class Wsdiscovery : ScanEngine
     {
         private const int port = 3702;
-        private new readonly string multicastIP = "239.255.255.250";
+        private readonly string multicastIP = "239.255.255.250";
 
         private Guid message_uuidg;
         private string announce = "<s:Envelope"

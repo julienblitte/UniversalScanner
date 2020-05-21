@@ -48,11 +48,11 @@ namespace UniversalScanner
 
     class mDNS : ScanEngine
     {
-        protected new string multicastIP = "224.0.0.251";
-        protected int port = 5353;
+        private readonly string multicastIP = "224.0.0.251";
+        private const int port = 5353;
 
-        protected static mDNS globalInstance = null;
-        protected static object locker = new Object();
+        private static mDNS globalInstance = null;
+        private static object locker = new Object();
 
         public override int color
         {
@@ -71,7 +71,7 @@ namespace UniversalScanner
 
         public delegate void mDNSResponse_Action(string domainFilter, mDNSAnswer[] answers);
 
-        protected Dictionary<string, mDNSResponse_Action> resolutionTable;
+        private Dictionary<string, mDNSResponse_Action> resolutionTable;
 
         private UInt16 mDNSQuestionClass = 0x0001;
 

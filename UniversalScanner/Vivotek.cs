@@ -11,9 +11,9 @@ namespace UniversalScanner
 {
     class Vivotek : ScanEngine
     {
-        protected const int port = 10000;
-        protected const UInt32 magic = 0x4a5d8f1c;
-        protected byte sessionCounter;
+        private const int port = 10000;
+        private const UInt32 magic = 0x4a5d8f1c;
+        private byte sessionCounter;
 
         public override int color
         {

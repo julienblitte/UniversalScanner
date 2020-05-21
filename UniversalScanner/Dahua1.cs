@@ -15,10 +15,10 @@ namespace UniversalScanner
 {
     class Dahua1 : ScanEngine
     {
-        protected const UInt16 magicQuery = 0x01a3;
-        protected const UInt16 magicResponse = 0x00b3;
+        private const int port = 5050;
 
-        protected const int port = 5050;
+        private const UInt16 requestMagic = 0x01a3;
+        private const UInt16 answerMagic = 0x00b3;
 
         public override int color
         {
@@ -93,7 +93,7 @@ namespace UniversalScanner
             [FieldOffset(116)] public UInt32 _74_value;
         }
 
-        protected byte[] discover = {
+        private byte[] discover = {
             0xa3, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         };
@@ -164,7 +164,7 @@ namespace UniversalScanner
             // section 1:
             section1 = data.GetStruct<Dahua1Section1>();
 
-            if (dtohl(section1.headerMagic) != magicResponse)
+            if (dtohl(section1.headerMagic) != answerMagic)
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace UniversalScanner
             viewer.deviceFound(name, 1, new IPAddress(deviceIP), deviceModel, deviceSerial);
         }
 
-        Dictionary<string, string>parseSection3(byte[] data)
+        private Dictionary<string, string> parseSection3(byte[] data)
         {
             Dictionary<string, string> result;
             string str;

@@ -24,11 +24,11 @@ namespace UniversalScanner
 
     public abstract class ScanEngine : IDisposable
     {
-        protected IPAddress multicastIP;
-        protected int multicastPort = 0;
+        private IPAddress multicastIP;
+        private int multicastPort = 0;
 
-        protected Thread scannerThread = null;
-        protected int scannerPort = 0;
+        private Thread scannerThread = null;
+        private int scannerPort = 0;
 
         protected ScannerViewer viewer = null;
 
