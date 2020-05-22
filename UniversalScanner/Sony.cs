@@ -10,10 +10,10 @@ namespace UniversalScanner
 {
     class Sony : ScanEngine
     {
-        protected const int port = 2380;
-        protected const byte marker_start = 0x02;
-        protected const byte marker_end = 0x03;
-        protected const byte marker_EOS = 0xff;
+        private const int port = 2380;
+        private const byte marker_start = 0x02;
+        private const byte marker_end = 0x03;
+        private const byte marker_EOS = 0xff;
 
         public override string name
         {

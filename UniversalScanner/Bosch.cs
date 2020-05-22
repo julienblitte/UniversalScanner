@@ -14,10 +14,11 @@ namespace UniversalScanner
 {
     class Bosch : ScanEngine
     {
-        protected int port = 1757;
+        private const int requestPort = 1757;
+        private const int answerPort = 1758;
 
-        protected UInt32 magic = 0x9939a427;
-        protected UInt32 requestMagic = 0xff0006de;
+        private const UInt32 requestMagic = 0xff0006de;
+        private const UInt32 answerMagic = 0x9939a427;
 
         public override string name
         {
@@ -46,7 +47,7 @@ namespace UniversalScanner
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
-        public struct BoschBinaryResponse
+        public struct BoschBinaryAnswer
         {
             [FieldOffset(0)] public UInt32 magic;
             [FieldOffset(4)] public UInt32 transactionID;
@@ -72,7 +73,7 @@ namespace UniversalScanner
 
         public Bosch()
         {
-            listenUdpGlobal(1758);
+            listenUdpGlobal(answerPort);
             listenUdpInterfaces();
         }
 
@@ -94,14 +95,14 @@ namespace UniversalScanner
             string deviceModel, deviceSerial;
 
             // xml is much bigger
-            if (data.Length == typeof(BoschBinaryResponse).StructLayoutAttribute.Size)
+            if (data.Length == typeof(BoschBinaryAnswer).StructLayoutAttribute.Size)
             {
-                BoschBinaryResponse binary;
+                BoschBinaryAnswer binary;
                 UInt32 ip;
 
-                binary = data.GetStruct<BoschBinaryResponse>();
+                binary = data.GetStruct<BoschBinaryAnswer>();
 
-                if (NetworkUtils.ntohl(binary.magic) != magic)
+                if (NetworkUtils.ntohl(binary.magic) != answerMagic)
                 {
                    Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
@@ -191,7 +192,7 @@ namespace UniversalScanner
             selfTest("Bosch.bin.selftest");
             selfTest("Bosch.xml.selftest");
 #endif
-            sendBroadcast(port);
+            sendBroadcast(requestPort);
         }
 
         public override byte[] sender(IPEndPoint dest)
@@ -203,7 +204,7 @@ namespace UniversalScanner
             date = DateTime.UtcNow;
 
             request = new BoschRequest();
-            request.magic = NetworkUtils.htonl(magic);
+            request.magic = NetworkUtils.htonl(answerMagic);
             request.transactionID = NetworkUtils.htonl((UInt32)
                 ((date.Hour << 24) | (date.Minute << 16) | 
                 (date.Second << 8) | (date.Millisecond / 10)

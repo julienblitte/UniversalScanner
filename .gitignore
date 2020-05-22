@@ -1,5 +1,3 @@
 .vs
-UniversalScanner/bin/*
-UniversalScanner/obj/*
-selftest2pcap/bin/*
-selftest2pcap/obj/*
+bin
+obj

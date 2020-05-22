@@ -367,10 +367,9 @@ namespace UniversalScanner
         private void ScannerWindow_Load(object sender, EventArgs e)
         {
 #if DEBUG
+            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
             if (Config.showDebugWarning)
             {
-                var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
                     + "You might want to download the release version at:\n{0}\n\n"
                     + "Do you really want to continue?",
@@ -379,9 +378,8 @@ namespace UniversalScanner
                 {
                     Application.Exit();
                 }
-
-                this.Text += " - debug " + versionInfo.Comments;
             }
+            this.Text += " - debug " + versionInfo.Comments;
 #endif
         }
     }

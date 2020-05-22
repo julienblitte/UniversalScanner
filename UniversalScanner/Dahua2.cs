@@ -16,10 +16,10 @@ namespace UniversalScanner
 {
     class Dahua2 : ScanEngine
     {
-        protected new string multicastIP = "239.255.255.251";
-        protected int port = 37810;
+        private readonly string multicastIP = "239.255.255.251";
+        private const int port = 37810;
 
-        protected const UInt32 magic = 0x44484950;
+        private const UInt32 magic = 0x44484950;
 
         public override int color
         {
@@ -61,6 +61,7 @@ namespace UniversalScanner
             selfTest("Dahua2.selftest");
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
+            sendBroadcast(port);
         }
 
         private UInt32 dtohl(UInt32 value)

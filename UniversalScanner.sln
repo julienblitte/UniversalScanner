@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalScanner", "UniversalScanner\UniversalScanner.csproj", "{6A0EAAE3-897B-4472-A692-CA0B08E09CD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "selftest2pcap", "selftest2pcap\selftest2pcap.csproj", "{6127A446-FAC5-4A53-8F0A-01C32F657DFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "selftest2pcap", "selftest2pcap\selftest2pcap.csproj", "{6127A446-FAC5-4A53-8F0A-01C32F657DFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "scannerTemplate", "scannerTemplate\scannerTemplate.csproj", "{32E255E4-8C44-470F-911A-E29729DCFA8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6127A446-FAC5-4A53-8F0A-01C32F657DFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6127A446-FAC5-4A53-8F0A-01C32F657DFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6127A446-FAC5-4A53-8F0A-01C32F657DFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32E255E4-8C44-470F-911A-E29729DCFA8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E255E4-8C44-470F-911A-E29729DCFA8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E255E4-8C44-470F-911A-E29729DCFA8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E255E4-8C44-470F-911A-E29729DCFA8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

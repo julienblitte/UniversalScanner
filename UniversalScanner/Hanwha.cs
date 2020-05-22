@@ -11,8 +11,8 @@ namespace UniversalScanner
 {
     class Hanwha : ScanEngine
     {
-        protected int port = 7701;
-        protected int answerPort = 7711;
+        private const int answerPort = 7711;
+        private const int requestPort = 7701;
 
         public override int color
         {
@@ -259,7 +259,7 @@ namespace UniversalScanner
 #if DEBUG
             selfTest();
 #endif
-            sendBroadcast(port);
+            sendBroadcast(requestPort);
         }
 
         public override byte[] sender(IPEndPoint dest)
