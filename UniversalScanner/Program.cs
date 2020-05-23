@@ -35,7 +35,7 @@ namespace UniversalScanner
                 new Hanwha(),
                 new Vivotek(),
                 new Sony(),
-                new _360vision()
+                new _360Vision()
             };
             foreach(var engine in engines)
             {

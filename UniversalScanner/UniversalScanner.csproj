@@ -67,7 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="360vision.cs" />
+    <Compile Include="360Vision.cs" />
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
@@ -107,7 +107,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="360vision.selftest">
+    <None Include="360Vision.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Axis.selftest">
