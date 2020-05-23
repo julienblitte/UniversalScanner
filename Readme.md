@@ -12,7 +12,7 @@ All protocols are analysed by reverse engineering in territory of French Republi
 All trademarks are the property of their respective owners.
 
 # Warranty
-This tool is delivered as it, without any warranty.
+This tool is delivered as it, without any warranty. If you want specific support, or specific version, contact me.
 
 # Protocols supported
 ## Generic protocols
@@ -29,6 +29,7 @@ This tool is delivered as it, without any warranty.
 * Hanwha (Samsung) discovery protocol
 * Vivotek discovery protocol
 * Sony discovery protocol
+* 360Vision discovery protocol
 
 # Protocols currently in implementation
 * Panasonic discovery protocol
@@ -45,3 +46,7 @@ value                        | description
 ```forceGenericProtocols```  | shows all protocols found on each device
 ```forceZeroConf```          | shows ZeroConf secondary ip address of device 
 ```onvifVerbatim```          | failback to ONVIF Device Manager dump for WSDiscovery payload
+
+# Participate
+If you own some device that are currently in the implementation list, you can contact me if you want to help for technical tests.
+If you want to propose a new protocol, you can send me relevant data following this [procedure](https://github.com/julienblitte/UniversalScanner/blob/master/doc/Collect%20data%20for%20new%20protocol.docx).
