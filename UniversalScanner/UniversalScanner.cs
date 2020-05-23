@@ -156,13 +156,18 @@ namespace UniversalScanner
 
         private void aboutButton_Click(object sender, EventArgs e)
         {
-            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+            FileVersionInfo versionInfo;
+            DateTime buildDate;
+
+            versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+
+            buildDate = new DateTime(2000, 1, 1)
+                                    .AddDays(versionInfo.FileBuildPart).AddSeconds(versionInfo.FilePrivatePart * 2);
 
             MessageBox.Show(this,
-                String.Format("{0} {1}.{2}\nBuild date {3:0000}-{4:00}-{5:00}\n\nCopyright {6}\n\n{7}",
+                String.Format("{0} {1}.{2}\nBuild date {3}\n\nCopyright {4}\n\n{5}",
                     versionInfo.ProductName, versionInfo.FileMajorPart, versionInfo.FileMinorPart,
-                    versionInfo.ProductBuildPart, (versionInfo.ProductPrivatePart / 100), (versionInfo.ProductPrivatePart % 100),
-                    versionInfo.LegalCopyright,
+                    buildDate, versionInfo.LegalCopyright,
                     "Program under GNU Lesser General Public License 3.0,\nmore information at https://www.gnu.org/licenses/lgpl-3.0.html"
                 ), "About");
         }
@@ -379,7 +384,7 @@ namespace UniversalScanner
                     Application.Exit();
                 }
             }
-            this.Text += " - debug " + versionInfo.Comments;
+            this.Text += " - Debug version " + versionInfo.ProductVersion;
 #endif
         }
     }
