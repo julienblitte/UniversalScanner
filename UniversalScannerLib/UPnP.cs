@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
     public class UPnP : ScanEngine
     {

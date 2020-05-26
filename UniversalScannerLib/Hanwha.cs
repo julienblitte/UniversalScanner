@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Hanwha : ScanEngine
+    public class Hanwha : ScanEngine
     {
         private const int answerPort = 7711;
         private const int requestPort = 7701;

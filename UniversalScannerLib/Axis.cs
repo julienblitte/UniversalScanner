@@ -7,9 +7,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Axis : ScanEngine
+    public class Axis : ScanEngine
     {
         private mDNS dnsBroker;
         private static readonly string[] domains = { "_axis-nvr._tcp.local", "_axis-video._tcp.local" };

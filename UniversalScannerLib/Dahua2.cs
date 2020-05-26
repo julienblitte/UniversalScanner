@@ -10,11 +10,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Dahua2 : ScanEngine
+    public class Dahua2 : ScanEngine
     {
         private readonly string multicastIP = "239.255.255.251";
         private const int port = 37810;

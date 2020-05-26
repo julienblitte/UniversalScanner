@@ -8,9 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Hikvision : ScanEngine
+    public class Hikvision : ScanEngine
     {
         private readonly string multicastIP = "239.255.255.250";
         private const int port = 37020;
@@ -38,9 +38,13 @@ namespace UniversalScanner
         
         public static string getAssemblyUUID()
         {
+            //TODO: Return lib uuid
+            /*
             var assembly = typeof(Program).Assembly;
             var attribute = (GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute), true)[0];
             return attribute.Value;
+            */
+            return System.Guid.NewGuid().ToString();
         }
 
         public override void reciever(IPEndPoint from, byte[] data)

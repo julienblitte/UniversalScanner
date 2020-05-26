@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
     public enum mDNSType : UInt16
     {
@@ -46,7 +46,7 @@ namespace UniversalScanner
         public string domain;
     }
 
-    class mDNS : ScanEngine
+    public class mDNS : ScanEngine
     {
         private readonly string multicastIP = "224.0.0.251";
         private const int port = 5353;

@@ -1,0 +1,28 @@
+name: .NET Core
+
+on:
+  push
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    
+    - name: Install dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build -c Release UniversalScannerService
+    
+#     - name: Upload a Build Artifact
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: app-release
+#         path: app-release
