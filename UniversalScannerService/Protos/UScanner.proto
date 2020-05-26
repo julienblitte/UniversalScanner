@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package UScanner;
+
+service UScannerService {
+  rpc GetFoundDevcies (DeviceFilter) returns (DeviceList);
+}
+
+message DeviceFilter {
+}
+
+message DeviceModel {
+    string protocol = 1;
+    int32 version = 2;
+    string deviceIP = 3;
+    string deviceType = 4;
+    string serial = 5;
+}
+
+message DeviceList {
+    repeated DeviceModel list = 1;
+}

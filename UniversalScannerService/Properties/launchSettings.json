@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "UniversalScannerService": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:4028",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
