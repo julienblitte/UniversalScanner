@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "selftest2pcap", "selftest2p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scannerTemplate", "scannerTemplate\scannerTemplate.csproj", "{CA2EBD82-FF40-4A5B-AEC6-D95104D159EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalScannerUI", "UniversalScannerUI\UniversalScannerUI.csproj", "{027983CA-4016-490B-813D-E43B04457467}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,5 +77,17 @@ Global
 		{CA2EBD82-FF40-4A5B-AEC6-D95104D159EF}.Release|x64.Build.0 = Release|Any CPU
 		{CA2EBD82-FF40-4A5B-AEC6-D95104D159EF}.Release|x86.ActiveCfg = Release|Any CPU
 		{CA2EBD82-FF40-4A5B-AEC6-D95104D159EF}.Release|x86.Build.0 = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|x64.Build.0 = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Debug|x86.Build.0 = Debug|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|x64.ActiveCfg = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|x64.Build.0 = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|x86.ActiveCfg = Release|Any CPU
+		{027983CA-4016-490B-813D-E43B04457467}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
