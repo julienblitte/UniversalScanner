@@ -7,9 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class _360Vision : ScanEngine
+    public class _360Vision : ScanEngine
     {
         protected int port = 3600;
 

@@ -6,9 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Sony : ScanEngine
+    public class Sony : ScanEngine
     {
         private const int port = 2380;
         private const byte marker_start = 0x02;

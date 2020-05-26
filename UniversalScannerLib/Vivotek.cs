@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Vivotek : ScanEngine
+    public class Vivotek : ScanEngine
     {
         private const int port = 10000;
         private const UInt32 magic = 0x4a5d8f1c;

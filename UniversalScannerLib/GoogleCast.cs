@@ -7,9 +7,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class GoogleCast : ScanEngine
+    public class GoogleCast : ScanEngine
     {
         private mDNS dnsBroker;
         private static readonly string domain = "_googlecast._tcp.local";

@@ -10,9 +10,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Bosch : ScanEngine
+    public class Bosch : ScanEngine
     {
         private const int requestPort = 1757;
         private const int answerPort = 1758;

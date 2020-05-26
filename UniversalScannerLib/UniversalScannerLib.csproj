@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="self-tests\360Vision.selftest" />
+    <None Remove="self-tests\Axis.selftest" />
+    <None Remove="self-tests\Bosch.bin.selftest" />
+    <None Remove="self-tests\Bosch.xml.selftest" />
+    <None Remove="self-tests\Dahua1.selftest" />
+    <None Remove="self-tests\Dahua2.selftest" />
+    <None Remove="self-tests\Hanwha.selftest" />
+    <None Remove="self-tests\Hikvision.selftest" />
+    <None Remove="self-tests\Sony.selftest" />
+    <None Remove="self-tests\UPnP.selftest" />
+    <None Remove="self-tests\Vivotek.selftest" />
+    <None Remove="self-tests\Wsdiscovery.selftest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="self-tests\360Vision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Axis.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Bosch.bin.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Dahua1.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Dahua2.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Hanwha.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Hikvision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Sony.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\UPnP.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Vivotek.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="self-tests\Wsdiscovery.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

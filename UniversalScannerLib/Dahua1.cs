@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Drawing;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Dahua1 : ScanEngine
+    public class Dahua1 : ScanEngine
     {
         private const int port = 5050;
 

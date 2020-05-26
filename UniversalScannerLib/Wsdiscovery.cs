@@ -7,9 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
-    class Wsdiscovery : ScanEngine
+    public class Wsdiscovery : ScanEngine
     {
         private const int port = 3702;
         private readonly string multicastIP = "239.255.255.250";

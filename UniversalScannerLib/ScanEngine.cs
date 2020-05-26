@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UniversalScanner
+namespace UniversalScannerLib
 {
     public delegate void scan();
     public interface ScannerViewer
@@ -353,7 +353,7 @@ namespace UniversalScanner
 
             if (filename == null)
             {
-                filename = String.Format("{0}.selftest", name);
+                filename = String.Format("self-tests\\{0}.selftest", name);
             }
 
             if (File.Exists(filename))
