@@ -80,6 +80,7 @@
     <Compile Include="mDNS.cs" />
     <Compile Include="MemoryUtils.cs" />
     <Compile Include="NetworkUtils.cs" />
+    <Compile Include="NiceVision.cs" />
     <Compile Include="RegistryUtils.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
@@ -140,6 +141,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="NiceVision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Sony.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
