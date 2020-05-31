@@ -129,6 +129,9 @@ namespace UniversalScanner
         {
             bool hasNonAutoIPv4, hasNonAutoIPv6;
 
+            if (viewer == null)
+                return;
+
             hasNonAutoIPv4 = false;
             hasNonAutoIPv6 = false;
             foreach (var ip in addresses)

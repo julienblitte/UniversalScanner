@@ -56,6 +56,9 @@ namespace UniversalScanner
             IPAddress ipv4, ipv6;
             string deviceType, deviceID;
 
+            if (viewer == null)
+                return;
+
             ipv4 = null;
             ipv6 = null;
             deviceType = "unknown";

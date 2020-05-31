@@ -30,6 +30,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Vivotek discovery protocol
 * Sony discovery protocol
 * 360Vision discovery protocol
+* NiceVision discovery protocol
 
 # Protocols currently in implementation
 * Panasonic discovery protocol
