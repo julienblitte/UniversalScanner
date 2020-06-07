@@ -17,8 +17,8 @@ namespace UniversalScanner
     {
         private const int port = 5050;
 
-        private const UInt16 requestMagic = 0x01a3;
-        private const UInt16 answerMagic = 0x00b3;
+        private const byte requestMagic = 0xa3;
+        private const byte answerMagic = 0xb3;
 
         public override int color
         {
@@ -59,9 +59,11 @@ namespace UniversalScanner
         [StructLayout(LayoutKind.Explicit, Size = 120, CharSet = CharSet.Ansi)]
         public struct Dahua1Section1
         {
-            [FieldOffset(0)] public UInt16 headerMagic;   // 0x00b3 for answer, 0x01a3 fo discovery
+            [FieldOffset(0)] public byte headerMagic;   // 0xb3 for answer, 0xa3 fo discovery
+            [FieldOffset(1)] public byte _01_value;
             /* not 4-bytes aligned */
-            [FieldOffset(2)] public UInt16 section2Len;
+            [FieldOffset(2)] public byte section2Len;
+            [FieldOffset(3)] public byte _03_value;
             [FieldOffset(4)] public UInt32 _04_value;      // 0x58 for answer, 0x00 for discovery
             [FieldOffset(8)] public UInt32 _08_reserved;
             [FieldOffset(12)] public UInt32 _0C_reserved;
@@ -103,8 +105,8 @@ namespace UniversalScanner
             if (listenUdpGlobal(port) == -1)
             {
                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
-               listenUdpInterfaces();
             }
+            listenUdpInterfaces();
         }
 
         public override void scan()
@@ -146,37 +148,53 @@ namespace UniversalScanner
         public override void reciever(IPEndPoint from, byte[] data)
         {
             Dahua1Section1 section1;
-            UInt16 section2Len;
+            int section1Len;
+            byte section2Len;
             UInt16 section3Len;
 
             int deviceMacSize;
 
-            UInt32 deviceIP;
+            UInt32 deviceIPv4;
 
-            string deviceModel, deviceSerial;
+            string deviceModel, deviceSerial, deviceIPv6;
             byte[] deviceTypeArray, deviceMacArray;
             byte[] section3Array;
 
             int index;
 
+            section1Len = Marshal.SizeOf(typeof(Dahua1Section1));
+
             deviceMacSize = 17; // "00:11:22:33:44:55".Length()
 
             // section 1:
+            if (data.Length < Marshal.SizeOf(typeof(Dahua1Section1)))
+            {
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid packet size (less than section1) from {0}", from.ToString()));
+                return;
+            }
+
             section1 = data.GetStruct<Dahua1Section1>();
 
-            if (dtohl(section1.headerMagic) != answerMagic)
+            if (section1.headerMagic != answerMagic)
             {
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Wrong header magic recieved from {0}", from.ToString()));
                 return;
             }
 
             // IP Address
-            deviceIP = dtohl(section1.ip);
+            deviceIPv4 = dtohl(section1.ip);
 
             // device type
             deviceModel = Encoding.UTF8.GetString(section1.deviceType);
 
-            section2Len = dtohs(section1.section2Len);
+            section2Len = section1.section2Len;
             section3Len = dtohs(section1.section3Len);
+
+            if (section1Len + section2Len + section3Len != data.Length)
+            {
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Packet has wrong size = {0} (expected was {1})", data.Length, section1Len + section2Len + section3Len));
+                return;
+            }
 
             // section 2:
             // mac Address
@@ -198,6 +216,7 @@ namespace UniversalScanner
             }
 
             // section 3:
+            deviceIPv6 = null;
             if (section3Len > 0)
             {
                 Dictionary<string, string> values;
@@ -206,14 +225,42 @@ namespace UniversalScanner
                 Array.Copy(data, index, section3Array, 0, section3Array.Length);
                 index += section3Array.Length;
 
-                values = parseSection3(data);
+                values = parseSection3(section3Array);
                 if (values.ContainsKey("SerialNo"))
                 {
                     deviceSerial = values["SerialNo"];
                 }
+                if (values.ContainsKey("IPv6Addr"))
+                {
+                    deviceIPv6 = values["IPv6Addr"];
+                    if (deviceIPv6.Contains(';'))
+                    {
+                        var IPv6Split = deviceIPv6.Split(';');
+                        deviceIPv6 = IPv6Split[0];
+                    }
+                    if (deviceIPv6.Contains('/'))
+                    {
+                        var IPv6Split = deviceIPv6.Split('/');
+                        deviceIPv6 = IPv6Split[0];
+                    }
+                }
             }
 
-            viewer.deviceFound(name, 1, new IPAddress(deviceIP), deviceModel, deviceSerial);
+            viewer.deviceFound(name, 1, new IPAddress(deviceIPv4), deviceModel, deviceSerial);
+
+            if (deviceIPv6 != null)
+            {
+                IPAddress ip;
+                if (IPAddress.TryParse(deviceIPv6, out ip))
+                {
+                    viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
+                }
+                else
+                {
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
+                }
+            }
+
         }
 
         private Dictionary<string, string> parseSection3(byte[] data)
@@ -233,7 +280,19 @@ namespace UniversalScanner
                 s = l.IndexOf(':');
                 if (s >= 0)
                 {
-                    result.Add(l.Substring(0, s), l.Substring(s+1));
+                    string key, value;
+
+                    key = l.Substring(0, s);
+                    value = l.Substring(s+1);
+
+                    if (!result.ContainsKey(key))
+                    {
+                        result.Add(key, value);
+                    }
+                    else
+                    {
+                        result[key] = value;
+                    }
                 }
             }
 

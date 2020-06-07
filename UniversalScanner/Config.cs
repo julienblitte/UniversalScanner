@@ -18,6 +18,7 @@ namespace UniversalScanner
         public static bool showDebugWarning;
         public static bool portSharing;
         public static bool onvifVerbatim;
+        public static bool dahuaNetScan;
 
         private static readonly string path = @"Software\UniversalScanner";
 
@@ -35,6 +36,7 @@ namespace UniversalScanner
             showDebugWarning = true;
             portSharing = true;
             onvifVerbatim = false;
+            dahuaNetScan = false;
 
             key = Registry.CurrentUser.openOrCreate(path);
             if (key != null)
@@ -65,6 +67,9 @@ namespace UniversalScanner
 
                 onvifVerbatim = key.readBool(nameof(onvifVerbatim), onvifVerbatim);
                 key.writeBool(nameof(onvifVerbatim), onvifVerbatim);
+
+                dahuaNetScan = key.readBool(nameof(dahuaNetScan), dahuaNetScan);
+                key.writeBool(nameof(dahuaNetScan), dahuaNetScan);
             }
         }
     }

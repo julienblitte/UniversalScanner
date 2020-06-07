@@ -62,6 +62,10 @@ namespace UniversalScanner
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
             sendBroadcast(port);
+            if (Config.dahuaNetScan)
+            {
+                sendNetScan(port);
+            }
         }
 
         private UInt32 dtohl(UInt32 value)
@@ -107,7 +111,7 @@ namespace UniversalScanner
                 reserved4 = 0
             };
 
-            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\r\n";
+            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\n";
             bodyArray = Encoding.UTF8.GetBytes(bodyStr);
 
             headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size; 
@@ -139,13 +143,13 @@ namespace UniversalScanner
 
             if (dtohl(header.headerSize) != headerSize)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
             if (dtohl(header.packetSize1) != packetSize)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
                 return;
             }
 
@@ -215,7 +219,7 @@ namespace UniversalScanner
                     }
                     else
                     {
-                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv4));
+                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
                     }
                 }
             }

@@ -193,14 +193,25 @@ namespace UniversalScanner
         {
             byte[] data;
 
-            if (interfacesListerner == null && !globalListener.inUse)
+            if (interfacesListerner == null && !globalListener.inUse && !multicastListener.inUse)
             {
-                Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: send(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+                Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: sendNetScan(): no opened sockets, you must call listenUdpInterfaces(), listenUdpGlobal() or listenMulticast() before.");
                 throw new InvalidOperationException("No opened sockets");
                 //return false;
             }
 
             data = sender(endpoint);
+
+            if (multicastListener.inUse)
+            {
+                Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", multicastListener.endPoint.ToString(), endpoint.ToString()));
+                Logger.WriteData(Logger.DebugLevel.Debug, data);
+                try
+                {
+                    multicastListener.udp.Send(data, data.Length, endpoint);
+                }
+                catch { }
+            }
 
             if (globalListener.inUse)
             {
