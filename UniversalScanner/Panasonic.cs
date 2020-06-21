@@ -58,7 +58,7 @@ namespace UniversalScanner
                 byte[] ipBytes;
                 UInt32 ipUInt32;
 
-                payload1 = 0x000d0000;
+                payload1 = 0x00000d00;
                 payload2 = 0x00000000;
 
                 headerMagic = NetworkUtils.htonl(0x00010000);
