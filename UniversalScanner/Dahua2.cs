@@ -68,6 +68,7 @@ namespace UniversalScanner
             }
         }
 
+        // DahuaEndianness is LittleEndian
         private UInt32 dtohl(UInt32 value)
         {
             if (!BitConverter.IsLittleEndian)
@@ -81,6 +82,7 @@ namespace UniversalScanner
             return value;
         }
 
+        // DahuaEndianness is LittleEndian
         private UInt16 dtohs(UInt16 value)
         {
             if (!BitConverter.IsLittleEndian)

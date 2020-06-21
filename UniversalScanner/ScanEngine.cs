@@ -311,7 +311,7 @@ namespace UniversalScanner
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
 
-                       Logger.WriteLine(Logger.DebugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                        Logger.WriteLine(Logger.DebugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
                         Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                         try
@@ -478,8 +478,8 @@ namespace UniversalScanner
             UInt32 addr, mask, first, last, len, i, current;
             IPAddress[] result;
 
-            addr = NetworkUtils.ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
-            mask = NetworkUtils.ntohl(BitConverter.ToUInt32(subNetMask.GetAddressBytes(), 0));
+            addr = address.ToUInt32();
+            mask = subNetMask.ToUInt32();
 
             first = (addr & mask) + 1;
             last = (addr | ~mask) - 1;
@@ -494,8 +494,7 @@ namespace UniversalScanner
             {
                 current = first + i;
 
-                result[i] = new IPAddress(
-                BitConverter.ToUInt32(new byte[] { (byte)(current >> 24), (byte)(current >> 16), (byte)(current >> 8), (byte)current }, 0));
+                result[i] = new IPAddress(NetworkUtils.htonl(current));
             }
 
             return result;

@@ -77,6 +77,7 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
+        // BochEndianness is LittleEndian
         private UInt32 btohl(UInt32 value)
         {
             if (!BitConverter.IsLittleEndian)

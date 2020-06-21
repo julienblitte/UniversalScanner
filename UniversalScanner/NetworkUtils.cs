@@ -56,7 +56,7 @@ namespace UniversalScanner
             switch (address.AddressFamily)
             { 
                 case AddressFamily.InterNetwork:
-                    addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+                    addr = address.ToUInt32();
 
                     subNetPrivate = 0xC0A80000; // 192.168.0.0/16
                     maskPrivate = 0xFFFF0000;
@@ -107,7 +107,7 @@ namespace UniversalScanner
             switch (address.AddressFamily)
             {
                 case AddressFamily.InterNetwork:
-                    addr = ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+                    addr = address.ToUInt32();
 
                     subNetPrivate = 0xA9FE0000; // 169.254.0.0/16
                     maskPrivate = 0xFFFF0000;
@@ -131,6 +131,21 @@ namespace UniversalScanner
                     break;
             }
             return false;
+        }
+
+        public static UInt32 ToUInt32(this IPAddress ipv4)
+        {
+            byte[] IPBytes;
+
+            IPBytes = ipv4.GetAddressBytes();
+
+            // less efficient
+            // return ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+
+            return (UInt32)((IPBytes[0] << 24)
+                    | (IPBytes[1] << 16)
+                    | (IPBytes[2] << 8)
+                    | (IPBytes[3]));
         }
     }
 }
