@@ -31,9 +31,9 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Sony discovery protocol
 * 360Vision discovery protocol
 * NiceVision discovery protocol
+* Panasonic discovery protocol
 
 # Protocols currently in implementation
-* Panasonic discovery protocol
 * Flir discovery protocol
 * Ubiquiti discovery protocol
 

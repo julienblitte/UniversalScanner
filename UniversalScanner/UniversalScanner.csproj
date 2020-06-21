@@ -82,6 +82,7 @@
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="NiceVision.cs" />
     <Compile Include="RegistryUtils.cs" />
+    <Compile Include="Panasonic.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
     <Compile Include="UniversalScanner.cs">
@@ -130,6 +131,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Hikvision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Panasonic.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">

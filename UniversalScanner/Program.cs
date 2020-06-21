@@ -34,9 +34,8 @@ namespace UniversalScanner
                 new GoogleCast(),
                 new Hanwha(),
                 new Vivotek(),
-                new Sony(),
                 new _360Vision(),
-                new NiceVision()
+                new NiceVision(),                new Panasonic()
             };
             foreach(var engine in engines)
             {
