@@ -32,6 +32,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * 360Vision discovery protocol
 * NiceVision discovery protocol
 * Panasonic discovery protocol
+* Arecont discovery protocol
 
 # Protocols currently in implementation
 * Flir discovery protocol
