@@ -120,8 +120,8 @@ namespace UniversalScanner
         {
             NiceVisionRequest req;
 
-            req = new NiceVisionRequest() { magic = NetworkUtils.htonl(magic), transactionID = NetworkUtils.htons(1),
-                payload = NetworkUtils.htonl(payload), answerPort = NetworkUtils.htons((UInt16)answerPort) };
+            req = new NiceVisionRequest() { magic = NetworkUtils.bigEndian32(magic), transactionID = NetworkUtils.bigEndian16(1),
+                payload = NetworkUtils.bigEndian32(payload), answerPort = NetworkUtils.bigEndian16((UInt16)answerPort) };
             return req.GetBytes();
         }
 

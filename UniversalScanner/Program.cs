@@ -29,6 +29,7 @@ namespace UniversalScanner
                 new Dahua1(),
                 new Dahua2(),
                 new Hikvision(),
+                new Sony(),
                 new Axis(),
                 new Bosch(),
                 new GoogleCast(),

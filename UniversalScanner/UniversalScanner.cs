@@ -150,7 +150,20 @@ namespace UniversalScanner
             ip = foundDeviceList.Rows[e.RowIndex].ItemArray[(int)Columns.IPAddress].ToString();
             if (ip != "")
             {
-               Process.Start("http://" + ip);
+                IPAddress parsed;
+
+                if (IPAddress.TryParse(ip, out parsed))
+                {
+                    switch (parsed.AddressFamily)
+                    {
+                        case AddressFamily.InterNetwork:
+                            Process.Start(String.Format("http://{0}", parsed.ToString()));
+                            break;
+                        case AddressFamily.InterNetworkV6:
+                            Process.Start(String.Format("http://[{0}]", parsed.ToString()));
+                            break;
+                    }
+                }
             }
         }
 

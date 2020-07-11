@@ -77,20 +77,6 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
-        // BochEndianness is LittleEndian
-        private UInt32 btohl(UInt32 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = value << 24
-                    | ((value << 8) & 0x00ff0000)
-                    | ((value >> 8) & 0x0000ff00)
-                    | (value >> 24);
-            }
-
-            return value;
-        }
-
         public override void reciever(IPEndPoint from, byte[] data)
         {
             string deviceModel, deviceSerial;
@@ -103,13 +89,13 @@ namespace UniversalScanner
 
                 binary = data.GetStruct<BoschBinaryAnswer>();
 
-                if (NetworkUtils.ntohl(binary.magic) != answerMagic)
+                if (NetworkUtils.bigEndian32(binary.magic) != answerMagic)
                 {
                    Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
-                ip = btohl(binary.ipv4);
+                ip = NetworkUtils.littleEndian32(binary.ipv4);
 
                 deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
                                             binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
@@ -205,12 +191,12 @@ namespace UniversalScanner
             date = DateTime.UtcNow;
 
             request = new BoschRequest();
-            request.magic = NetworkUtils.htonl(answerMagic);
-            request.transactionID = NetworkUtils.htonl((UInt32)
+            request.magic = NetworkUtils.bigEndian32(answerMagic);
+            request.transactionID = NetworkUtils.bigEndian32((UInt32)
                 ((date.Hour << 24) | (date.Minute << 16) | 
                 (date.Second << 8) | (date.Millisecond / 10)
                 ));
-            request.requestMagic = NetworkUtils.htonl(requestMagic);
+            request.requestMagic = NetworkUtils.bigEndian32(requestMagic);
 
             result = request.GetBytes();
 

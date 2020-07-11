@@ -12,35 +12,98 @@ namespace UniversalScanner
 {
     public static class NetworkUtils
     {
-        // NetworkToHostOrder and HostToNetworkOrder are unsafe due type overload
-        // UInt64 ntohll(UInt64) and UInt64 htonll(UInt64) defined bellow
-        [DllImport("wsock32.dll")]
-        public static extern UInt32 ntohl(UInt32 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt32 htonl(UInt32 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt16 ntohs(UInt16 value);
-        [DllImport("wsock32.dll")]
-        public static extern UInt16 htons(UInt16 value);
-        
-        public static UInt64 htonll(UInt64 value)
+        public enum Endianness { BigEndian = 1, LittleEndian = 2 };
+
+        // NetworkToHostOrder and HostToNetworkOrder from IPAddress are unsafe due type overload
+        public static UInt16 NetworkToHostOrder16(UInt16 value)
         {
-            if (htonl(1) != 1)
+            return byteOrder16(value, Endianness.BigEndian);
+        }
+        public static UInt16 HostToNetworkOrder16(UInt16 value)
+        {
+            return byteOrder16(value, Endianness.BigEndian);
+        }
+
+        public static UInt32 NetworkToHostOrder32(UInt32 value)
+        {
+            return byteOrder32(value, Endianness.BigEndian);
+        }
+        public static UInt32 HostToNetworkOrder32(UInt32 value)
+        {
+            return byteOrder32(value, Endianness.BigEndian);
+        }
+
+        public static UInt64 NetworkToHostOrder64(UInt64 value)
+        {
+            return byteOrder64(value, Endianness.BigEndian);
+        }
+        public static UInt64 HostToNetworkOrder64(UInt64 value)
+        {
+            return byteOrder64(value, Endianness.BigEndian);
+        }
+
+        public static UInt16 littleEndian16(UInt16 value)
+        {
+            return byteOrder16(value, Endianness.LittleEndian);
+        }
+
+        public static UInt32 littleEndian32(UInt32 value)
+        {
+            return byteOrder32(value, Endianness.LittleEndian);
+        }
+
+        public static UInt64 littleEndian64(UInt64 value)
+        {
+            return byteOrder64(value, Endianness.LittleEndian);
+        }
+
+        public static UInt16 bigEndian16(UInt16 value)
+        {
+            return byteOrder16(value, Endianness.BigEndian);
+        }
+        public static UInt32 bigEndian32(UInt32 value)
+        {
+            return byteOrder32(value, Endianness.BigEndian);
+        }
+        public static UInt64 bigEndian64(UInt64 value)
+        {
+            return byteOrder64(value, Endianness.BigEndian);
+        }
+
+        private static UInt16 byteOrder16(UInt16 value, Endianness endian)
+        {
+            if ((endian == Endianness.BigEndian && BitConverter.IsLittleEndian)
+                || (endian == Endianness.LittleEndian && !BitConverter.IsLittleEndian))
             {
-                UInt32 high_part = htonl((UInt32)(value >> 32));
-                UInt32 low_part = htonl((UInt32)(value & 0xFFFFFFFF));
-                value = low_part;
-                value <<= 32;
-                value |= high_part;
+                value = (UInt16)(
+                    ((value << 8) & 0xff00)
+                    | (value >> 8)
+                );
             }
             return value;
         }
-        public static UInt64 ntohll(UInt64 value)
+
+        private static UInt32 byteOrder32(UInt32 value, Endianness endian)
         {
-            if (ntohl(1) != 1)
+            if ((endian == Endianness.BigEndian && BitConverter.IsLittleEndian)
+                || (endian == Endianness.LittleEndian && !BitConverter.IsLittleEndian))
             {
-                UInt32 high_part = ntohl((UInt32)(value >> 32));
-                UInt32 low_part = ntohl((UInt32)(value & 0xFFFFFFFF));
+                value = value << 24
+                    | ((value << 8) & 0x00ff0000)
+                    | ((value >> 8) & 0x0000ff00)
+                    | (value >> 24);
+            }
+
+            return value;
+        }
+
+        private static UInt64 byteOrder64(UInt64 value, Endianness endian)
+        {
+            if ((endian == Endianness.BigEndian && BitConverter.IsLittleEndian)
+                || (endian == Endianness.LittleEndian && !BitConverter.IsLittleEndian))
+            {
+                UInt32 high_part = byteOrder32((UInt32)(value >> 32), endian);
+                UInt32 low_part = byteOrder32((UInt32)(value & 0xFFFFFFFF), endian);
                 value = low_part;
                 value <<= 32;
                 value |= high_part;
@@ -140,7 +203,7 @@ namespace UniversalScanner
             IPBytes = ipv4.GetAddressBytes();
 
             // less efficient
-            // return ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
+            // return NetworkToHostOrder32(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
 
             return (UInt32)((IPBytes[0] << 24)
                     | (IPBytes[1] << 16)

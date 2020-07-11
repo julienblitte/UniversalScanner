@@ -61,7 +61,7 @@ namespace UniversalScanner
                 payload1 = 0x00000d00;
                 payload2 = 0x00000000;
 
-                headerMagic = NetworkUtils.htonl(0x00010000);
+                headerMagic = NetworkUtils.bigEndian32(0x00010000);
 
                 mac = macAddress.GetAddressBytes().GetStruct<MacAddress>();
 
@@ -70,16 +70,16 @@ namespace UniversalScanner
                     (ipBytes[1] << 16) |
                     (ipBytes[2] << 8) |
                     (ipBytes[3]));
-                ip = NetworkUtils.htonl(ipUInt32);
+                ip = NetworkUtils.bigEndian32(ipUInt32);
 
-                payload3 = NetworkUtils.htonl(0x00012011);
-                payload4 = NetworkUtils.htonl(0x1e11231f);
-                payload5 = NetworkUtils.htonl(0x1e191300);
-                payload6 = NetworkUtils.htonl(0x00020000);
-                payload7 = NetworkUtils.htonl(0x00000000);
-                payload8 = NetworkUtils.htonl(0x00000000);
-                payload9 = NetworkUtils.htonl(0x0000ffff);
-                checksum = NetworkUtils.htons(0x0000);
+                payload3 = NetworkUtils.bigEndian32(0x00012011);
+                payload4 = NetworkUtils.bigEndian32(0x1e11231f);
+                payload5 = NetworkUtils.bigEndian32(0x1e191300);
+                payload6 = NetworkUtils.bigEndian32(0x00020000);
+                payload7 = NetworkUtils.bigEndian32(0x00000000);
+                payload8 = NetworkUtils.bigEndian32(0x00000000);
+                payload9 = NetworkUtils.bigEndian32(0x0000ffff);
+                checksum = NetworkUtils.bigEndian16(0x0000);
             }
         }
 

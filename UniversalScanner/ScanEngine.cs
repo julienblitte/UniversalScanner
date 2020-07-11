@@ -494,7 +494,7 @@ namespace UniversalScanner
             {
                 current = first + i;
 
-                result[i] = new IPAddress(NetworkUtils.htonl(current));
+                result[i] = new IPAddress(NetworkUtils.HostToNetworkOrder32(current));
             }
 
             return result;

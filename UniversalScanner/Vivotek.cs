@@ -72,7 +72,7 @@ namespace UniversalScanner
 
             headerSize = typeof(VivotekHeader).StructLayoutAttribute.Size;
 
-            if (NetworkUtils.ntohl(header.magic) != magic)
+            if (NetworkUtils.bigEndian32(header.magic) != magic)
             {
                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
                 return;
@@ -163,7 +163,7 @@ namespace UniversalScanner
             VivotekHeader header;
             byte[] result;
 
-            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.htonl(magic) };
+            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.bigEndian32(magic) };
 
             result = header.GetBytes();
 

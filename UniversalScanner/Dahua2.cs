@@ -19,7 +19,7 @@ namespace UniversalScanner
         private readonly string multicastIP = "239.255.255.251";
         private const int port = 37810;
 
-        private const UInt32 magic = 0x44484950;
+        private const UInt32 magic = 0x44484950;   // 'DHIP'
 
         public override int color
         {
@@ -68,31 +68,6 @@ namespace UniversalScanner
             }
         }
 
-        // DahuaEndianness is LittleEndian
-        private UInt32 dtohl(UInt32 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = value << 24
-                    | ((value << 8) & 0x00ff0000)
-                    | ((value >> 8) & 0x0000ff00)
-                    | (value >> 24);
-            }
-
-            return value;
-        }
-
-        // DahuaEndianness is LittleEndian
-        private UInt16 dtohs(UInt16 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = (UInt16)((value << 8) | (value >> 8));
-            }
-
-            return value;
-        }
-
         public override byte[] sender(IPEndPoint dest)
         {
             Dahua2Header header;
@@ -103,8 +78,8 @@ namespace UniversalScanner
             int headerSize;
 
             header = new Dahua2Header {
-                headerSize = dtohl((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
-                headerMagic = NetworkUtils.ntohl(magic),
+                headerSize = NetworkUtils.littleEndian32((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
+                headerMagic = NetworkUtils.bigEndian32(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
                 packetSize1 = 0, 
@@ -143,15 +118,15 @@ namespace UniversalScanner
 
             header = data.GetStruct<Dahua2Header>();
 
-            if (dtohl(header.headerSize) != headerSize)
+            if (NetworkUtils.littleEndian32(header.headerSize) != headerSize)
             {
                 Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
-            if (dtohl(header.packetSize1) != packetSize)
+            if (NetworkUtils.littleEndian32(header.packetSize1) != packetSize)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", NetworkUtils.littleEndian32(header.packetSize1), packetSize));
                 return;
             }
 

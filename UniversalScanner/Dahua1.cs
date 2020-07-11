@@ -122,31 +122,6 @@ namespace UniversalScanner
             return discover;
         }
 
-        // DahuaEndianness is LittleEndian
-        private UInt32 dtohl(UInt32 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = value << 24
-                    | ((value << 8) & 0x00ff0000)
-                    | ((value >> 8) & 0x0000ff00)
-                    | (value  >> 24);
-            }
-
-            return value;
-        }
-
-        // DahuaEndianness is LittleEndian
-        private UInt16 dtohs(UInt16 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = (UInt16)((value << 8) | (value  >> 8));
-            }
-
-            return value;
-        }
-
         public override void reciever(IPEndPoint from, byte[] data)
         {
             Dahua1Section1 section1;
@@ -184,13 +159,13 @@ namespace UniversalScanner
             }
 
             // IP Address
-            deviceIPv4 = dtohl(section1.ip);
+            deviceIPv4 = NetworkUtils.littleEndian32(section1.ip);
 
             // device type
             deviceModel = Encoding.UTF8.GetString(section1.deviceType);
 
             section2Len = section1.section2Len;
-            section3Len = dtohs(section1.section3Len);
+            section3Len = NetworkUtils.littleEndian16(section1.section3Len);
 
             if (section1Len + section2Len + section3Len != data.Length)
             {

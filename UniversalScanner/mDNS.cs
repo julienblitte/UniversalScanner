@@ -163,7 +163,7 @@ namespace UniversalScanner
             byte[] headerBytes;
             IPEndPoint endpoint;
 
-            header = new mDNSHeader() { transactionID = 0, flags = 0, questions = NetworkUtils.ntohs(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
+            header = new mDNSHeader() { transactionID = 0, flags = 0, questions = NetworkUtils.NetworkToHostOrder16(1), answerRRs = 0, authorityRRs = 0, additionalRRs = 0 };
             query = buildQuery(queryString, queryType);
 
             headerBytes = header.GetBytes();
@@ -225,8 +225,8 @@ namespace UniversalScanner
 
             header = data.GetStruct<mDNSHeader>();
 
-            expectedQueries = NetworkUtils.ntohs(header.questions);
-            expectedAnwers = NetworkUtils.ntohs(header.authorityRRs) + NetworkUtils.ntohs(header.answerRRs) + NetworkUtils.ntohs(header.additionalRRs);
+            expectedQueries = NetworkUtils.NetworkToHostOrder16(header.questions);
+            expectedAnwers = NetworkUtils.NetworkToHostOrder16(header.authorityRRs) + NetworkUtils.NetworkToHostOrder16(header.answerRRs) + NetworkUtils.NetworkToHostOrder16(header.additionalRRs);
             if (expectedAnwers > 0)
             {
                 position = headerSize;
@@ -349,7 +349,7 @@ namespace UniversalScanner
                 return IPAddress.Any;
             }
 
-            ipVal = NetworkUtils.ntohl(readUInt32(data, ref position));
+            ipVal = NetworkUtils.NetworkToHostOrder32(readUInt32(data, ref position));
             return (new IPAddress(ipVal));
         }
 
@@ -465,7 +465,7 @@ namespace UniversalScanner
             return result;
         }
 
-        private string readString(byte[] data, ref int position)
+        private string readString(byte[] data, ref int position, int maxCallBack = 16)
         {
             byte len;
             StringBuilder sb;
@@ -502,7 +502,12 @@ namespace UniversalScanner
                         break;
                     }
 
-                    sb.Append(readString(data, ref positionPtr));
+                    maxCallBack--;
+                    if (maxCallBack <= 0)
+                    {
+                        throw new OverflowException(String.Format("mDNS string substring max redirections exceeded"));
+                    }
+                    sb.Append(readString(data, ref positionPtr, maxCallBack));
                     return sb.ToString();
                 }
                 else
