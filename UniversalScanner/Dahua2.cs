@@ -16,10 +16,10 @@ namespace UniversalScanner
 {
     class Dahua2 : ScanEngine
     {
-        protected new string multicastIP = "239.255.255.251";
-        protected int port = 37810;
+        private readonly string multicastIP = "239.255.255.251";
+        private const int port = 37810;
 
-        protected const UInt32 magic = 0x44484950;
+        private const UInt32 magic = 0x44484950;   // 'DHIP'
 
         public override int color
         {
@@ -61,29 +61,11 @@ namespace UniversalScanner
             selfTest("Dahua2.selftest");
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
-        }
-
-        private UInt32 dtohl(UInt32 value)
-        {
-            if (!BitConverter.IsLittleEndian)
+            sendBroadcast(port);
+            if (Config.dahuaNetScan)
             {
-                value = value << 24
-                    | ((value << 8) & 0x00ff0000)
-                    | ((value >> 8) & 0x0000ff00)
-                    | (value >> 24);
+                sendNetScan(port);
             }
-
-            return value;
-        }
-
-        private UInt16 dtohs(UInt16 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = (UInt16)((value << 8) | (value >> 8));
-            }
-
-            return value;
         }
 
         public override byte[] sender(IPEndPoint dest)
@@ -96,8 +78,8 @@ namespace UniversalScanner
             int headerSize;
 
             header = new Dahua2Header {
-                headerSize = dtohl((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
-                headerMagic = NetworkUtils.ntohl(magic),
+                headerSize = NetworkUtils.littleEndian32((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
+                headerMagic = NetworkUtils.bigEndian32(magic),
                 reserved1 = 0,
                 reserved2 = 0, 
                 packetSize1 = 0, 
@@ -106,7 +88,7 @@ namespace UniversalScanner
                 reserved4 = 0
             };
 
-            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\r\n";
+            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\n";
             bodyArray = Encoding.UTF8.GetBytes(bodyStr);
 
             headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size; 
@@ -136,15 +118,15 @@ namespace UniversalScanner
 
             header = data.GetStruct<Dahua2Header>();
 
-            if (dtohl(header.headerSize) != headerSize)
+            if (NetworkUtils.littleEndian32(header.headerSize) != headerSize)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
-            if (dtohl(header.packetSize1) != packetSize)
+            if (NetworkUtils.littleEndian32(header.packetSize1) != packetSize)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: reciever(): recieved invalid frame (packetSize={0}, expected {1})!", dtohl(header.packetSize1), packetSize));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", NetworkUtils.littleEndian32(header.packetSize1), packetSize));
                 return;
             }
 
@@ -214,7 +196,7 @@ namespace UniversalScanner
                     }
                     else
                     {
-                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv4));
+                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
                     }
                 }
             }

@@ -11,9 +11,9 @@ namespace UniversalScanner
 {
     class Vivotek : ScanEngine
     {
-        protected const int port = 10000;
-        protected const UInt32 magic = 0x4a5d8f1c;
-        protected byte sessionCounter;
+        private const int port = 10000;
+        private const UInt32 magic = 0x4a5d8f1c;
+        private byte sessionCounter;
 
         public override int color
         {
@@ -72,7 +72,7 @@ namespace UniversalScanner
 
             headerSize = typeof(VivotekHeader).StructLayoutAttribute.Size;
 
-            if (NetworkUtils.ntohl(header.magic) != magic)
+            if (NetworkUtils.bigEndian32(header.magic) != magic)
             {
                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
                 return;
@@ -163,7 +163,7 @@ namespace UniversalScanner
             VivotekHeader header;
             byte[] result;
 
-            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.htonl(magic) };
+            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.bigEndian32(magic) };
 
             result = header.GetBytes();
 

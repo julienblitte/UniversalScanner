@@ -1,42 +1,42 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace UniversalScanner
 {
-    class Axis : ScanEngine
+    class Arecont : ScanEngine
     {
         private mDNS dnsBroker;
-        private static readonly string[] domains = { "_axis-nvr._tcp.local", "_axis-video._tcp.local" };
+        private static readonly string domain = "_arec._tcp.local";
 
         public override int color
         {
             get
             {
-                return 0x806000;
+                return Color.DarkBlue.ToArgb();
             }
         }
         public override string name
         {
             get
             {
-                return "Axis";
+                return "Arecont";
             }
         }
 
-        public Axis()
+        public Arecont()
         {
             dnsBroker = mDNS.getInstance();
 
-            foreach(var d in domains)
-            {
-                dnsBroker.registerDomain(d, axisDeviceFound);
-            }
+            dnsBroker.registerDomain(domain, mdnsReplyReciever);
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
@@ -44,15 +44,25 @@ namespace UniversalScanner
             throw new NotImplementedException();
         }
 
+        public void multiScanThread()
+        {
+            for (int i=0; i < 4; i++)
+            {
+                if (i > 0) Thread.Sleep(750);
+                dnsBroker.scan(domain, mDNSType.TYPE_PTR);
+            }
+        }
+
         public override void scan()
         {
+            Thread multiScan;
 #if DEBUG
-            dnsBroker.selfTest("Axis.selftest");
+            dnsBroker.selfTest("Arecont.selftest");
 #endif
-            foreach (var d in domains)
-            {
-                dnsBroker.scan(d, mDNSType.TYPE_PTR);
-            }
+            //dnsBroker.scan(domain, mDNSType.TYPE_PTR);
+
+            multiScan = new Thread(multiScanThread);
+            multiScan.Start();
         }
 
         public override byte[] sender(IPEndPoint dest)
@@ -60,12 +70,14 @@ namespace UniversalScanner
             return (new byte[0]);
         }
 
-        public void axisDeviceFound(string domainFilter, mDNSAnswer[] answers)
+        public void mdnsReplyReciever(string domainFilter, mDNSAnswer[] answers)
         {
-            List <IPAddress> addresses;
+            List<IPAddress> addresses;
             string deviceModel, serial;
+            Hashtable variables;
 
             addresses = new List<IPAddress>();
+            variables = new Hashtable();
             deviceModel = null;
             serial = null;
             foreach (var a in answers)
@@ -84,7 +96,7 @@ namespace UniversalScanner
                         if (deviceModel == null)
                         {
                             int splitter;
-
+                            
                             deviceModel = a.data.typePTR;
                             splitter = deviceModel.IndexOf('.');
                             if (splitter >= 0)
@@ -96,15 +108,20 @@ namespace UniversalScanner
                     case mDNSType.TYPE_SRV:
                         break;
                     case mDNSType.TYPE_TXT:
-                        if (serial == null)
+                        foreach (string txt in a.data.typeTXT)
                         {
                             int splitter;
 
-                            serial = a.data.typeTXT[0];
-                            splitter = serial.IndexOf('=');
+                            splitter = txt.IndexOf('=');
                             if (splitter >= 0)
                             {
-                                serial = serial.Substring(splitter + 1);
+                                string name, value;
+                                name = txt.Substring(0, splitter);
+                                value = txt.Substring(splitter + 1);
+                                if (!variables.ContainsKey(name))
+                                {
+                                    variables.Add(name, value);
+                                }
                             }
                         }
                         break;
@@ -113,19 +130,45 @@ namespace UniversalScanner
 
             if (addresses.Count > 0)
             {
+                int splitter;
+
                 if (deviceModel == null) deviceModel = "unknown";
 
-                int modelMacSplitter = deviceModel.IndexOf(" - ");
-                if (modelMacSplitter >= 0)
+                // method 1: retrieve device model and mac by name                
+                splitter = deviceModel.IndexOf('-');
+                if (splitter >= 0)
                 {
                     if (serial == null)
                     {
-                        serial = deviceModel.Substring(modelMacSplitter + 3).Trim();
+                        serial = deviceModel.Substring(splitter+1).Trim();
                     }
-                    deviceModel = deviceModel.Substring(0, modelMacSplitter).Trim();
+                    deviceModel = deviceModel.Substring(0, splitter).Trim();
                 }
 
-                if (serial == null) serial = "unknown";
+                // method 2 (more accurate): retrieve device model and mac by variable
+                if (variables.ContainsKey("MAC"))
+                {
+                    string infos;
+
+                    infos = (string)variables["MAC"];
+                    splitter = infos.IndexOf('/');
+                    if (splitter >= 0)
+                    {
+                        deviceModel = "AV" + infos.Substring(splitter + 1);
+                    }
+
+                    if (serial == null)
+                    {
+                        splitter = infos.IndexOf('-');
+                        if (splitter >= 0)
+                        {
+                            deviceModel = infos.Substring(0, splitter);
+                        }
+                    }
+                }
+
+                // resolve arecont serial coding
+                serial = serial.Replace("AV", "001A07");
 
                 deviceFound(name, 1, addresses, deviceModel, serial);
             }

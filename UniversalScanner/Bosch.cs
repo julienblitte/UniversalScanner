@@ -14,10 +14,11 @@ namespace UniversalScanner
 {
     class Bosch : ScanEngine
     {
-        protected int port = 1757;
+        private const int requestPort = 1757;
+        private const int answerPort = 1758;
 
-        protected UInt32 magic = 0x9939a427;
-        protected UInt32 requestMagic = 0xff0006de;
+        private const UInt32 requestMagic = 0xff0006de;
+        private const UInt32 answerMagic = 0x9939a427;
 
         public override string name
         {
@@ -46,7 +47,7 @@ namespace UniversalScanner
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
-        public struct BoschBinaryResponse
+        public struct BoschBinaryAnswer
         {
             [FieldOffset(0)] public UInt32 magic;
             [FieldOffset(4)] public UInt32 transactionID;
@@ -72,21 +73,8 @@ namespace UniversalScanner
 
         public Bosch()
         {
-            listenUdpGlobal(1758);
+            listenUdpGlobal(answerPort);
             listenUdpInterfaces();
-        }
-
-        private UInt32 btohl(UInt32 value)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                value = value << 24
-                    | ((value << 8) & 0x00ff0000)
-                    | ((value >> 8) & 0x0000ff00)
-                    | (value >> 24);
-            }
-
-            return value;
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
@@ -94,20 +82,20 @@ namespace UniversalScanner
             string deviceModel, deviceSerial;
 
             // xml is much bigger
-            if (data.Length == typeof(BoschBinaryResponse).StructLayoutAttribute.Size)
+            if (data.Length == typeof(BoschBinaryAnswer).StructLayoutAttribute.Size)
             {
-                BoschBinaryResponse binary;
+                BoschBinaryAnswer binary;
                 UInt32 ip;
 
-                binary = data.GetStruct<BoschBinaryResponse>();
+                binary = data.GetStruct<BoschBinaryAnswer>();
 
-                if (NetworkUtils.ntohl(binary.magic) != magic)
+                if (NetworkUtils.bigEndian32(binary.magic) != answerMagic)
                 {
                    Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
-                ip = btohl(binary.ipv4);
+                ip = NetworkUtils.littleEndian32(binary.ipv4);
 
                 deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
                                             binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
@@ -191,7 +179,7 @@ namespace UniversalScanner
             selfTest("Bosch.bin.selftest");
             selfTest("Bosch.xml.selftest");
 #endif
-            sendBroadcast(port);
+            sendBroadcast(requestPort);
         }
 
         public override byte[] sender(IPEndPoint dest)
@@ -203,12 +191,12 @@ namespace UniversalScanner
             date = DateTime.UtcNow;
 
             request = new BoschRequest();
-            request.magic = NetworkUtils.htonl(magic);
-            request.transactionID = NetworkUtils.htonl((UInt32)
+            request.magic = NetworkUtils.bigEndian32(answerMagic);
+            request.transactionID = NetworkUtils.bigEndian32((UInt32)
                 ((date.Hour << 24) | (date.Minute << 16) | 
                 (date.Second << 8) | (date.Millisecond / 10)
                 ));
-            request.requestMagic = NetworkUtils.htonl(requestMagic);
+            request.requestMagic = NetworkUtils.bigEndian32(requestMagic);
 
             result = request.GetBytes();
 

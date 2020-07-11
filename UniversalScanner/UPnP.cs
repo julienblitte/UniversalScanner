@@ -14,8 +14,8 @@ namespace UniversalScanner
 {
     public class UPnP : ScanEngine
     {
-        protected new string multicastIP = "239.255.255.250";
-        protected int port = 1900;
+        private readonly string multicastIP = "239.255.255.250";
+        private const int port = 1900;
 
         public override int color
         {
@@ -50,7 +50,7 @@ namespace UniversalScanner
         public override byte[] sender(IPEndPoint dest)
         {
             return Encoding.UTF8.GetBytes(string.Format("M-SEARCH * HTTP/1.1\r\nHost: {0}:{1}\r\nST:upnp:rootdevice\r\nMan:\"ssdp:discover\"\r\nMX:2\r\n\r\n",
-                    multicastIP, multicastPort));
+                    dest.Address, dest.Port));
         }
 
         public override void reciever(IPEndPoint from, byte[] data)

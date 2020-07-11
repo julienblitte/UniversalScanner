@@ -24,11 +24,11 @@ namespace UniversalScanner
 
     public abstract class ScanEngine : IDisposable
     {
-        protected IPAddress multicastIP;
-        protected int multicastPort = 0;
+        private IPAddress multicastIP;
+        private int multicastPort = 0;
 
-        protected Thread scannerThread = null;
-        protected int scannerPort = 0;
+        private Thread scannerThread = null;
+        private int scannerPort = 0;
 
         protected ScannerViewer viewer = null;
 
@@ -62,12 +62,22 @@ namespace UniversalScanner
 
         public int listenUdpGlobal(int localPort = 0)
         {
+            bool reuseAddress = false;
+
             if (localPort != 0)
             {
                 if (!isFreeUdpPort(localPort))
                 {
-                   Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
-                    return -1;
+                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
+                    if (Config.portSharing)
+                    {
+                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Trying to share the port {0}...", localPort));
+                        reuseAddress = true;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
             }
             else
@@ -81,6 +91,11 @@ namespace UniversalScanner
                 globalListener.udp = new UdpClient();
                 globalListener.udp.EnableBroadcast = true;
                 globalListener.endPoint = new IPEndPoint(IPAddress.Any, localPort);
+
+                if (reuseAddress)
+                {
+                    globalListener.udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                }
 
                 // start unicast reciever on main interface
                 globalListener.thread = new Thread(unicastReciever);
@@ -178,14 +193,25 @@ namespace UniversalScanner
         {
             byte[] data;
 
-            if (interfacesListerner == null && !globalListener.inUse)
+            if (interfacesListerner == null && !globalListener.inUse && !multicastListener.inUse)
             {
-                Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: send(): no opened sockets, you must call listenUdpInterfaces() or listenUdpGlobal() before.");
+                Logger.WriteLine(Logger.DebugLevel.Fatal, "Error: sendNetScan(): no opened sockets, you must call listenUdpInterfaces(), listenUdpGlobal() or listenMulticast() before.");
                 throw new InvalidOperationException("No opened sockets");
                 //return false;
             }
 
             data = sender(endpoint);
+
+            if (multicastListener.inUse)
+            {
+                Logger.WriteLine(Logger.DebugLevel.Info, String.Format("{0} -> {1}", multicastListener.endPoint.ToString(), endpoint.ToString()));
+                Logger.WriteData(Logger.DebugLevel.Debug, data);
+                try
+                {
+                    multicastListener.udp.Send(data, data.Length, endpoint);
+                }
+                catch { }
+            }
 
             if (globalListener.inUse)
             {
@@ -285,7 +311,7 @@ namespace UniversalScanner
                         IPEndPoint endpoint = new IPEndPoint(local, scannerPort);
                         data = sender(endpoint);
 
-                       Logger.WriteLine(Logger.DebugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
+                        Logger.WriteLine(Logger.DebugLevel.Info, string.Format("{0} -> {1}", globalListener.endPoint.ToString(), endpoint.ToString()));
                         Logger.WriteData(Logger.DebugLevel.Debug, data);
 
                         try
@@ -452,8 +478,8 @@ namespace UniversalScanner
             UInt32 addr, mask, first, last, len, i, current;
             IPAddress[] result;
 
-            addr = NetworkUtils.ntohl(BitConverter.ToUInt32(address.GetAddressBytes(), 0));
-            mask = NetworkUtils.ntohl(BitConverter.ToUInt32(subNetMask.GetAddressBytes(), 0));
+            addr = address.ToUInt32();
+            mask = subNetMask.ToUInt32();
 
             first = (addr & mask) + 1;
             last = (addr | ~mask) - 1;
@@ -468,8 +494,7 @@ namespace UniversalScanner
             {
                 current = first + i;
 
-                result[i] = new IPAddress(
-                BitConverter.ToUInt32(new byte[] { (byte)(current >> 24), (byte)(current >> 16), (byte)(current >> 8), (byte)current }, 0));
+                result[i] = new IPAddress(NetworkUtils.HostToNetworkOrder32(current));
             }
 
             return result;
@@ -507,7 +532,7 @@ namespace UniversalScanner
             {
                Logger.WriteLine(Logger.DebugLevel.Error, String.Format("Error: ScanEngine.unicastReciever(): Unable to bind {0}!", localEP.ToString()));
                Logger.WriteLine(Logger.DebugLevel.Error, e.ToString());
-                return;
+               return;
             }
 
             while (!closing)

@@ -11,7 +11,7 @@ namespace UniversalScanner
 {
     class GoogleCast : ScanEngine
     {
-        protected mDNS dnsBroker;
+        private mDNS dnsBroker;
         private static readonly string domain = "_googlecast._tcp.local";
 
         public override int color
@@ -55,6 +55,9 @@ namespace UniversalScanner
         {
             IPAddress ipv4, ipv6;
             string deviceType, deviceID;
+
+            if (viewer == null)
+                return;
 
             ipv4 = null;
             ipv6 = null;

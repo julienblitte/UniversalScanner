@@ -150,19 +150,37 @@ namespace UniversalScanner
             ip = foundDeviceList.Rows[e.RowIndex].ItemArray[(int)Columns.IPAddress].ToString();
             if (ip != "")
             {
-               Process.Start("http://" + ip);
+                IPAddress parsed;
+
+                if (IPAddress.TryParse(ip, out parsed))
+                {
+                    switch (parsed.AddressFamily)
+                    {
+                        case AddressFamily.InterNetwork:
+                            Process.Start(String.Format("http://{0}", parsed.ToString()));
+                            break;
+                        case AddressFamily.InterNetworkV6:
+                            Process.Start(String.Format("http://[{0}]", parsed.ToString()));
+                            break;
+                    }
+                }
             }
         }
 
         private void aboutButton_Click(object sender, EventArgs e)
         {
-            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+            FileVersionInfo versionInfo;
+            DateTime buildDate;
+
+            versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+
+            buildDate = new DateTime(2000, 1, 1)
+                                    .AddDays(versionInfo.FileBuildPart).AddSeconds(versionInfo.FilePrivatePart * 2);
 
             MessageBox.Show(this,
-                String.Format("{0} {1}.{2}\nBuild date {3:0000}-{4:00}-{5:00}\n\nCopyright {6}\n\n{7}",
+                String.Format("{0} {1}.{2}\nBuild date {3}\n\nCopyright {4}\n\n{5}",
                     versionInfo.ProductName, versionInfo.FileMajorPart, versionInfo.FileMinorPart,
-                    versionInfo.ProductBuildPart, (versionInfo.ProductPrivatePart / 100), (versionInfo.ProductPrivatePart % 100),
-                    versionInfo.LegalCopyright,
+                    buildDate, versionInfo.LegalCopyright,
                     "Program under GNU Lesser General Public License 3.0,\nmore information at https://www.gnu.org/licenses/lgpl-3.0.html"
                 ), "About");
         }
@@ -367,10 +385,9 @@ namespace UniversalScanner
         private void ScannerWindow_Load(object sender, EventArgs e)
         {
 #if DEBUG
+            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
             if (Config.showDebugWarning)
             {
-                var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
                     + "You might want to download the release version at:\n{0}\n\n"
                     + "Do you really want to continue?",
@@ -379,9 +396,8 @@ namespace UniversalScanner
                 {
                     Application.Exit();
                 }
-
-                this.Text += " - debug " + versionInfo.Comments;
             }
+            this.Text += " - Debug version " + versionInfo.ProductVersion;
 #endif
         }
     }

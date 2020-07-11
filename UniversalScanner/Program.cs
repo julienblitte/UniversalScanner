@@ -35,8 +35,11 @@ namespace UniversalScanner
                 new Hanwha(),
                 new Vivotek(),
                 new Sony(),
-                new Ubiquiti()
-            };
+                new Ubiquiti(),
+                new _360Vision(),
+                new NiceVision(),
+                new Panasonic(),
+                new Arecont()            };
             foreach(var engine in engines)
             {
                 engine.registerViewer(viewer);
