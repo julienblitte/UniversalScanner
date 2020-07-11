@@ -39,7 +39,8 @@ namespace UniversalScanner
                 new _360Vision(),
                 new NiceVision(),
                 new Panasonic(),
-                new Arecont()            };
+                new Arecont()
+            };
             foreach(var engine in engines)
             {
                 engine.registerViewer(viewer);

@@ -156,6 +156,9 @@
     <None Include="Sony.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Ubiquiti.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
