@@ -43,6 +43,9 @@ namespace UniversalScanner
 
         public override void scan()
         {
+#if DEBUG
+            dnsBroker.selfTest("GoogleCast.selftest");
+#endif
             dnsBroker.scan(domain, mDNSType.TYPE_PTR);
         }
 
