@@ -86,6 +86,7 @@
     <Compile Include="Panasonic.cs" />
     <Compile Include="ScanEngine.cs" />
     <Compile Include="Sony.cs" />
+    <Compile Include="Ubiquiti.cs" />
     <Compile Include="UniversalScanner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,6 +157,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Sony.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Ubiquiti.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="UniversalScanner.iss">

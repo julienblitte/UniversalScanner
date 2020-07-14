@@ -30,9 +30,9 @@ namespace UniversalScanner
             }
         }
 
-        enum VivotekValue
+        private enum VivotekValue
         {
-            invalid = 0x00,
+            typeNull = 0x00,
             longName = 0x01,
             macAddress = 0x02,
             IPAddress = 0x03,
@@ -91,8 +91,8 @@ namespace UniversalScanner
                 variable = readNextValue(data, ref position, out value);
                 switch (variable)
                 {
-                    case (byte)VivotekValue.invalid:
-                       Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet");
+                    case (byte)VivotekValue.typeNull:
+                       Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet, variable type null");
                         return;
                     case (byte)VivotekValue.IPAddress:
                         IPv4 = new IPAddress(value);
@@ -124,7 +124,7 @@ namespace UniversalScanner
             if (position +2 >= data.Length)
             {
                 value = null;
-                return 00;
+                return 0x00;
             }
             vtype = data[position];
             position++;
