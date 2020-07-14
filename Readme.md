@@ -33,10 +33,11 @@ This tool is delivered as it, without any warranty. If you want specific support
 * NiceVision discovery protocol
 * Panasonic discovery protocol
 * Arecont discovery protocol
+* Ubiquiti discovery protocol
 
 # Protocols currently in implementation
 * Flir discovery protocol
-* Ubiquiti discovery protocol
+
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
