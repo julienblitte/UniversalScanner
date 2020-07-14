@@ -55,6 +55,7 @@ namespace UniversalScanner
 
         public Ubiquiti()
         {
+            listenUdpGlobal(port);
             listenUdpInterfaces();
         }
 
