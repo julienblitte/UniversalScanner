@@ -24,10 +24,10 @@ namespace UniversalScanner
             macIPv4 = 0x0002,     // binary: 10 bytes
             firmware = 0x0003,    // string
             uptime = 0x000a,      // binary: in sec, big endian
-            brand = 0x000b,       // 'UBNT'
-            model1 = 0x000c,      // 'U7LR';
+            brand = 0x000b,       // string
+            model1 = 0x000c,      // string
             firmware_version = 0x0016, // string
-            model2 = 0x0015,      // 'U7LR'
+            model2 = 0x0015,      // string
             bool_0x17 = 0x0017,
             bool_0x18 = 0x0018,
             bool_0x19 = 0x0019,
@@ -59,11 +59,11 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 4, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x04, CharSet = CharSet.Ansi)]
         public struct UbiquitiHeader
         {
-            [FieldOffset(0)] public UInt16 magic;
-            [FieldOffset(2)] public UInt16 packetSize;
+            [FieldOffset(0x00)] public UInt16 magic;
+            [FieldOffset(0x02)] public UInt16 packetSize;
         }
 
         public override void scan()
@@ -104,14 +104,14 @@ namespace UniversalScanner
             header = data.GetStruct<UbiquitiHeader>();
             if (NetworkUtils.bigEndian16(header.magic) != anwserMagic)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid magic value (less than section1) from {0}", from.ToString()));
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid magic value from {0}", from.ToString()));
                 /* not enougth tested Ubiquiti answer to say it is always this magic, so disabling return for now */
                 // return;
             }
 
             if (NetworkUtils.bigEndian16(header.packetSize) != data.Length - 4)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid packet size value (value {0} while expected {1}) from {2}",
+                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid packet size value (got value {0} while value {1} was expected) from {2}",
                                  NetworkUtils.bigEndian16(header.packetSize), data.Length - 4, from.ToString()));
                 return;
             }

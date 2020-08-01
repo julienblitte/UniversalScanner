@@ -75,6 +75,7 @@
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
+    <Compile Include="GigEVision.cs" />
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
     <Compile Include="Logger.cs" />
@@ -130,6 +131,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Dahua2.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="GigEVision.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="GoogleCast.selftest">

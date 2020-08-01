@@ -19,6 +19,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * SSDP (UPnP)
 * WS-Discovery (ONVIF)
 * DNS-SD (Zeroconf)
+* GigE Vision
 
 ## Proprietary
 * Dahua camera discovery protocol
@@ -35,9 +36,10 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Arecont discovery protocol
 * Ubiquiti discovery protocol
 
-# Protocols currently in implementation
-* Flir discovery protocol
-
+# Vendors supported by design
+* Uniview: WS-Discovery
+* Flir: SSDP and GigE Vision
+* Siqura: SSDP and WS-Discovery
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
