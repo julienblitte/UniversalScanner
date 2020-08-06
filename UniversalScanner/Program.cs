@@ -40,7 +40,8 @@ namespace UniversalScanner
                 new NiceVision(),
                 new Panasonic(),
                 new Arecont(),
-                new GigEVision()
+                new GigEVision(),
+                new Dlink()
             };
             foreach(var engine in engines)
             {
