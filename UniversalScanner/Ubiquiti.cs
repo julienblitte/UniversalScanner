@@ -11,11 +11,11 @@ namespace UniversalScanner
 {
     class Ubiquiti : ScanEngine
     {
-        protected readonly string multicastIP = "233.89.188.1";
-        protected const int port = 10001;
+        private static readonly string multicastIP = "233.89.188.1";
+        private const int port = 10001;
 
-        protected readonly UInt32 requestVersion = 1;
-        protected readonly UInt16 anwserMagic = 0x0206;
+        private const UInt32 requestVersion = 1;
+        private const UInt16 anwserMagic = 0x0206;
 
         private enum UbiquitiValue
         {

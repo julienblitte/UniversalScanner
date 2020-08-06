@@ -16,7 +16,7 @@ namespace UniversalScanner
 {
     class Dahua2 : ScanEngine
     {
-        private readonly string multicastIP = "239.255.255.251";
+        private static readonly string multicastIP = "239.255.255.251";
         private const int port = 37810;
 
         private const UInt32 magic = 0x44484950;   // 'DHIP'
@@ -36,17 +36,17 @@ namespace UniversalScanner
             }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x20, CharSet = CharSet.Ansi)]
         public struct Dahua2Header
         {
-            [FieldOffset(0)] public UInt32 headerSize;
-            [FieldOffset(4)] public UInt32 headerMagic;
-            [FieldOffset(8)] public UInt32 reserved1;
-            [FieldOffset(12)] public UInt32 reserved2;
-            [FieldOffset(16)] public UInt32 packetSize1;
-            [FieldOffset(20)] public UInt32 reserved3;
-            [FieldOffset(24)] public UInt32 packetSize2;
-            [FieldOffset(28)] public UInt32 reserved4;
+            [FieldOffset(0x00)] public UInt32 headerSize;
+            [FieldOffset(0x04)] public UInt32 headerMagic;
+            [FieldOffset(0x08)] public UInt32 _reserved_08;
+            [FieldOffset(0x0C)] public UInt32 _reserved_0C;
+            [FieldOffset(0x10)] public UInt32 packetSize1;
+            [FieldOffset(0x14)] public UInt32 _reserved_14;
+            [FieldOffset(0x18)] public UInt32 packetSize2;
+            [FieldOffset(0x1C)] public UInt32 _reserved_1C;
         }
 
         public Dahua2()
@@ -80,12 +80,12 @@ namespace UniversalScanner
             header = new Dahua2Header {
                 headerSize = NetworkUtils.littleEndian32((UInt32)typeof(Dahua2Header).StructLayoutAttribute.Size),
                 headerMagic = NetworkUtils.bigEndian32(magic),
-                reserved1 = 0,
-                reserved2 = 0, 
+                _reserved_08 = 0,
+                _reserved_0C = 0, 
                 packetSize1 = 0, 
-                reserved3 = 0,
+                _reserved_14 = 0,
                 packetSize2 = 0,
-                reserved4 = 0
+                _reserved_1C = 0
             };
 
             bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\n";

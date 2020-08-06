@@ -52,11 +52,17 @@ namespace UniversalScanner
             listenUdpInterfaces();
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 5, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x05, CharSet = CharSet.Ansi)]
         public struct VivotekHeader
         {
-            [FieldOffset(0)] public byte session;
-            [FieldOffset(1)] public UInt32 magic;
+            [FieldOffset(0x00)] public byte session;
+            [FieldOffset(0x01)] public UInt32 magic;
+
+            public VivotekHeader(byte sessionId)
+            {
+                session = sessionId;
+                magic = NetworkUtils.bigEndian32(Vivotek.magic);
+            }
         }
 
        public override void reciever(IPEndPoint from, byte[] data)
@@ -163,7 +169,7 @@ namespace UniversalScanner
             VivotekHeader header;
             byte[] result;
 
-            header = new VivotekHeader() { session = sessionCounter++, magic = NetworkUtils.bigEndian32(magic) };
+            header = new VivotekHeader(sessionCounter++);
 
             result = header.GetBytes();
 

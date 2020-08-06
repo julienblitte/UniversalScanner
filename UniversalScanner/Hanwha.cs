@@ -29,203 +29,202 @@ namespace UniversalScanner
             }
         }
 
-        const byte packet_type_request = 0x01;
-        const byte packet_type_reply = 0x0b;
+        private const byte packet_type_request = 0x01;
+        private const byte packet_type_reply = 0x0b;
 
-        [StructLayout(LayoutKind.Explicit, Size = 10, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x0A, CharSet = CharSet.Ansi)]
         public struct String10bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
-            [FieldOffset(10)] public byte byte0A;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 16, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x10, CharSet = CharSet.Ansi)]
         public struct String16bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
-            [FieldOffset(10)] public byte byte0A;
-            [FieldOffset(11)] public byte byte0B;
-            [FieldOffset(12)] public byte byte0C;
-            [FieldOffset(13)] public byte byte0D;
-            [FieldOffset(14)] public byte byte0E;
-            [FieldOffset(15)] public byte byte0F;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 18, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x12, CharSet = CharSet.Ansi)]
         public struct String18bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
-            [FieldOffset(10)] public byte byte0A;
-            [FieldOffset(11)] public byte byte0B;
-            [FieldOffset(12)] public byte byte0C;
-            [FieldOffset(13)] public byte byte0D;
-            [FieldOffset(14)] public byte byte0E;
-            [FieldOffset(15)] public byte byte0F;
-            [FieldOffset(16)] public byte byte10;
-            [FieldOffset(17)] public byte byte11;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
+            [FieldOffset(0x10)] public byte byte10;
+            [FieldOffset(0x11)] public byte byte11;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 39, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x27, CharSet = CharSet.Ansi)]
         public struct String39bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
-            [FieldOffset(10)] public byte byte0A;
-            [FieldOffset(11)] public byte byte0B;
-            [FieldOffset(12)] public byte byte0C;
-            [FieldOffset(13)] public byte byte0D;
-            [FieldOffset(14)] public byte byte0E;
-            [FieldOffset(15)] public byte byte0F;
-            [FieldOffset(16)] public byte byte10;
-            [FieldOffset(17)] public byte byte11;
-            [FieldOffset(18)] public byte byte12;
-            [FieldOffset(19)] public byte byte13;
-            [FieldOffset(20)] public byte byte14;
-            [FieldOffset(21)] public byte byte15;
-            [FieldOffset(22)] public byte byte16;
-            [FieldOffset(23)] public byte byte17;
-            [FieldOffset(24)] public byte byte18;
-            [FieldOffset(25)] public byte byte19;
-            [FieldOffset(26)] public byte byte1A;
-            [FieldOffset(27)] public byte byte1B;
-            [FieldOffset(28)] public byte byte1C;
-            [FieldOffset(29)] public byte byte1D;
-            [FieldOffset(30)] public byte byte1E;
-            [FieldOffset(31)] public byte byte1F;
-            [FieldOffset(32)] public byte byte20;
-            [FieldOffset(33)] public byte byte21;
-            [FieldOffset(34)] public byte byte22;
-            [FieldOffset(35)] public byte byte23;
-            [FieldOffset(36)] public byte byte24;
-            [FieldOffset(37)] public byte byte25;
-            [FieldOffset(38)] public byte byte26;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
+            [FieldOffset(0x10)] public byte byte10;
+            [FieldOffset(0x11)] public byte byte11;
+            [FieldOffset(0x12)] public byte byte12;
+            [FieldOffset(0x13)] public byte byte13;
+            [FieldOffset(0x14)] public byte byte14;
+            [FieldOffset(0x15)] public byte byte15;
+            [FieldOffset(0x16)] public byte byte16;
+            [FieldOffset(0x17)] public byte byte17;
+            [FieldOffset(0x18)] public byte byte18;
+            [FieldOffset(0x19)] public byte byte19;
+            [FieldOffset(0x1A)] public byte byte1A;
+            [FieldOffset(0x1B)] public byte byte1B;
+            [FieldOffset(0x1C)] public byte byte1C;
+            [FieldOffset(0x1D)] public byte byte1D;
+            [FieldOffset(0x1E)] public byte byte1E;
+            [FieldOffset(0x1F)] public byte byte1F;
+            [FieldOffset(0x20)] public byte byte20;
+            [FieldOffset(0x21)] public byte byte21;
+            [FieldOffset(0x22)] public byte byte22;
+            [FieldOffset(0x23)] public byte byte23;
+            [FieldOffset(0x24)] public byte byte24;
+            [FieldOffset(0x25)] public byte byte25;
+            [FieldOffset(0x26)] public byte byte26;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 262, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x106, CharSet = CharSet.Ansi)]
         public struct HanwhaHeader
         {
-            [FieldOffset(0)] public byte packet_type;   // 0x01 for request, 0x0b for answer
-            [FieldOffset(1)] public byte _01_value;
-            [FieldOffset(2)] public byte _02_value;
-            [FieldOffset(3)] public byte _03_value;
-            [FieldOffset(4)] public byte _04_value;
-            [FieldOffset(5)] public byte _05_value;
-            [FieldOffset(6)] public byte _06_value;
-            [FieldOffset(7)] public byte _07_value;
-            [FieldOffset(8)] public byte _08_value;
-            [FieldOffset(9)] public byte _09_value;
-            [FieldOffset(10)] public byte _0A_value;
-            [FieldOffset(11)] public byte _0B_value;
-            [FieldOffset(12)] public byte _0C_value;
-            [FieldOffset(13)] public byte _0D_value;
-            [FieldOffset(14)] public byte _0E_value;
-            [FieldOffset(15)] public byte _0F_value;
-            [FieldOffset(16)] public byte _10_value;
-            [FieldOffset(17)] public byte _11_value;
-            [FieldOffset(18)] public byte _12_value;
-            [FieldOffset(19)] public String18bytes mac_address;
-            [FieldOffset(37)] public String16bytes ip_address;
-            [FieldOffset(53)] public String16bytes ip_mask;
-            [FieldOffset(69)] public String16bytes ip_gw;
-            [FieldOffset(85)] public byte _55_value;
-            [FieldOffset(86)] public byte _56_value;
-            [FieldOffset(87)] public byte _57_value;
-            [FieldOffset(88)] public byte _58_value;
-            [FieldOffset(89)] public byte _59_value;
-            [FieldOffset(90)] public byte _5A_value;
-            [FieldOffset(91)] public byte _5B_value;
-            [FieldOffset(92)] public byte _5C_value;
-            [FieldOffset(93)] public byte _5D_value;
-            [FieldOffset(94)] public byte _5E_value;
-            [FieldOffset(95)] public byte _5F_value;
-            [FieldOffset(96)] public byte _60_value;
-            [FieldOffset(97)] public byte _61_value;
-            [FieldOffset(98)] public byte _62_value;
-            [FieldOffset(99)] public byte _63_value;
-            [FieldOffset(100)] public byte _64_value;
-            [FieldOffset(101)] public byte _65_value;
-            [FieldOffset(102)] public byte _66_value;
-            [FieldOffset(103)] public byte _67_value;
-            [FieldOffset(104)] public byte _68_value;
-            [FieldOffset(105)] public byte _69_value;
-            [FieldOffset(106)] public byte _6A_value;
-            [FieldOffset(107)] public byte _6B_value;
-            [FieldOffset(108)] public byte _6C_value;
-            [FieldOffset(109)] public String10bytes device_type;
-            [FieldOffset(119)] public byte _77_value;
-            [FieldOffset(120)] public byte _78_value;
-            [FieldOffset(121)] public byte _79_value;
-            [FieldOffset(122)] public byte _7A_value;
-            [FieldOffset(123)] public byte _7B_value;
-            [FieldOffset(124)] public byte _7C_value;
-            [FieldOffset(125)] public byte _7D_value;
-            [FieldOffset(126)] public byte _7E_value;
-            [FieldOffset(127)] public byte _7F_value;
-            [FieldOffset(128)] public byte _80_value;
-            [FieldOffset(129)] public byte _81_value;
-            [FieldOffset(130)] public byte _82_value;
-            [FieldOffset(131)] public byte _83_value;
-            [FieldOffset(132)] public byte _84_value;
-            [FieldOffset(133)] public String39bytes url;
-            [FieldOffset(172)] public byte _AC_value;
-            [FieldOffset(173)] public byte _AD_value;
-            [FieldOffset(174)] public UInt32 _padding1;
-            [FieldOffset(178)] public UInt32 _padding2;
-            [FieldOffset(182)] public UInt32 _padding3;
-            [FieldOffset(186)] public UInt32 _padding4;
-            [FieldOffset(190)] public UInt32 _padding5;
-            [FieldOffset(194)] public UInt32 _padding6;
-            [FieldOffset(198)] public UInt32 _padding7;
-            [FieldOffset(202)] public UInt32 _padding8;
-            [FieldOffset(206)] public UInt32 _padding9;
-            [FieldOffset(210)] public UInt32 _padding10;
-            [FieldOffset(214)] public UInt32 _padding11;
-            [FieldOffset(218)] public UInt32 _padding12;
-            [FieldOffset(222)] public UInt32 _padding13;
-            [FieldOffset(226)] public UInt32 _padding14;
-            [FieldOffset(230)] public UInt32 _padding15;
-            [FieldOffset(234)] public UInt32 _padding16;
-            [FieldOffset(238)] public UInt32 _padding17;
-            [FieldOffset(242)] public UInt32 _padding18;
-            [FieldOffset(246)] public UInt32 _padding19;
-            [FieldOffset(250)] public UInt32 _padding20;
-            [FieldOffset(254)] public UInt32 _padding21;
-            [FieldOffset(258)] public UInt32 _padding22;
+            [FieldOffset(0x00)] public byte packet_type;   // 0x01 for request, 0x0b for answer
+            [FieldOffset(0x01)] public byte _byte_01;
+            [FieldOffset(0x02)] public byte _byte_02;
+            [FieldOffset(0x03)] public byte _byte_03;
+            [FieldOffset(0x04)] public byte _byte_04;
+            [FieldOffset(0x05)] public byte _byte_05;
+            [FieldOffset(0x06)] public byte _byte_06;
+            [FieldOffset(0x07)] public byte _byte_07;
+            [FieldOffset(0x08)] public byte _byte_08;
+            [FieldOffset(0x09)] public byte _byte_09;
+            [FieldOffset(0x0A)] public byte _byte_0A;
+            [FieldOffset(0x0B)] public byte _byte_0B;
+            [FieldOffset(0x0C)] public byte _byte_0C;
+            [FieldOffset(0x0D)] public byte _byte_0D;
+            [FieldOffset(0x0E)] public byte _byte_0E;
+            [FieldOffset(0x0F)] public byte _byte_0F;
+            [FieldOffset(0x10)] public byte _byte_10;
+            [FieldOffset(0x11)] public byte _byte_11;
+            [FieldOffset(0x12)] public byte _byte_12;
+            [FieldOffset(0x13)] public String18bytes mac_address;
+            [FieldOffset(0x25)] public String16bytes ip_address;
+            [FieldOffset(0x35)] public String16bytes ip_mask;
+            [FieldOffset(0x45)] public String16bytes ip_gw;
+            [FieldOffset(0x55)] public byte _byte_55;
+            [FieldOffset(0x56)] public byte _byte_56;
+            [FieldOffset(0x57)] public byte _byte_57;
+            [FieldOffset(0x58)] public byte _byte_58;
+            [FieldOffset(0x59)] public byte _byte_59;
+            [FieldOffset(0x5A)] public byte _byte_5A;
+            [FieldOffset(0x5B)] public byte _byte_5B;
+            [FieldOffset(0x5C)] public byte _byte_5C;
+            [FieldOffset(0x5D)] public byte _byte_5D;
+            [FieldOffset(0x5E)] public byte _byte_5E;
+            [FieldOffset(0x5F)] public byte _byte_5F;
+            [FieldOffset(0x60)] public byte _byte_60;
+            [FieldOffset(0x61)] public byte _byte_61;
+            [FieldOffset(0x62)] public byte _byte_62;
+	        [FieldOffset(0x63)] public byte _byte_63;
+            [FieldOffset(0x64)] public byte _byte_64;
+            [FieldOffset(0x65)] public byte _byte_65;
+            [FieldOffset(0x66)] public byte _byte_66;
+            [FieldOffset(0x67)] public byte _byte_67;
+            [FieldOffset(0x68)] public byte _byte_68;
+            [FieldOffset(0x69)] public byte _byte_69;
+            [FieldOffset(0x6A)] public byte _byte_6A;
+            [FieldOffset(0x6B)] public byte _byte_6B;
+            [FieldOffset(0x6C)] public byte _byte_6C;
+            [FieldOffset(0x6D)] public String10bytes device_type;
+            [FieldOffset(0x77)] public byte _byte_77;
+            [FieldOffset(0x78)] public byte _byte_78;
+            [FieldOffset(0x79)] public byte _byte_79;
+            [FieldOffset(0x7A)] public byte _byte_7A;
+            [FieldOffset(0x7B)] public byte _byte_7B;
+            [FieldOffset(0x7C)] public byte _byte_7C;
+            [FieldOffset(0x7D)] public byte _byte_7D;
+            [FieldOffset(0x7E)] public byte _byte_7E;
+            [FieldOffset(0x7F)] public byte _byte_7F;
+            [FieldOffset(0x80)] public byte _byte_80;
+            [FieldOffset(0x81)] public byte _byte_81;
+            [FieldOffset(0x82)] public byte _byte_82;
+            [FieldOffset(0x83)] public byte _byte_83;
+            [FieldOffset(0x84)] public byte _byte_84;
+            [FieldOffset(0x85)] public String39bytes url;
+            [FieldOffset(0xAC)] public byte _AC_value;
+            [FieldOffset(0xAD)] public byte _AD_value;
+            [FieldOffset(0xAE)] public UInt32 _reserved_AE;
+            [FieldOffset(0xB2)] public UInt32 _reserved_B2;
+            [FieldOffset(0xB6)] public UInt32 _reserved_B6;
+            [FieldOffset(0xBA)] public UInt32 _reserved_BA;
+            [FieldOffset(0xBE)] public UInt32 _reserved_BE;
+            [FieldOffset(0xC2)] public UInt32 _reserved_C2;
+            [FieldOffset(0xC6)] public UInt32 _reserved_C6;
+            [FieldOffset(0xCA)] public UInt32 _reserved_CA;
+            [FieldOffset(0xCE)] public UInt32 _reserved_CE;
+            [FieldOffset(0xD2)] public UInt32 _reserved_D2;
+            [FieldOffset(0xD6)] public UInt32 _reserved_D6;
+            [FieldOffset(0xDA)] public UInt32 _reserved_DA;
+            [FieldOffset(0xDE)] public UInt32 _reserved_DE;
+            [FieldOffset(0xE2)] public UInt32 _reserved_E2;
+            [FieldOffset(0xE6)] public UInt32 _reserved_E6;
+            [FieldOffset(0xEA)] public UInt32 _reserved_EA;
+            [FieldOffset(0xEE)] public UInt32 _reserved_EE;
+            [FieldOffset(0xF2)] public UInt32 _reserved_F2;
+            [FieldOffset(0xF6)] public UInt32 _reserved_F6;
+            [FieldOffset(0xFA)] public UInt32 _reserved_FA;
+            [FieldOffset(0xFE)] public UInt32 _reserved_FE;
+            [FieldOffset(0x102)] public UInt32 _reserved_102;
         }
 
         public Hanwha()

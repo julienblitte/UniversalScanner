@@ -25,6 +25,15 @@ namespace UniversalScanner
             [FieldOffset(0x02)] public UInt16 command;
             [FieldOffset(0x04)] public UInt16 payloadLen;
             [FieldOffset(0x06)] public UInt16 requestId;
+
+            public GigEVisionRequest(UInt16 requestCounter)
+            {
+                messageType = 0x42;
+                flags = 0x11;
+                command = NetworkUtils.HostToNetworkOrder16(0x0002);
+                payloadLen = 0;
+                requestId = requestCounter;
+            }
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0x06, CharSet = CharSet.Ansi)]
@@ -160,49 +169,49 @@ namespace UniversalScanner
             [FieldOffset(0x08)] public UInt16 plMajorVersion;
             [FieldOffset(0x0A)] public UInt16 plMinorVersion;
             [FieldOffset(0x0C)] public UInt32 plDeviceFlags;
-            [FieldOffset(0x10)] public byte _byte10;
-            [FieldOffset(0x11)] public byte _byte11;
+            [FieldOffset(0x10)] public byte _byte_10;
+            [FieldOffset(0x11)] public byte _byte_11;
             [FieldOffset(0x12)] public MacAddress plMacAddress;
             [FieldOffset(0x18)] public UInt32 plIPOptionsfFlags;
             [FieldOffset(0x1C)] public UInt32 plIPCurrentFlags;
-            [FieldOffset(0x20)] public byte _byte20;
-            [FieldOffset(0x21)] public byte _byte21;
-            [FieldOffset(0x22)] public byte _byte22;
-            [FieldOffset(0x23)] public byte _byte23;
-            [FieldOffset(0x24)] public byte _byte24;
-            [FieldOffset(0x25)] public byte _byte25;
-            [FieldOffset(0x26)] public byte _byte26;
-            [FieldOffset(0x27)] public byte _byte27;
-            [FieldOffset(0x28)] public byte _byte28;
-            [FieldOffset(0x29)] public byte _byte29;
-            [FieldOffset(0x2A)] public byte _byte2A;
-            [FieldOffset(0x2B)] public byte _byte2B;
+            [FieldOffset(0x20)] public byte _byte_20;
+            [FieldOffset(0x21)] public byte _byte_21;
+            [FieldOffset(0x22)] public byte _byte_22;
+            [FieldOffset(0x23)] public byte _byte_23;
+            [FieldOffset(0x24)] public byte _byte_24;
+            [FieldOffset(0x25)] public byte _byte_25;
+            [FieldOffset(0x26)] public byte _byte_26;
+            [FieldOffset(0x27)] public byte _byte_27;
+            [FieldOffset(0x28)] public byte _byte_28;
+            [FieldOffset(0x29)] public byte _byte_29;
+            [FieldOffset(0x2A)] public byte _byte_2A;
+            [FieldOffset(0x2B)] public byte _byte_2B;
             [FieldOffset(0x2C)] public UInt32 plIPCurrentAddr;
-            [FieldOffset(0x30)] public byte _byte30;
-            [FieldOffset(0x31)] public byte _byte31;
-            [FieldOffset(0x32)] public byte _byte32;
-            [FieldOffset(0x33)] public byte _byte33;
-            [FieldOffset(0x34)] public byte _byte34;
-            [FieldOffset(0x35)] public byte _byte35;
-            [FieldOffset(0x36)] public byte _byte36;
-            [FieldOffset(0x37)] public byte _byte37;
-            [FieldOffset(0x38)] public byte _byte38;
-            [FieldOffset(0x39)] public byte _byte39;
-            [FieldOffset(0x3A)] public byte _byte3A;
-            [FieldOffset(0x3B)] public byte _byte3B;
+            [FieldOffset(0x30)] public byte _byte_30;
+            [FieldOffset(0x31)] public byte _byte_31;
+            [FieldOffset(0x32)] public byte _byte_32;
+            [FieldOffset(0x33)] public byte _byte_33;
+            [FieldOffset(0x34)] public byte _byte_34;
+            [FieldOffset(0x35)] public byte _byte_35;
+            [FieldOffset(0x36)] public byte _byte_36;
+            [FieldOffset(0x37)] public byte _byte_37;
+            [FieldOffset(0x38)] public byte _byte_38;
+            [FieldOffset(0x39)] public byte _byte_39;
+            [FieldOffset(0x3A)] public byte _byte_3A;
+            [FieldOffset(0x3B)] public byte _byte_3B;
             [FieldOffset(0x3C)] public UInt32 plIPCurrentMask;
-            [FieldOffset(0x40)] public byte _byte40;
-            [FieldOffset(0x41)] public byte _byte41;
-            [FieldOffset(0x42)] public byte _byte42;
-            [FieldOffset(0x43)] public byte _byte43;
-            [FieldOffset(0x44)] public byte _byte44;
-            [FieldOffset(0x45)] public byte _byte45;
-            [FieldOffset(0x46)] public byte _byte46;
-            [FieldOffset(0x47)] public byte _byte47;
-            [FieldOffset(0x48)] public byte _byte48;
-            [FieldOffset(0x49)] public byte _byte49;
-            [FieldOffset(0x4A)] public byte _byte4A;
-            [FieldOffset(0x4B)] public byte _byte4B;
+            [FieldOffset(0x40)] public byte _byte_40;
+            [FieldOffset(0x41)] public byte _byte_41;
+            [FieldOffset(0x42)] public byte _byte_42;
+            [FieldOffset(0x43)] public byte _byte_43;
+            [FieldOffset(0x44)] public byte _byte_44;
+            [FieldOffset(0x45)] public byte _byte_45;
+            [FieldOffset(0x46)] public byte _byte_46;
+            [FieldOffset(0x47)] public byte _byte_47;
+            [FieldOffset(0x48)] public byte _byte_48;
+            [FieldOffset(0x49)] public byte _byte_49;
+            [FieldOffset(0x4A)] public byte _byte_4A;
+            [FieldOffset(0x4B)] public byte _byte_4B;
             [FieldOffset(0x4C)] public UInt32 plIPCurrentGateway;
             [FieldOffset(0x50)] public String32bytes plManufacturer;
             [FieldOffset(0x70)] public String32bytes plModel;
@@ -248,7 +257,7 @@ namespace UniversalScanner
             GigEVisionRequest request;
 
             requestCounter++;
-            request = new GigEVisionRequest() { messageType = 0x42, flags = 0x11, command = NetworkUtils.HostToNetworkOrder16(0x0002), payloadLen = 0, requestId = requestCounter };
+            request = new GigEVisionRequest(requestCounter);
 
             return request.GetBytes();
         }

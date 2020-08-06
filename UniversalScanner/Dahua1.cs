@@ -35,67 +35,67 @@ namespace UniversalScanner
             }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 16, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x10, CharSet = CharSet.Ansi)]
         public struct String16bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
-            [FieldOffset(10)] public byte byte0A;
-            [FieldOffset(11)] public byte byte0B;
-            [FieldOffset(12)] public byte byte0C;
-            [FieldOffset(13)] public byte byte0D;
-            [FieldOffset(14)] public byte byte0E;
-            [FieldOffset(15)] public byte byte0F;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 120, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x78, CharSet = CharSet.Ansi)]
         public struct Dahua1Section1
         {
-            [FieldOffset(0)] public byte headerMagic;   // 0xb3 for answer, 0xa3 fo discovery
-            [FieldOffset(1)] public byte _01_value;
+            [FieldOffset(0x00)] public byte headerMagic;   // 0xb3 for answer, 0xa3 fo discovery
+            [FieldOffset(0x01)] public byte _byte_01;
             /* not 4-bytes aligned */
-            [FieldOffset(2)] public byte section2Len;
-            [FieldOffset(3)] public byte _03_value;
-            [FieldOffset(4)] public UInt32 _04_value;      // 0x58 for answer, 0x00 for discovery
-            [FieldOffset(8)] public UInt32 _08_reserved;
-            [FieldOffset(12)] public UInt32 _0C_reserved;
-            [FieldOffset(16)] public UInt32 protocolVersion;    // 0x02 for answer
-            [FieldOffset(20)] public UInt16 section3Len;
+            [FieldOffset(0x02)] public byte section2Len;
+            [FieldOffset(0x03)] public byte _byte_03;
+            [FieldOffset(0x04)] public UInt32 packetType;      // 0x58 for answer, 0x00 for discovery
+            [FieldOffset(0x08)] public UInt32 _reserved_08;
+            [FieldOffset(0x0C)] public UInt32 _reserved_0C;
+            [FieldOffset(0x10)] public UInt32 protocolVersion;    // 0x02 for answer
+            [FieldOffset(0x14)] public UInt16 section3Len;
             /* not 4-bytes aligned */
-            [FieldOffset(22)] public UInt16 _16_value;   // often 0x0000
-            [FieldOffset(24)] public UInt32 _18_reserved;
-            [FieldOffset(28)] public UInt32 _1C_reserved;
-            [FieldOffset(32)] public UInt32 _20_value;
-            [FieldOffset(36)] public UInt32 _24_value;
-            [FieldOffset(40)] public String16bytes deviceType;
-            [FieldOffset(56)] public UInt32 ip;
-            [FieldOffset(60)] public UInt32 mask;
-            [FieldOffset(64)] public UInt32 gateway;
-            [FieldOffset(68)] public UInt32 dns;
+            [FieldOffset(0x16)] public UInt16 _uint32_16;   // often 0x0000
+            [FieldOffset(0x18)] public UInt32 _reserved_18;
+            [FieldOffset(0x1C)] public UInt32 _reserved_1C;
+            [FieldOffset(0x20)] public UInt32 _uint32_20;
+            [FieldOffset(0x24)] public UInt32 _uint32_24;
+            [FieldOffset(0x28)] public String16bytes deviceType;
+            [FieldOffset(0x38)] public UInt32 ip;
+            [FieldOffset(0x3C)] public UInt32 mask;
+            [FieldOffset(0x40)] public UInt32 gateway;
+            [FieldOffset(0x44)] public UInt32 dns;
 
-            [FieldOffset(72)] public UInt32 _48_value;
-            [FieldOffset(76)] public UInt32 _4C_value;
-            [FieldOffset(80)] public UInt32 _50_value;
-            [FieldOffset(84)] public UInt32 _54_value;
-            [FieldOffset(88)] public UInt32 _58_value;
-            [FieldOffset(92)] public UInt32 _5C_value;
-            [FieldOffset(96)] public UInt32 _60_value;
-            [FieldOffset(100)] public UInt32 _64_value;
-            [FieldOffset(104)] public UInt32 _68_value;
-            [FieldOffset(108)] public UInt32 _6C_value;
-            [FieldOffset(112)] public UInt32 _70_value;
-            [FieldOffset(116)] public UInt32 _74_value;
+            [FieldOffset(0x48)] public UInt32 _uint32_48;
+            [FieldOffset(0x4C)] public UInt32 _uint32_4C;
+            [FieldOffset(0x50)] public UInt32 _uint32_50;
+            [FieldOffset(0x54)] public UInt32 _uint32_54;
+            [FieldOffset(0x58)] public UInt32 _uint32_58;
+            [FieldOffset(0x5C)] public UInt32 _uint32_5C;
+            [FieldOffset(0x60)] public UInt32 _uint32_60;
+            [FieldOffset(0x64)] public UInt32 _uint32_64;
+            [FieldOffset(0x68)] public UInt32 _uint32_68;
+            [FieldOffset(0x6C)] public UInt32 _uint32_6C;
+            [FieldOffset(0x70)] public UInt32 _uint32_70;
+            [FieldOffset(0x74)] public UInt32 _uint32_74;
         }
 
-        private byte[] discover = {
+        private readonly byte[] discover = {
             0xa3, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         };

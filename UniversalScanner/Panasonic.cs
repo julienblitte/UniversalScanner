@@ -25,41 +25,41 @@ namespace UniversalScanner
             shortname = 0xa8
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 6, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x06, CharSet = CharSet.Ansi)]
         public struct MacAddress
         {
-            [FieldOffset(0)] public byte byte0;
-            [FieldOffset(1)] public byte byte1;
-            [FieldOffset(2)] public byte byte2;
-            [FieldOffset(3)] public byte byte3;
-            [FieldOffset(4)] public byte byte4;
-            [FieldOffset(5)] public byte byte5;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 52, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x34, CharSet = CharSet.Ansi)]
         public struct PanasonicDiscovery
         {
-            [FieldOffset(0)] public UInt32 headerMagic;
-            [FieldOffset(4)] public UInt32 payload1;
-            [FieldOffset(8)] public UInt32 payload2;
-            [FieldOffset(12)] MacAddress mac;
-            [FieldOffset(18)] public UInt32 ip;
-            [FieldOffset(22)] public UInt32 payload3;
-            [FieldOffset(26)] public UInt32 payload4;
-            [FieldOffset(30)] public UInt32 payload5;
-            [FieldOffset(34)] public UInt32 payload6;
-            [FieldOffset(38)] public UInt32 payload7;
-            [FieldOffset(42)] public UInt32 payload8;
-            [FieldOffset(46)] public UInt32 payload9;
-            [FieldOffset(50)] public UInt16 checksum;
+            [FieldOffset(0x00)] public UInt32 headerMagic;
+            [FieldOffset(0x04)] public UInt32 _uint32_04;
+            [FieldOffset(0x08)] public UInt32 _uint32_08;
+            [FieldOffset(0x0C)] MacAddress mac;
+            [FieldOffset(0x12)] public UInt32 ip;
+            [FieldOffset(0x16)] public UInt32 _uint32_16;
+            [FieldOffset(0x1A)] public UInt32 _uint32_1A;
+            [FieldOffset(0x1E)] public UInt32 _uint32_1E;
+            [FieldOffset(0x22)] public UInt32 _uint32_22;
+            [FieldOffset(0x26)] public UInt32 _uint32_26;
+            [FieldOffset(0x2A)] public UInt32 _uint32_2A;
+            [FieldOffset(0x2E)] public UInt32 _uint32_2E;
+            [FieldOffset(0x32)] public UInt16 checksum;
 
             public PanasonicDiscovery(PhysicalAddress macAddress, IPAddress _ip)
             {
                 byte[] ipBytes;
                 UInt32 ipUInt32;
 
-                payload1 = 0x00000d00;
-                payload2 = 0x00000000;
+                _uint32_04 = NetworkUtils.bigEndian32(0x000d0000);
+                _uint32_08 = NetworkUtils.bigEndian32(0x00000000);
 
                 headerMagic = NetworkUtils.bigEndian32(0x00010000);
 
@@ -72,13 +72,13 @@ namespace UniversalScanner
                     (ipBytes[3]));
                 ip = NetworkUtils.bigEndian32(ipUInt32);
 
-                payload3 = NetworkUtils.bigEndian32(0x00012011);
-                payload4 = NetworkUtils.bigEndian32(0x1e11231f);
-                payload5 = NetworkUtils.bigEndian32(0x1e191300);
-                payload6 = NetworkUtils.bigEndian32(0x00020000);
-                payload7 = NetworkUtils.bigEndian32(0x00000000);
-                payload8 = NetworkUtils.bigEndian32(0x00000000);
-                payload9 = NetworkUtils.bigEndian32(0x0000ffff);
+                _uint32_16 = NetworkUtils.bigEndian32(0x00012011);
+                _uint32_1A = NetworkUtils.bigEndian32(0x1e11231f);
+                _uint32_1E = NetworkUtils.bigEndian32(0x1e191300);
+                _uint32_22 = NetworkUtils.bigEndian32(0x00020000);
+                _uint32_26 = NetworkUtils.bigEndian32(0x00000000);
+                _uint32_2A = NetworkUtils.bigEndian32(0x00000000);
+                _uint32_2E = NetworkUtils.bigEndian32(0x0000ffff);
                 checksum = NetworkUtils.bigEndian16(0x0000);
             }
         }

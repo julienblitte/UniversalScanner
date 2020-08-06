@@ -15,77 +15,89 @@ namespace UniversalScanner
     {
         private const int requestPort = 2007;
         private int answerPort;
+        private UInt16 transactionId;
 
-        private readonly UInt32 magic = 0x4e494345; // 'NICE'
-        private readonly UInt32 payload = 0x01080000;
+        private static readonly UInt32 magic = 0x4e494345; // 'NICE'
+        private static readonly UInt32 payload = 0x01080000;
 
-        [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x0C, CharSet = CharSet.Ansi)]
         public struct NiceVisionRequest
         {
-            [FieldOffset(0)] public UInt32 magic;
-            [FieldOffset(4)] public UInt16 transactionID;
-            [FieldOffset(6)] public UInt32 payload;
-            [FieldOffset(10)] public UInt16 answerPort;
+            [FieldOffset(0x00)] public UInt32 magic;
+            [FieldOffset(0x04)] public UInt16 transaction;
+            [FieldOffset(0x06)] public UInt32 payload;
+            [FieldOffset(0x0c)] public UInt16 answerPort;
+
+            public NiceVisionRequest(UInt16 transactionId, UInt16 answerToPort)
+            {
+                magic = NetworkUtils.bigEndian32(NiceVision.magic);
+                transaction = NetworkUtils.bigEndian16(transactionId);
+                payload = NetworkUtils.bigEndian32(NiceVision.payload);
+                answerPort = NetworkUtils.bigEndian16((UInt16)answerToPort);
+            }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 6, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x06, CharSet = CharSet.Ansi)]
         public struct MacAddress
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
         };
 
-        [StructLayout(LayoutKind.Explicit, Size = 10, CharSet = CharSet.Ansi)]
-        public struct DeviceName
+        [StructLayout(LayoutKind.Explicit, Size = 0x16, CharSet = CharSet.Ansi)]
+        public struct String16Bytes
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
-            [FieldOffset(6)] public byte byte06;
-            [FieldOffset(7)] public byte byte07;
-            [FieldOffset(8)] public byte byte08;
-            [FieldOffset(9)] public byte byte09;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
         };
 
-        [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x5A, CharSet = CharSet.Ansi)]
         public struct NiceVisionAnswer
         {
-            [FieldOffset(0)] public UInt32 magic;
-            [FieldOffset(4)] public UInt16 transactionID1;
-            [FieldOffset(6)] public byte _value_06;
-            [FieldOffset(7)] public byte _value_07;
-            [FieldOffset(8)] public byte _value_08;
-            [FieldOffset(9)] public byte _value_09;
-            [FieldOffset(10)] public MacAddress mac;
-            [FieldOffset(16)] public UInt32 ipv4;
-            [FieldOffset(20)] public UInt32 mask;
-            [FieldOffset(24)] public UInt32 gateway;
-            [FieldOffset(28)] public byte _value_1C;
-            [FieldOffset(29)] public byte _value_1D;
-            [FieldOffset(30)] public UInt16 version1;
-            [FieldOffset(32)] public UInt16 version2;
-            [FieldOffset(34)] public UInt16 version3;
-            [FieldOffset(36)] public UInt16 version4;
-            [FieldOffset(38)] public UInt32 padding_28;
-            [FieldOffset(42)] public UInt32 padding_2C;
-            [FieldOffset(46)] public UInt32 padding_30;
-            [FieldOffset(50)] public UInt32 padding_34;
-            [FieldOffset(54)] public UInt32 padding_38;
-            [FieldOffset(58)] public UInt32 padding_3C;
-            [FieldOffset(62)] public UInt32 padding_40;
-            [FieldOffset(66)] public UInt32 padding_44;
-            [FieldOffset(70)] public byte _value_48;
-            [FieldOffset(71)] public byte _value_49;
-            [FieldOffset(72)] public byte _value_4A;
-            [FieldOffset(73)] public byte _value_4B;
-            [FieldOffset(74)] public DeviceName name;
+            [FieldOffset(0x00)] public UInt32 magic;
+            [FieldOffset(0x04)] public UInt16 transactionID1;
+            [FieldOffset(0x06)] public byte _byte_06;
+            [FieldOffset(0x07)] public byte _byte_07;
+            [FieldOffset(0x08)] public byte _byte_08;
+            [FieldOffset(0x09)] public byte _byte_09;
+            [FieldOffset(0x0A)] public MacAddress mac;
+            [FieldOffset(0x10)] public UInt32 ipv4;
+            [FieldOffset(0x14)] public UInt32 mask;
+            [FieldOffset(0x18)] public UInt32 gateway;
+            [FieldOffset(0x1C)] public byte _byte_1C;
+            [FieldOffset(0x1D)] public byte _byte_1D;
+            [FieldOffset(0x1E)] public UInt16 version1;
+            [FieldOffset(0x20)] public UInt16 version2;
+            [FieldOffset(0x22)] public UInt16 version3;
+            [FieldOffset(0x24)] public UInt16 version4;
+            [FieldOffset(0x26)] public UInt32 _uint32_26;
+            [FieldOffset(0x2A)] public UInt32 _uint32_2A;
+            [FieldOffset(0x2E)] public UInt32 _uint32_2E;
+            [FieldOffset(0x32)] public UInt32 _uint32_32;
+            [FieldOffset(0x36)] public UInt32 _uint32_36;
+            [FieldOffset(0x3A)] public UInt32 _uint32_3A;
+            [FieldOffset(0x3E)] public UInt32 _uint32_3E;
+            [FieldOffset(0x42)] public UInt32 _uint32_42;
+            [FieldOffset(0x46)] public UInt32 _uint32_46;
+            [FieldOffset(0x4A)] public String16Bytes name;
         }
 
         public override int color
@@ -104,6 +116,8 @@ namespace UniversalScanner
         }
         public NiceVision()
         {
+            transactionId = 0;
+
             listenUdpInterfaces();
             answerPort = listenUdpGlobal();
         }
@@ -120,8 +134,9 @@ namespace UniversalScanner
         {
             NiceVisionRequest req;
 
-            req = new NiceVisionRequest() { magic = NetworkUtils.bigEndian32(magic), transactionID = NetworkUtils.bigEndian16(1),
-                payload = NetworkUtils.bigEndian32(payload), answerPort = NetworkUtils.bigEndian16((UInt16)answerPort) };
+            transactionId++;
+
+            req = new NiceVisionRequest(transactionId, (UInt16)answerPort);
             return req.GetBytes();
         }
 

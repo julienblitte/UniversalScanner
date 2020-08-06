@@ -75,15 +75,15 @@ namespace UniversalScanner
 
         private UInt16 mDNSQuestionClass = 0x0001;
 
-        [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x0C, CharSet = CharSet.Ansi)]
         public struct mDNSHeader
         {
-            [FieldOffset(0)] public UInt16 transactionID;
-            [FieldOffset(2)] public UInt16 flags;
-            [FieldOffset(4)] public UInt16 questions;
-            [FieldOffset(6)] public UInt16 answerRRs;
-            [FieldOffset(8)] public UInt16 authorityRRs;
-            [FieldOffset(10)] public UInt16 additionalRRs;
+            [FieldOffset(0x00)] public UInt16 transactionID;
+            [FieldOffset(0x02)] public UInt16 flags;
+            [FieldOffset(0x04)] public UInt16 questions;
+            [FieldOffset(0x06)] public UInt16 answerRRs;
+            [FieldOffset(0x08)] public UInt16 authorityRRs;
+            [FieldOffset(0x0A)] public UInt16 additionalRRs;
         }
 
         private mDNS()

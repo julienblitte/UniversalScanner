@@ -11,9 +11,9 @@ namespace UniversalScanner
 {
     class _360Vision : ScanEngine
     {
-        protected int port = 3600;
+        protected const int port = 3600;
 
-        private string request = "DISCOVER\n";
+        private static readonly string request = "DISCOVER\n";
 
         public override string name
         {

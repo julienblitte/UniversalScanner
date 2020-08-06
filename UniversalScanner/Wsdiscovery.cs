@@ -12,7 +12,7 @@ namespace UniversalScanner
     class Wsdiscovery : ScanEngine
     {
         private const int port = 3702;
-        private readonly string multicastIP = "239.255.255.250";
+        private static readonly string multicastIP = "239.255.255.250";
 
         private Guid message_uuidg;
         private string announce = "<s:Envelope"
@@ -37,7 +37,7 @@ namespace UniversalScanner
             + "</s:Body>"
             + "</s:Envelope>";
 
-        private string verbatim = "<s:Envelope"
+        private static readonly string verbatim = "<s:Envelope"
             + " xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\""
             + " xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\""
             + ">"

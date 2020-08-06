@@ -35,40 +35,40 @@ namespace UniversalScanner
             }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 6, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x06, CharSet = CharSet.Ansi)]
         public struct MacAddress
         {
-            [FieldOffset(0)] public byte byte00;
-            [FieldOffset(1)] public byte byte01;
-            [FieldOffset(2)] public byte byte02;
-            [FieldOffset(3)] public byte byte03;
-            [FieldOffset(4)] public byte byte04;
-            [FieldOffset(5)] public byte byte05;
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
         };
 
-        [StructLayout(LayoutKind.Explicit, Size = 32, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x20, CharSet = CharSet.Ansi)]
         public struct BoschBinaryAnswer
         {
-            [FieldOffset(0)] public UInt32 magic;
-            [FieldOffset(4)] public UInt32 transactionID;
-            [FieldOffset(8)] public MacAddress mac;
-            [FieldOffset(14)] public byte _0D_value;
-            [FieldOffset(15)] public byte _0E_value;
-            [FieldOffset(16)] public UInt32 ipv4;
-            [FieldOffset(20)] public UInt32 mask;
-            [FieldOffset(24)] public UInt32 gateway;
-            [FieldOffset(28)] public byte _1C_value;
-            [FieldOffset(29)] public byte _1D_value;
-            [FieldOffset(20)] public byte _1E_value;
-            [FieldOffset(31)] public byte _1F_value;
+            [FieldOffset(0x00)] public UInt32 magic;
+            [FieldOffset(0x04)] public UInt32 transactionID;
+            [FieldOffset(0x08)] public MacAddress mac;
+            [FieldOffset(0x0E)] public byte _byte_0E;
+            [FieldOffset(0x0F)] public byte _byte_0F;
+            [FieldOffset(0x10)] public UInt32 ipv4;
+            [FieldOffset(0x14)] public UInt32 mask;
+            [FieldOffset(0x18)] public UInt32 gateway;
+            [FieldOffset(0x1C)] public byte _byte_1C;
+            [FieldOffset(0x1D)] public byte _byte_1D;
+            [FieldOffset(0x1E)] public byte _byte_1E;
+            [FieldOffset(0x1F)] public byte _byte_1F;
         };
 
-        [StructLayout(LayoutKind.Explicit, Size = 12, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Explicit, Size = 0x0C, CharSet = CharSet.Ansi)]
         public struct BoschRequest
         {
-            [FieldOffset(0)] public UInt32 magic;
-            [FieldOffset(4)] public UInt32 transactionID;
-            [FieldOffset(8)] public UInt32 requestMagic;
+            [FieldOffset(0x00)] public UInt32 magic;
+            [FieldOffset(0x04)] public UInt32 transactionID;
+            [FieldOffset(0x08)] public UInt32 requestMagic;
         };
 
         public Bosch()

@@ -12,7 +12,7 @@ namespace UniversalScanner
 {
     class Hikvision : ScanEngine
     {
-        private readonly string multicastIP = "239.255.255.250";
+        private static readonly string multicastIP = "239.255.255.250";
         private const int port = 37020;
 
         public override int color
