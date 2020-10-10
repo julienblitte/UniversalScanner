@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using JulienBlitte.Utils;
 
 namespace selftest2pcap
 {
@@ -41,7 +42,7 @@ namespace selftest2pcap
             }
             else
             {
-                destPort = 0;
+                destPort = 2048;
             }
 
             source = args[0];

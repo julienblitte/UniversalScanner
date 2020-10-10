@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace selftest2pcap
+namespace JulienBlitte.Utils
 {
     public static class MemoryUtils
     {

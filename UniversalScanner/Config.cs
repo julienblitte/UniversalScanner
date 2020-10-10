@@ -14,8 +14,7 @@ namespace UniversalScanner
         public static bool enableIPv4;
         public static bool forceZeroConf;
         public static bool forceGenericProtocols;
-        public static bool clearOnRescan;
-        public static bool showDebugWarning;
+        public static bool traceMode;
         public static bool portSharing;
         public static bool onvifVerbatim;
         public static bool dahuaNetScan;
@@ -32,8 +31,7 @@ namespace UniversalScanner
             enableIPv4 = true;
             forceZeroConf = false;
             forceGenericProtocols = false;
-            clearOnRescan = false;
-            showDebugWarning = true;
+            traceMode = true;
             portSharing = true;
             onvifVerbatim = false;
             dahuaNetScan = false;
@@ -56,11 +54,8 @@ namespace UniversalScanner
                 forceGenericProtocols = key.readBool(nameof(forceGenericProtocols), forceGenericProtocols);
                 key.writeBool(nameof(forceGenericProtocols), forceGenericProtocols);
                 
-                clearOnRescan = key.readBool(nameof(clearOnRescan), clearOnRescan);
-                key.writeBool(nameof(clearOnRescan), clearOnRescan);
-                
-                showDebugWarning = key.readBool(nameof(showDebugWarning), showDebugWarning);
-                key.writeBool(nameof(showDebugWarning), showDebugWarning);
+                traceMode = key.readBool(nameof(traceMode), traceMode);
+                key.writeBool(nameof(traceMode), traceMode);
 
                 portSharing = key.readBool(nameof(portSharing), portSharing);
                 key.writeBool(nameof(portSharing), portSharing);

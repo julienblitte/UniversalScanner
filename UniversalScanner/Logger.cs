@@ -24,6 +24,11 @@ namespace UniversalScanner
 #endif
         }
 
+        public static void setLevel(DebugLevel level)
+        {
+            Logger.level = level;
+        }
+
         public static void WriteData(DebugLevel dataLevel, byte[] data, int threadId = 0)
         {
             string textFromData;

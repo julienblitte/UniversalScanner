@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,8 +7,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using JulienBlitte.Utils;
 
-namespace selftest2pcap
+namespace JulienBlitte.Utils
 {
     public class PcapFile
     {
@@ -22,6 +24,8 @@ namespace selftest2pcap
 
         private MemoryStream content;
         private string filename;
+
+        private Dictionary<UInt16, UInt64> tcpWindows;
 
         public static readonly byte[] macManufacturer = { 0x02, 0x00, 0x00 };
 
@@ -46,6 +50,8 @@ namespace selftest2pcap
                 content.Write(initData, 0, initData.Length);
                 Save();
             }
+
+            tcpWindows = new Dictionary<UInt16, UInt64>();
         }
 
         public void Save()
@@ -59,19 +65,78 @@ namespace selftest2pcap
             PcapItemHeader packetHeader;
             Ethernet packetEthernet;
             IPv4 packetIP;
-            UDP packetUDP;
 
             byte[] sourceBytes, destinationBytes;
 
-            byte[] payloadItemHeader, payloadEthernet, payloadIP, payloadUDP, payloadData;
+            byte[] payloadItemHeader, payloadEthernet, payloadIP, payloadTransport, payloadData;
             int index;
 
-            /* UDP */
-            packetUDP = new UDP((UInt16)source.Port, (UInt16)destination.Port, (UInt16)payload.Length);
-            payloadUDP = packetUDP.GetBytes();
+            switch (protocol)
+            {
+                case ProtocolType.Udp:
+                    UDP packetUDP;
+                    packetUDP = new UDP((UInt16)source.Port, (UInt16)destination.Port, (UInt16)payload.Length);
+                    payloadTransport = packetUDP.GetBytes();
+                    break;
+                case ProtocolType.Tcp:
+                    TCP packetTCP;
+                    UInt16 connection1, connection2;
+
+                    UInt64 seqAck;
+                    UInt32 seq, ack;
+
+                    connection1 = tcpConnectionId(source, destination);
+                    connection2 = tcpConnectionId(destination, source);
+                    if (tcpWindows.ContainsKey(connection1))
+                    {
+                        seqAck = tcpWindows[connection1];
+                        seq = (UInt32)(seqAck >> 32);
+                        ack = (UInt32)seqAck;
+                    }
+                    else
+                    {
+                        seq = 1;
+                        ack = 1;
+                        seqAck = ((UInt64)seq << 32) | ack;
+                        tcpWindows.Add(connection1, seqAck);
+                    }
+
+                    packetTCP = new TCP((UInt16)source.Port, (UInt16)destination.Port, seq, ack);
+
+                    seq += (UInt32)payload.Length;
+                    seqAck = ((UInt64)seq << 32) | ack;
+                    tcpWindows[connection1] = seqAck;
+
+                    if (tcpWindows.ContainsKey(connection2))
+                    {
+                        seqAck = tcpWindows[connection2];
+                        seq = (UInt32)(seqAck >> 32);
+                        ack = (UInt32)payload.Length;
+
+                        seqAck = ((UInt64)seq << 32) | ack;
+                        tcpWindows[connection2] = seqAck;
+                    }
+                    else
+                    {
+                        seq = 1;
+                        ack = (UInt32)payload.Length;
+
+                        seqAck = ((UInt64)seq << 32) | ack;
+                        tcpWindows.Add(connection2, seqAck);
+                    }
+
+                    payloadTransport = packetTCP.GetBytes();
+                    break;
+                case ProtocolType.IP:
+                    payloadTransport = new byte[] { };
+                    break;
+                default:
+                    throw new System.ArgumentException("This protocol is not supported", "protocol");
+            }
+
 
             /* ipv4 */
-            packetIP = new IPv4(source.Address, destination.Address, protocol, (UInt16)(payloadUDP.Length + payload.Length));
+            packetIP = new IPv4(source.Address, destination.Address, protocol, (UInt16)(payloadTransport.Length + payload.Length));
             payloadIP = packetIP.GetBytes();
 
             /* ethernet */
@@ -85,10 +150,10 @@ namespace selftest2pcap
             {
                 timestamp = DateTime.UtcNow;
             }
-            packetHeader = new PcapItemHeader((DateTime)timestamp, (UInt32)(payloadEthernet.Length + payloadIP.Length + payloadUDP.Length + payload.Length));
+            packetHeader = new PcapItemHeader((DateTime)timestamp, (UInt32)(payloadEthernet.Length + payloadIP.Length + payloadTransport.Length + payload.Length));
             payloadItemHeader = packetHeader.GetBytes();
 
-            payloadData = new byte[payloadItemHeader.Length + payloadEthernet.Length + payloadIP.Length + payloadUDP.Length + payload.Length];
+            payloadData = new byte[payloadItemHeader.Length + payloadEthernet.Length + payloadIP.Length + payloadTransport.Length + payload.Length];
 
             index = 0;
             payloadItemHeader.CopyTo(payloadData, index);
@@ -100,8 +165,8 @@ namespace selftest2pcap
             payloadIP.CopyTo(payloadData, index);
             index += payloadIP.Length;
 
-            payloadUDP.CopyTo(payloadData, index);
-            index += payloadUDP.Length;
+            payloadTransport.CopyTo(payloadData, index);
+            index += payloadTransport.Length;
 
             payload.CopyTo(payloadData, index);
             index += payload.Length;
@@ -252,6 +317,97 @@ namespace selftest2pcap
                 totalLength = htons((UInt16)(length + typeof(UDP).StructLayoutAttribute.Size));
                 checksum = 0;
             }
+        }
+
+        [StructLayout(LayoutKind.Explicit, Size = 8, CharSet = CharSet.Ansi)]
+        public struct TCP
+        {
+            [FieldOffset(0)] public UInt16 sourcePort;
+            [FieldOffset(2)] public UInt16 destPort;
+            [FieldOffset(4)] public UInt32 sequence;
+            [FieldOffset(8)] public UInt32 acknowledge;
+            [FieldOffset(12)] public UInt16 nextHeaderFlags;
+            [FieldOffset(14)] public UInt16 window;
+            [FieldOffset(16)] public UInt16 checksum;
+            [FieldOffset(18)] public UInt16 urgent;
+
+            public TCP(UInt16 sourcePort, UInt16 destPort, UInt32 seq, UInt32 ack)
+            {
+                UInt16 headerSize;
+
+                headerSize = 5;
+
+                this.sourcePort = htons(sourcePort);
+                this.destPort = htons(destPort);
+                sequence = htonl(seq);
+                acknowledge = htonl(ack);
+                
+                nextHeaderFlags = htons((UInt16)(
+                    (headerSize << 12) |
+                    (acknowledge != 0 ? 0x10 : 0)));
+
+                window = 0xffff;
+                checksum = 0;
+                urgent = 0;
+            }
+        }
+
+        UInt16 tcpConnectionId(IPEndPoint src, IPEndPoint dst)
+        {
+            byte[] addr1 = src.Address.GetAddressBytes();
+            byte[] port1 = src.Port.GetBytes();
+            byte[] addr2 = dst.Address.GetAddressBytes();
+            byte[] port2 = dst.Port.GetBytes();
+
+            byte[] data = new byte[addr1.Length + port1.Length + addr2.Length + port2.Length];
+
+            addr1.CopyTo(data, 0);
+            port1.CopyTo(data, addr1.Length);
+            addr2.CopyTo(data, addr1.Length + port1.Length);
+            port2.CopyTo(data, addr1.Length + port1.Length + addr2.Length);
+
+            return Crc16.ComputeChecksum(data);
+        }
+    }
+}
+
+public static class Crc16
+{
+    const ushort polynomial = 0xA001;
+    static readonly ushort[] table = new ushort[256];
+
+    public static ushort ComputeChecksum(byte[] bytes)
+    {
+        ushort crc = 0;
+        for (int i = 0; i < bytes.Length; ++i)
+        {
+            byte index = (byte)(crc ^ bytes[i]);
+            crc = (ushort)((crc >> 8) ^ table[index]);
+        }
+        return crc;
+    }
+
+    static Crc16()
+    {
+        ushort value;
+        ushort temp;
+        for (ushort i = 0; i < table.Length; ++i)
+        {
+            value = 0;
+            temp = i;
+            for (byte j = 0; j < 8; ++j)
+            {
+                if (((value ^ temp) & 0x0001) != 0)
+                {
+                    value = (ushort)((value >> 1) ^ polynomial);
+                }
+                else
+                {
+                    value >>= 1;
+                }
+                temp >>= 1;
+            }
+            table[i] = value;
         }
     }
 }
