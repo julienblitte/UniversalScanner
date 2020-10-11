@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -132,7 +131,7 @@ namespace UniversalScanner
 
                 if (i + length >= data.Length)
                 {
-                    Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Panasonic.parsePacket(): packet overflow");
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Panasonic.parsePacket(): packet overflow");
                     return result;
                 }
 
@@ -154,7 +153,7 @@ namespace UniversalScanner
 
             if (data.Length <= 52)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Panasonic.reciever(): Invalid packet size: {0}", data.Length));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Panasonic.reciever(): Invalid packet size: {0}", data.Length));
                 return;
             }
 

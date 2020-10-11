@@ -83,6 +83,7 @@
     <Compile Include="MemoryUtils.cs" />
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="NiceVision.cs" />
+    <Compile Include="PCapFile.cs" />
     <Compile Include="RegistryUtils.cs" />
     <Compile Include="Panasonic.cs" />
     <Compile Include="ScanEngine.cs" />

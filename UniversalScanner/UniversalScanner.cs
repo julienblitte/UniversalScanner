@@ -64,9 +64,9 @@ namespace UniversalScanner
 
             protocolFormat = new Dictionary<string, int>();
 
-            if (Config.traceMode)
+            if (Config.debugMode)
             {
-                Logger.setLevel(Logger.DebugLevel.Debug);
+                Logger.getInstance().setLevel(Logger.DebugLevel.Debug);
             }
         }
 
@@ -138,6 +138,7 @@ namespace UniversalScanner
 
         private void ScannerWindow_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Logger.getInstance().Dispose(); // mandatory to save pcap data when debugging
             Application.Exit();
         }
 
@@ -388,7 +389,7 @@ namespace UniversalScanner
         {
 #if DEBUG
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-            if (!Config.traceMode)
+            if (!Config.debugMode)
             {
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
                     + "You might want to download the release version at:\n{0}\n\n"

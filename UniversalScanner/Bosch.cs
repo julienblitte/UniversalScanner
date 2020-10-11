@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -91,7 +87,7 @@ namespace UniversalScanner
 
                 if (NetworkUtils.bigEndian32(binary.magic) != answerMagic)
                 {
-                   Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
+                   Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Bosch.reciever(): Packet with wrong header.");
                     return;
                 }
 
@@ -157,7 +153,7 @@ namespace UniversalScanner
 
                 if (!IPAddress.TryParse(deviceIPv4Str, out ip))
                 {
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv4 format: {0}", deviceIPv4Str));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv4 format: {0}", deviceIPv4Str));
                     ip = from.Address;
                 }
                 viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
@@ -168,7 +164,7 @@ namespace UniversalScanner
                 }
                 else
                 {
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv6 format: {0}", deviceIPv6Str));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Bosch.reciever(): Invalid ipv6 format: {0}", deviceIPv6Str));
                 }
             }
         }

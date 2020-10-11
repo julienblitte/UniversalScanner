@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using JulienBlitte;
 
 /*
  * @description: UniversalScanner discovery protocol
@@ -275,7 +275,7 @@ namespace UniversalScanner
 
             if (data.Length != typeof(GigEVisionAckn).StructLayoutAttribute.Size)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid size packet recieved from {0}", from.ToString()));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid size packet recieved from {0}", from.ToString()));
                 return;
             }
 
@@ -283,7 +283,7 @@ namespace UniversalScanner
 
             if (NetworkUtils.NetworkToHostOrder16(answer.payloadLen) != data.Length - 8)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid size payload length value (got value {0} while value {1} was expected) recieved from {2}",
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid size payload length value (got value {0} while value {1} was expected) recieved from {2}",
                     NetworkUtils.NetworkToHostOrder16(answer.payloadLen), data.Length - 8, from.ToString()));
                 return;
             }
@@ -293,7 +293,7 @@ namespace UniversalScanner
 
             if (version != 0x00010002)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid packet version (got value 0x{0:X8} while value 0x{1:X8} was expected) recieved from {2}",
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: GigEVision.reciever(): Invalid packet version (got value 0x{0:X8} while value 0x{1:X8} was expected) recieved from {2}",
                     version, 0x00010002, from.ToString()));
             }
 

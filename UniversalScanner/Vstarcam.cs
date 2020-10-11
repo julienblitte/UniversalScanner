@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using JulienBlitte;
 
 /*
  * @description: UniversalScanner discovery protocol
@@ -172,7 +173,7 @@ namespace UniversalScanner
 
             if (data.Length < typeof(VSCAnswerHeader).StructLayoutAttribute.Size)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: VStartCam.reciever(): Packet has wrong size = {0} (packet is too small)", data.Length));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: VStartCam.reciever(): Packet has wrong size = {0} (packet is too small)", data.Length));
                 return;
             }
 
@@ -180,7 +181,7 @@ namespace UniversalScanner
 
             if (NetworkUtils.NetworkToHostOrder32(header.answerMagic) != answerMagic)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: VStartCam.reciever(): Packet has wrong header."));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: VStartCam.reciever(): Packet has wrong header."));
                 return;
             }
 
