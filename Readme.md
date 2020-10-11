@@ -52,7 +52,7 @@ value                        | description
 ```forceGenericProtocols```  | shows all protocols found on each device
 ```forceZeroConf```          | shows ZeroConf secondary ip address of device 
 ```onvifVerbatim```          | failback to ONVIF Device Manager dump for WSDiscovery payload
-```traceMode```              | enable advanced log collection system
+```debugMode```              | enable advanced log and network collection system
 ```dahuaNetScan```           | Dahua subnet exhaustive scan for broken firmware (mainly Thermal cameras)
 
 # Participate
