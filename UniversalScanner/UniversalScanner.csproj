@@ -84,6 +84,7 @@
     <Compile Include="MemoryUtils.cs" />
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="NiceVision.cs" />
+    <Compile Include="PCapFile.cs" />
     <Compile Include="RegistryUtils.cs" />
     <Compile Include="Panasonic.cs" />
     <Compile Include="ScanEngine.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Vivotek.cs" />
+    <Compile Include="Vstarcam.cs" />
     <Compile Include="Wsdiscovery.cs" />
     <EmbeddedResource Include="UniversalScanner.resx">
       <DependentUpon>UniversalScanner.cs</DependentUpon>
@@ -174,6 +176,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Vivotek.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Vstarcam.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Wsdiscovery.selftest">

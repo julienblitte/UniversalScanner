@@ -36,6 +36,10 @@
             this.exportListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutButton = new System.Windows.Forms.Button();
             this.broadcastTip = new System.Windows.Forms.ToolTip(this.components);
+            this.openSelectedInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.rightClickMenu.SuspendLayout();
             this.SuspendLayout();
@@ -79,15 +83,19 @@
             // 
             this.rightClickMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openSelectedInBrowserToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.clearListToolStripMenuItem,
+            this.toolStripMenuItem2,
             this.exportListToolStripMenuItem});
             this.rightClickMenu.Name = "rightClickMenu";
-            this.rightClickMenu.Size = new System.Drawing.Size(167, 26);
+            this.rightClickMenu.Size = new System.Drawing.Size(250, 82);
             // 
             // exportListToolStripMenuItem
             // 
             this.exportListToolStripMenuItem.Name = "exportListToolStripMenuItem";
             this.exportListToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.exportListToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.exportListToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
             this.exportListToolStripMenuItem.Text = "&Export list";
             this.exportListToolStripMenuItem.Click += new System.EventHandler(this.exportListToolStripMenuItem_Click);
             // 
@@ -105,6 +113,31 @@
             // broadcastTip
             // 
             this.broadcastTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            // 
+            // openSelectedInBrowserToolStripMenuItem
+            // 
+            this.openSelectedInBrowserToolStripMenuItem.Name = "openSelectedInBrowserToolStripMenuItem";
+            this.openSelectedInBrowserToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+            this.openSelectedInBrowserToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.openSelectedInBrowserToolStripMenuItem.Text = "&Open selected in browser";
+            this.openSelectedInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openSelectedInBrowserToolStripMenuItem_Click);
+            // 
+            // clearListToolStripMenuItem
+            // 
+            this.clearListToolStripMenuItem.Name = "clearListToolStripMenuItem";
+            this.clearListToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.clearListToolStripMenuItem.Text = "Clear list";
+            this.clearListToolStripMenuItem.Click += new System.EventHandler(this.clearListToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(246, 6);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(246, 6);
             // 
             // ScannerWindow
             // 
@@ -135,6 +168,10 @@
         private System.Windows.Forms.ContextMenuStrip rightClickMenu;
         private System.Windows.Forms.ToolStripMenuItem exportListToolStripMenuItem;
         private System.Windows.Forms.ToolTip broadcastTip;
+        private System.Windows.Forms.ToolStripMenuItem openSelectedInBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

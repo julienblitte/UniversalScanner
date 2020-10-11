@@ -69,7 +69,7 @@ namespace UniversalScanner
             if (!IPAddress.TryParse(deviceIPv4, out ip))
             {
                 ip = from.Address;
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
             }
             viewer.deviceFound(name, 1, ip, deviceType, deviceSN);
 
@@ -81,7 +81,7 @@ namespace UniversalScanner
                 }
                 else
                 {
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hikvision.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
                 }
             }
         }

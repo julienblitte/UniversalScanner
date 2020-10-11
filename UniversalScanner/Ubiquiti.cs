@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -97,21 +95,21 @@ namespace UniversalScanner
 
             if (data.Length < headerSize)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid size packet recieved from {0}", from.ToString()));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid size packet recieved from {0}", from.ToString()));
                 return;
             }
 
             header = data.GetStruct<UbiquitiHeader>();
             if (NetworkUtils.bigEndian16(header.magic) != anwserMagic)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid magic value from {0}", from.ToString()));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid magic value from {0}", from.ToString()));
                 /* not enougth tested Ubiquiti answer to say it is always this magic, so disabling return for now */
                 // return;
             }
 
             if (NetworkUtils.bigEndian16(header.packetSize) != data.Length - 4)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid packet size value (got value {0} while value {1} was expected) from {2}",
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): Invalid packet size value (got value {0} while value {1} was expected) from {2}",
                                  NetworkUtils.bigEndian16(header.packetSize), data.Length - 4, from.ToString()));
                 return;
             }
@@ -130,14 +128,14 @@ namespace UniversalScanner
                 switch (variable)
                 {
                     case (byte)UbiquitiValue.typeNull:
-                        Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Ubiquiti.reciever(): Invalid packet, variable type null");
+                        Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Ubiquiti.reciever(): Invalid packet, variable type null");
                         return;
 
                     case (byte)UbiquitiValue.macAddress1: // binary: 4 bytes
                     case (byte)UbiquitiValue.macAddress2: // binary: 4 bytes
                         if (value.Length != 6)
                         {
-                            Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): invalid size of variable 0x{0:X4} (expected={1}, found={2})",
+                            Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): invalid size of variable 0x{0:X4} (expected={1}, found={2})",
                                             (UInt16)variable, 6, value.Length));
                             break;
                         }
@@ -150,7 +148,7 @@ namespace UniversalScanner
                     case (byte)UbiquitiValue.macIPv4: // binary: 10 bytes
                         if (value.Length != 10)
                         {
-                            Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): invalid size of variable 0x{0:X4} (expected={1}, found={2})",
+                            Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Ubiquiti.reciever(): invalid size of variable 0x{0:X4} (expected={1}, found={2})",
                                             (UInt16)variable, 10, value.Length));
                             break;
                         }

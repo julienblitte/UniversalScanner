@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -248,7 +246,7 @@ namespace UniversalScanner
             if (!IPAddress.TryParse(deviceIP, out ip))
             {
                 ip = from.Address;
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hawha.reciever(): Invalid ipv4 format: {0}", deviceIP));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Hawha.reciever(): Invalid ipv4 format: {0}", deviceIP));
             }
             viewer.deviceFound(name, 1, ip, deviceType, deviceSN);
         }

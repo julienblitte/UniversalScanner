@@ -72,7 +72,7 @@ namespace UniversalScanner
             if (Config.onvifVerbatim)
             {
                 announce = verbatim;
-                Logger.WriteLine(Logger.DebugLevel.Warn, "Using WSDiscovery ONVIF verbatim payload");
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Using WSDiscovery ONVIF verbatim payload");
             }
 
             listenMulticast(IPAddress.Parse(multicastIP), port);
@@ -116,7 +116,7 @@ namespace UniversalScanner
             }
             catch (Exception)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Wsdiscovery.reciever(): Error: Unable to read text");
             }
 
             if (viewer != null && deviceModel != "" && deviceSerial != "")

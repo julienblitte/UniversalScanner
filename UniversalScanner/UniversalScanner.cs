@@ -63,14 +63,15 @@ namespace UniversalScanner
             dataGridView1.Columns[(int)Columns.Version].Visible = false;
 
             protocolFormat = new Dictionary<string, int>();
+
+            if (Config.debugMode)
+            {
+                Logger.getInstance().setLevel(Logger.DebugLevel.Debug);
+            }
         }
 
         private void scanButton_Click(object sender, EventArgs e)
         {
-            if (Config.clearOnRescan)
-            {
-                foundDeviceList.Clear();
-            }
             scanEvent.Invoke();
         }
 
@@ -137,6 +138,7 @@ namespace UniversalScanner
 
         private void ScannerWindow_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Logger.getInstance().Dispose(); // mandatory to save pcap data when debugging
             Application.Exit();
         }
 
@@ -147,7 +149,8 @@ namespace UniversalScanner
             if (e.RowIndex < 0)
                 return;
 
-            ip = foundDeviceList.Rows[e.RowIndex].ItemArray[(int)Columns.IPAddress].ToString();
+            ip = dataGridView1.Rows[e.RowIndex].Cells[(int)Columns.IPAddress].Value.ToString();
+            //ip = foundDeviceList.Rows[e.RowIndex].ItemArray[(int)Columns.IPAddress].ToString();
             if (ip != "")
             {
                 IPAddress parsed;
@@ -180,7 +183,7 @@ namespace UniversalScanner
             MessageBox.Show(this,
                 String.Format("{0} {1}.{2}\nBuild date {3}\n\nCopyright {4}\n\n{5}",
                     versionInfo.ProductName, versionInfo.FileMajorPart, versionInfo.FileMinorPart,
-                    buildDate, versionInfo.LegalCopyright,
+                    buildDate.ToString("yyyy-MM-dd hh:mm:ss"), versionInfo.LegalCopyright,
                     "Program under GNU Lesser General Public License 3.0,\nmore information at https://www.gnu.org/licenses/lgpl-3.0.html"
                 ), "About");
         }
@@ -386,7 +389,7 @@ namespace UniversalScanner
         {
 #if DEBUG
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-            if (Config.showDebugWarning)
+            if (!Config.debugMode)
             {
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
                     + "You might want to download the release version at:\n{0}\n\n"
@@ -399,6 +402,26 @@ namespace UniversalScanner
             }
             this.Text += " - Debug version " + versionInfo.ProductVersion;
 #endif
+        }
+
+        private void openSelectedInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selRows = dataGridView1.SelectedRows;
+            
+            if (selRows.Count == 1)
+            {
+                dataGridView1_CellContentDoubleClick(dataGridView1, new DataGridViewCellEventArgs((int)Columns.IPAddress, selRows[0].Index));
+            }
+        }
+
+        private void clearListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, "The current list will be cleared. Are you sure?", "Clear the discovered item list",
+                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            {
+                foundDeviceList.Clear();
+                dataGridView1.Refresh();
+            }
         }
     }
 }

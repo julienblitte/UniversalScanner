@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -71,7 +69,7 @@ namespace UniversalScanner
             int headerSize;
             int position;
 
-            string model, mac;
+            string model, mac, deviceName;
             IPAddress IPv4;
 
             header = data.GetStruct<VivotekHeader>();
@@ -80,7 +78,7 @@ namespace UniversalScanner
 
             if (NetworkUtils.bigEndian32(header.magic) != magic)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
+               Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Wrong packet magic value");
                 return;
             }
 
@@ -98,14 +96,13 @@ namespace UniversalScanner
                 switch (variable)
                 {
                     case (byte)VivotekValue.typeNull:
-                       Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet, variable type null");
+                       Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Vivotek.reciever(): Invalid packet, variable type null");
                         return;
                     case (byte)VivotekValue.IPAddress:
                         IPv4 = new IPAddress(value);
                         break;
                     case (byte)VivotekValue.longName:
-                        Logger.WriteLine(Logger.DebugLevel.Debug, "longName");
-                        Logger.WriteData(Logger.DebugLevel.Debug, value);
+                        deviceName = Encoding.UTF8.GetString(value);
                         break;
                     case (byte)VivotekValue.macAddress:
                         mac = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}", value[0], value[1], value[2], value[3], value[4], value[5]);

@@ -88,7 +88,7 @@ namespace UniversalScanner
                 if (!IPAddress.TryParse(ipv4, out ip))
                 {
                     ip = from.Address;
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Sony.reciever(): Invalid ipv4 format: {0}", ipv4));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Sony.reciever(): Invalid ipv4 format: {0}", ipv4));
                 }
                 viewer.deviceFound(name, 1, ip, model, serial);
             }
@@ -135,17 +135,17 @@ namespace UniversalScanner
             result = new List<string>();
             if (binary.Length < 2)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet size!");
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet size!");
                 return result.ToArray();
             }
             if (binary[0] != marker_start)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet start marker!");
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet start marker!");
                 return result.ToArray();
             }
             if (binary[binary.Length-1] != marker_end)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet end marker!");
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Sony.readPacket(): Invalid packet end marker!");
                 return result.ToArray();
             }
             lastMarker = 0; 

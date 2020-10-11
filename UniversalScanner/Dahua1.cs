@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Net;
-using System.Net.Sockets;
-using System.Diagnostics;
-using System.Windows.Forms;
-using System.Threading;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -104,7 +100,7 @@ namespace UniversalScanner
         {
             if (listenUdpGlobal(port) == -1)
             {
-               Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
+               Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
             }
             listenUdpInterfaces();
         }
@@ -146,7 +142,7 @@ namespace UniversalScanner
             // section 1:
             if (data.Length < Marshal.SizeOf(typeof(Dahua1Section1)))
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid packet size (less than section1) from {0}", from.ToString()));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid packet size (less than section1) from {0}", from.ToString()));
                 return;
             }
 
@@ -154,7 +150,7 @@ namespace UniversalScanner
 
             if (section1.headerMagic != answerMagic)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Wrong header magic recieved from {0}", from.ToString()));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Wrong header magic recieved from {0}", from.ToString()));
                 return;
             }
 
@@ -169,7 +165,7 @@ namespace UniversalScanner
 
             if (section1Len + section2Len + section3Len != data.Length)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Packet has wrong size = {0} (expected was {1})", data.Length, section1Len + section2Len + section3Len));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Packet has wrong size = {0} (expected was {1})", data.Length, section1Len + section2Len + section3Len));
                 return;
             }
 
@@ -234,7 +230,7 @@ namespace UniversalScanner
                 }
                 else
                 {
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
                 }
             }
 

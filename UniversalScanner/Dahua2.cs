@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -120,13 +114,13 @@ namespace UniversalScanner
 
             if (NetworkUtils.littleEndian32(header.headerSize) != headerSize)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (headerSize={0}, expected {1})!", header.headerSize, headerSize));
                 return;
             }
             packetSize = data.Length - headerSize;
             if (NetworkUtils.littleEndian32(header.packetSize1) != packetSize)
             {
-                Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", NetworkUtils.littleEndian32(header.packetSize1), packetSize));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): recieved invalid frame (packetSize={0}, expected {1})!", NetworkUtils.littleEndian32(header.packetSize1), packetSize));
                 return;
             }
 
@@ -184,7 +178,7 @@ namespace UniversalScanner
                 if (!IPAddress.TryParse(deviceIPv4, out ip))
                 {
                     ip = from.Address;
-                    Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
                 }
                 viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
 
@@ -196,7 +190,7 @@ namespace UniversalScanner
                     }
                     else
                     {
-                        Logger.WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
+                        Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv6 format: {0}", deviceIPv6));
                     }
                 }
             }

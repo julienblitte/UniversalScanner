@@ -1,9 +1,5 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
@@ -14,8 +10,7 @@ namespace UniversalScanner
         public static bool enableIPv4;
         public static bool forceZeroConf;
         public static bool forceGenericProtocols;
-        public static bool clearOnRescan;
-        public static bool showDebugWarning;
+        public static bool debugMode;
         public static bool portSharing;
         public static bool onvifVerbatim;
         public static bool dahuaNetScan;
@@ -32,8 +27,7 @@ namespace UniversalScanner
             enableIPv4 = true;
             forceZeroConf = false;
             forceGenericProtocols = false;
-            clearOnRescan = false;
-            showDebugWarning = true;
+            debugMode = false;
             portSharing = true;
             onvifVerbatim = false;
             dahuaNetScan = false;
@@ -56,11 +50,8 @@ namespace UniversalScanner
                 forceGenericProtocols = key.readBool(nameof(forceGenericProtocols), forceGenericProtocols);
                 key.writeBool(nameof(forceGenericProtocols), forceGenericProtocols);
                 
-                clearOnRescan = key.readBool(nameof(clearOnRescan), clearOnRescan);
-                key.writeBool(nameof(clearOnRescan), clearOnRescan);
-                
-                showDebugWarning = key.readBool(nameof(showDebugWarning), showDebugWarning);
-                key.writeBool(nameof(showDebugWarning), showDebugWarning);
+                debugMode = key.readBool(nameof(debugMode), debugMode);
+                key.writeBool(nameof(debugMode), debugMode);
 
                 portSharing = key.readBool(nameof(portSharing), portSharing);
                 key.writeBool(nameof(portSharing), portSharing);

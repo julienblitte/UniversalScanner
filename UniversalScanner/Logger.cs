@@ -1,30 +1,74 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+using JulienBlitte;
 
 namespace UniversalScanner
 {
-    public static class Logger
+    public class Logger : IDisposable
     {
         public enum DebugLevel { Fatal = 0, Error = 1, Warn = 2, Info = 3, Debug = 4 };
 
-        public static DebugLevel level;
+        private static DebugLevel level;
+        private static Logger instance;
+        private PcapFile pcap;
+        private UInt32 packetCounter;
 
-        static Logger()
+        private Logger()
         {
 #if DEBUG
             level = DebugLevel.Debug;
+            openPcap();
 #else
             level  = DebugLevel.Info;
 #endif
         }
 
-        public static void WriteData(DebugLevel dataLevel, byte[] data, int threadId = 0)
+        private void openPcap()
+        {
+            pcap = new PcapFile("UniversalScanner_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".pcap");
+            packetCounter = 0;
+        }
+
+        public static Logger getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new Logger();
+            }
+            return instance;
+        }
+
+        public void setLevel(DebugLevel level)
+        {
+            Logger.level = level;
+
+            if (level == DebugLevel.Debug && pcap == null)
+            {
+                openPcap();
+            }
+        }
+
+        public void WriteNet(DebugLevel dataLevel, IPEndPoint source, IPEndPoint destination, ProtocolType protocol, byte[] payload)
+        {
+            if (dataLevel > level)
+            {
+                return;
+            }
+
+            if (pcap != null)
+            {
+                pcap.Append(source, destination, protocol, payload);
+                packetCounter++;
+                WriteLine(DebugLevel.Debug, String.Format("Packet {0}", packetCounter));
+            }
+        }
+
+        public void WriteData(DebugLevel dataLevel, byte[] data, int threadId = 0)
         {
             string textFromData;
             bool isBinary;
@@ -81,7 +125,7 @@ namespace UniversalScanner
             Trace.WriteLineIf(dataLevel <= level, String.Format("[{0,4}] {1}", threadId, result.ToString()));
         }
 
-        public static void WriteLine(DebugLevel lineLevel, string line, int threadId = 0)
+        public void WriteLine(DebugLevel lineLevel, string line, int threadId = 0)
         {
             if (threadId == 0)
             {
@@ -91,6 +135,12 @@ namespace UniversalScanner
             Trace.WriteLineIf(lineLevel <= level, String.Format("[{0,4}] {1}", threadId, line));
         }
 
-
+        public void Dispose()
+        {
+            if (pcap != null && packetCounter > 0)
+            {
+                pcap.Save();
+            }
+        }
     }
 }
