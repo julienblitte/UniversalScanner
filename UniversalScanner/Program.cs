@@ -41,7 +41,8 @@ namespace UniversalScanner
                 new Panasonic(),
                 new Arecont(),
                 new GigEVision(),
-                new Vstarcam()
+                new Vstarcam(),
+                new Eaton()
             };
             foreach(var engine in engines)
             {
