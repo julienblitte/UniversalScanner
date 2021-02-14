@@ -21,7 +21,7 @@ namespace UniversalScanner
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            viewer = new ScannerWindow();          
+            viewer = new ScannerWindow();
 
             engines = new ScanEngine[] {
                 new UPnP(),
@@ -40,8 +40,10 @@ namespace UniversalScanner
                 new NiceVision(),
                 new Panasonic(),
                 new Arecont(),
-                new GigEVision(),                new Vstarcam(),
-                new Dlink()            };
+                new Vstarcam(),
+                new Eaton(),
+                new Dlink()
+            };
             foreach(var engine in engines)
             {
                 engine.registerViewer(viewer);

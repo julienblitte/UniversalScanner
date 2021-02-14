@@ -36,6 +36,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Arecont discovery protocol
 * Ubiquiti discovery protocol
 * VStarCam discovery protocol
+* Eaton discovery protocol
 
 # Vendors supported by design
 * Uniview: WS-Discovery

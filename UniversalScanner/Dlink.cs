@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using JulienBlitte;
 
 /*
  * @description: UniversalScanner discovery protocol
