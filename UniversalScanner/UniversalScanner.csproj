@@ -73,6 +73,7 @@
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Eaton.cs" />
+    <Compile Include="Foscam.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
