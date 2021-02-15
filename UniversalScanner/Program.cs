@@ -42,7 +42,8 @@ namespace UniversalScanner
                 new Arecont(),
                 new GigEVision(),
                 new Vstarcam(),
-                new Eaton()
+                new Eaton(),
+                new Hid()
             };
             foreach(var engine in engines)
             {
