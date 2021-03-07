@@ -79,6 +79,7 @@
     <Compile Include="GigEVision.cs" />
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
+    <Compile Include="Lantronix.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="mDNS.cs" />
     <Compile Include="MemoryUtils.cs" />
@@ -149,6 +150,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Hikvision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Lantronix.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Panasonic.selftest">
