@@ -43,7 +43,37 @@ namespace UniversalScanner
                 new GigEVision(),
                 new Vstarcam(),
                 new Eaton(),
+                //new Foscam(),
+                //new Dlink(),
                 new Hid()
+                //new Lantronix(),
+                //new GCE()
+                // further protocol 25
+                // further protocol 26
+                // further protocol 27
+                // further protocol 28
+                // further protocol 29
+                // further protocol 30
+                // further protocol 31
+                // further protocol 32
+                // further protocol 33
+                // further protocol 34
+                // further protocol 35
+                // further protocol 36
+                // further protocol 37
+                // further protocol 38
+                // further protocol 39
+                // further protocol 40
+                // further protocol 41
+                // further protocol 42
+                // further protocol 43
+                // further protocol 44
+                // further protocol 45
+                // further protocol 46
+                // further protocol 47
+                // further protocol 48
+                // further protocol 49
+                // further protocol 50
             };
             foreach(var engine in engines)
             {
