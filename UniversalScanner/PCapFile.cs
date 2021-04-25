@@ -167,6 +167,11 @@ namespace JulienBlitte
             payload.CopyTo(payloadData, index);
             index += payload.Length;
 
+            if (payloadData.Length != packetHeader.length + 16)
+            {
+                throw new Exception("Error of PCap. Possible bug");
+            }
+
             content.Write(payloadData, 0, payloadData.Length);
         }
 
@@ -204,7 +209,7 @@ namespace JulienBlitte
             public PcapItemHeader(DateTime captureTime, UInt32 len)
             {
                 second = (UInt32)(captureTime.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                microsecond = 0;
+                microsecond = (UInt32)(captureTime.Subtract(new DateTime(1970, 1, 1))).Milliseconds * 1000;
                 length = len;
                 untruncated = length;
             }
