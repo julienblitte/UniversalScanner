@@ -21,7 +21,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * DNS-SD (Zeroconf)
 * GigE Vision
 
-## Proprietary
+## Proprietary protocols
 * Dahua camera discovery protocol
 * Hikvision discovery protocol
 * Axis discovery protocol
@@ -38,11 +38,18 @@ This tool is delivered as it, without any warranty. If you want specific support
 * VStarCam discovery protocol
 * Eaton discovery protocol
 
-# Vendors supported by design
+## Vendors supported by design
 * Uniview: WS-Discovery
 * Flir: SSDP and GigE Vision
 * Siqura: SSDP and WS-Discovery
 * Mobotix: WS-Discovery
+
+## Protocols in implementation
+* Foscam discovery protocol
+* Dlink discovery protocol
+* Hid discovery protocol
+* Lantronix discovery protocol
+* GCE Electronics discovery protocol
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
@@ -59,3 +66,18 @@ value                        | description
 # Participate
 If you own some device that are currently in the implementation list, you can contact me if you want to help for technical tests.
 If you want to propose a new protocol, you can send me relevant data following this [procedure](https://github.com/julienblitte/UniversalScanner/blob/master/doc/Collect%20data%20for%20new%20protocol.docx).
+
+**Current helps is wanted for: Foscam cameras, Dlink cameras, Hid access control, Lantronix device (such as Vauban acces control), GCE Electronics**
+If you have such devices, and are happy to help, please contact me.
+
+# Greetings
+Thank you to:
+* IPCamTalk.com forum users,
+* IPVM.com forum users,
+* Geza Gyorfi,
+* John Honovich,
+* Nathan Lafontaine,
+* Brian Rhodes,
+* John Scanlan,
+* Alastair Stevenson,
+* And all other contributors...
