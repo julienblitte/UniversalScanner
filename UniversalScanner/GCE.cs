@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 /*
  * @description: UniversalScanner discovery protocol
@@ -52,7 +53,35 @@ namespace UniversalScanner
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
-            viewer.deviceFound(name, 1, from.Address, "Unknown", "Unknown");
+            string lines_string;
+            string[] lines;             //lines: hostname, mac, port, product, other;
+            string product, mac;
+
+            product = "";
+            mac = "";
+            try
+            {
+                lines_string = Encoding.UTF8.GetString(data);
+
+                if (lines_string == requestMagic)
+                {
+                    return;
+                }
+
+                lines = Regex.Split(lines_string, "\r\n|\r|\n");
+
+                if (lines.Length >= 3)
+                {
+                    product = lines[3].Trim();
+                    mac = lines[1].Trim();
+                }
+            }
+            catch(Exception)
+            {
+                product = "Unknown";
+            }
+
+            viewer.deviceFound(name, 1, from.Address, product, mac);
         }
 
     }
