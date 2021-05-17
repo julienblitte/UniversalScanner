@@ -75,6 +75,7 @@ If you have such devices, and are happy to help, please contact me.
 Thank you to:
 * http://ipcamtalk.com forum users,
 * http://ipvm.com forum users,
+* Patrick Gorce
 * Geza Gyorfi,
 * John Honovich,
 * Nathan Lafontaine,
