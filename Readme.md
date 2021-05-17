@@ -37,6 +37,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Ubiquiti discovery protocol
 * VStarCam discovery protocol
 * Eaton discovery protocol
+* GCE Electronics discovery protocol
 
 ## Vendors supported by design
 * Uniview: WS-Discovery
@@ -49,7 +50,6 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Dlink discovery protocol
 * Hid discovery protocol
 * Lantronix discovery protocol
-* GCE Electronics discovery protocol
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```

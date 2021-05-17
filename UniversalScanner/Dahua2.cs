@@ -180,6 +180,12 @@ namespace UniversalScanner
                     ip = from.Address;
                     Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
                 }
+
+                if (ip.Equals(IPAddress.Parse("0.0.0.0")))
+                {
+                    ip = from.Address;
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Recieved ipv4 is null (from: {0})", from.Address.ToString()));
+                }
                 viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
 
                 if (deviceIPv6 != null)

@@ -219,7 +219,15 @@ namespace UniversalScanner
                 }
             }
 
-            viewer.deviceFound(name, 1, new IPAddress(deviceIPv4), deviceModel, deviceSerial);
+            if (deviceIPv4 != 0)
+            {
+                viewer.deviceFound(name, 1, new IPAddress(deviceIPv4), deviceModel, deviceSerial);
+            }
+            else
+            {
+                viewer.deviceFound(name, 1, from.Address, deviceModel, deviceSerial);
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua1.reciever(): Recieved ipv4 is null (from: {0})", from.Address.ToString()));
+            }
 
             if (deviceIPv6 != null)
             {
