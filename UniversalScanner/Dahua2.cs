@@ -56,7 +56,7 @@ namespace UniversalScanner
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
             sendBroadcast(port);
-            if (Config.dahuaNetScan)
+            if (Config.getInstance().DahuaNetScan)
             {
                 sendNetScan(port);
             }

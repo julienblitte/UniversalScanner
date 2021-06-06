@@ -65,7 +65,7 @@ namespace UniversalScanner
                 if (!isFreeUdpPort(localPort))
                 {
                     Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Local UDP port {0} is already in use...", localPort));
-                    if (Config.portSharing)
+                    if (Config.getInstance().PortSharing)
                     {
                         Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: ScanEngine.listenUdpGlobal(): Trying to share the port {0}...", localPort));
                         reuseAddress = true;

@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -8,11 +6,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -64,7 +60,7 @@ namespace UniversalScanner
 
             protocolFormat = new Dictionary<string, int>();
 
-            if (Config.debugMode)
+            if (Config.getInstance().DebugMode)
             {
                 Logger.getInstance().setLevel(Logger.DebugLevel.Debug);
             }
@@ -80,10 +76,10 @@ namespace UniversalScanner
             if (IsDisposed)
                 return;
 
-            if (deviceIP.AddressFamily == AddressFamily.InterNetwork && !Config.enableIPv4)
+            if (deviceIP.AddressFamily == AddressFamily.InterNetwork && !Config.getInstance().EnableIPv4)
                 return;
 
-            if (deviceIP.AddressFamily == AddressFamily.InterNetworkV6 && !Config.enableIPv6)
+            if (deviceIP.AddressFamily == AddressFamily.InterNetworkV6 && !Config.getInstance().EnableIPv6)
                 return;
 
             if (InvokeRequired)
@@ -100,7 +96,7 @@ namespace UniversalScanner
         {
             DataRow[] existingRow;
 
-            if (Config.forceGenericProtocols)
+            if (Config.getInstance().ForceGenericProtocols)
             {
                 // find same protocol and same address
                 existingRow = foundDeviceList.Select(String.Format("`{0}` = '{1}' AND `{2}` = '{3}'", ColumnNames[(int)Columns.Protocol], protocol, ColumnNames[(int)Columns.IPAddress], deviceIP));
@@ -183,18 +179,14 @@ namespace UniversalScanner
             MessageBox.Show(this,
                 String.Format("{0} {1}.{2}\nBuild date {3}\n\nCopyright {4}\n\n{5}",
                     versionInfo.ProductName, versionInfo.FileMajorPart, versionInfo.FileMinorPart,
-                    buildDate.ToString("yyyy-MM-dd hh:mm:ss"), versionInfo.LegalCopyright,
+                    buildDate.ToString("yyyy-MM-dd HH:mm:ss"), versionInfo.LegalCopyright,
                     "Program under GNU Lesser General Public License 3.0,\nmore information at https://www.gnu.org/licenses/lgpl-3.0.html"
                 ), "About");
         }
 
         private void ScannerWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.S)
-            {
-                exportAsCSV();
-            }
-            else if (e.Control && e.KeyCode == Keys.A)
+            if (e.Control && e.KeyCode == Keys.A)
             {
                 dataGridView1.SelectAll();
             }
@@ -389,7 +381,7 @@ namespace UniversalScanner
         {
 #if DEBUG
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-            if (!Config.debugMode)
+            if (!Config.getInstance().DebugMode)
             {
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
                     + "You might want to download the release version at:\n{0}\n\n"
@@ -421,7 +413,45 @@ namespace UniversalScanner
             {
                 foundDeviceList.Clear();
                 dataGridView1.Refresh();
+
+                scanEvent.Invoke();
             }
+        }
+
+        private void enableIPv6ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Config.getInstance().EnableIPv6 = !Config.getInstance().EnableIPv6;
+            enableIPv6ToolStripMenuItem.Checked = Config.getInstance().EnableIPv6;
+        }
+
+        private void exhaustiveprotocolsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Config.getInstance().ForceGenericProtocols = !Config.getInstance().ForceGenericProtocols;
+            exhaustiveprotocolsToolStripMenuItem.Checked = Config.getInstance().ForceGenericProtocols;
+        }
+
+        private void showUnconfiguredDevicesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bool status;
+
+            status = Config.getInstance().ForceZeroConf || Config.getInstance().ForceLinkLocal;
+            status = !status;
+
+            Config.getInstance().ForceZeroConf = status;
+            Config.getInstance().ForceLinkLocal = status;
+            exhaustiveprotocolsToolStripMenuItem.Checked = status;
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            scanEvent.Invoke();
+        }
+
+        private void ScannerWindow_Shown(object sender, EventArgs e)
+        {
+            enableIPv6ToolStripMenuItem.Checked = Config.getInstance().EnableIPv6;
+            exhaustiveprotocolsToolStripMenuItem.Checked = Config.getInstance().ForceGenericProtocols;
+            exhaustiveprotocolsToolStripMenuItem.Checked = Config.getInstance().ForceZeroConf || Config.getInstance().ForceLinkLocal;
         }
     }
 }
