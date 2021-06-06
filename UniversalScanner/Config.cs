@@ -3,21 +3,33 @@ using JulienBlitte;
 
 namespace UniversalScanner
 {
-    public static class Config
+    public class Config
     {
-        public static bool enableIPv6;
-        public static bool forceLinkLocal;
-        public static bool enableIPv4;
-        public static bool forceZeroConf;
-        public static bool forceGenericProtocols;
-        public static bool debugMode;
-        public static bool portSharing;
-        public static bool onvifVerbatim;
-        public static bool dahuaNetScan;
+        private bool enableIPv6;
+        private bool forceLinkLocal;
+        private bool enableIPv4;
+        private bool forceZeroConf;
+        private bool forceGenericProtocols;
+        private bool debugMode;
+        private bool portSharing;
+        private bool onvifVerbatim;
+        private bool dahuaNetScan;
+
+        public bool EnableIPv6 { get => enableIPv6; set { enableIPv6 = value; updateBool(nameof(enableIPv6), value); }  }
+        public bool ForceLinkLocal { get => forceLinkLocal; set { forceLinkLocal = value; updateBool(nameof(forceLinkLocal), value); } }
+        public bool EnableIPv4 { get => enableIPv4; set { enableIPv4 = value; updateBool(nameof(enableIPv4), value); } }
+        public bool ForceZeroConf { get => forceZeroConf; set { forceZeroConf = value; updateBool(nameof(forceZeroConf), value); } }
+        public bool ForceGenericProtocols { get => forceGenericProtocols; set { forceGenericProtocols = value; updateBool(nameof(forceGenericProtocols), value); } }
+        public bool DebugMode { get => debugMode; set { debugMode = value; updateBool(nameof(debugMode), value); } }
+        public bool PortSharing { get => portSharing; set { portSharing = value; updateBool(nameof(portSharing), value); } }
+        public bool OnvifVerbatim { get => onvifVerbatim; set { onvifVerbatim = value; updateBool(nameof(onvifVerbatim), value); } }
+        public bool DahuaNetScan { get => dahuaNetScan; set { dahuaNetScan = value; updateBool(nameof(dahuaNetScan), value); } }
 
         private static readonly string path = @"Software\UniversalScanner";
 
-        static Config()
+        private static Config instance;
+
+        private Config()
         {
             RegistryKey key;
 
@@ -61,7 +73,31 @@ namespace UniversalScanner
 
                 dahuaNetScan = key.readBool(nameof(dahuaNetScan), dahuaNetScan);
                 key.writeBool(nameof(dahuaNetScan), dahuaNetScan);
+
+                key.Close();
             }
+        }
+
+        public void updateBool(string variable, bool value)
+        {
+            RegistryKey key;
+
+            key = Registry.CurrentUser.openOrCreate(path);
+            if (key != null)
+            {
+                key.writeBool(variable, value);
+
+                key.Close();
+            }
+        }
+
+        public static Config getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new Config();
+            }
+            return instance;
         }
     }
 }
