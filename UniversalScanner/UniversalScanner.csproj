@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="360Vision.cs" />
+    <Compile Include="Advantech.cs" />
     <Compile Include="Arecont.cs" />
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
@@ -117,6 +118,9 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="360Vision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Advantech.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Arecont.selftest">

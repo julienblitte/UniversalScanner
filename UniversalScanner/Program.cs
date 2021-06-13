@@ -47,8 +47,8 @@ namespace UniversalScanner
                 //new Dlink(),
                 //new Hid(),
                 //new Lantronix(),
-                new GCE()
-                // further protocol 25
+                new GCE(),
+                new Advantech()
                 // further protocol 26
                 // further protocol 27
                 // further protocol 28

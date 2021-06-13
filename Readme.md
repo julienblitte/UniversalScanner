@@ -38,6 +38,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * VStarCam discovery protocol
 * Eaton discovery protocol
 * GCE Electronics discovery protocol
+* Advantech discovery protocol
 
 ## Vendors supported by design
 * Uniview: WS-Discovery
