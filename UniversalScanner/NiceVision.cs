@@ -45,6 +45,10 @@ namespace UniversalScanner
             [FieldOffset(0x03)] public byte byte03;
             [FieldOffset(0x04)] public byte byte04;
             [FieldOffset(0x05)] public byte byte05;
+            public override string ToString()
+            {
+                return String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", byte00, byte01, byte02, byte03, byte04, byte05);
+            }
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 0x16, CharSet = CharSet.Ansi)]
@@ -66,6 +70,11 @@ namespace UniversalScanner
             [FieldOffset(0x0D)] public byte byte0D;
             [FieldOffset(0x0E)] public byte byte0E;
             [FieldOffset(0x0F)] public byte byte0F;
+
+            public override string ToString()
+            {
+                return String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", byte00, byte01, byte02, byte03, byte04, byte05);
+            }
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 0x5A, CharSet = CharSet.Ansi)]
@@ -147,8 +156,7 @@ namespace UniversalScanner
 
             answer = data.GetStruct<NiceVisionAnswer>();
 
-            deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", answer.mac.byte00, answer.mac.byte01, answer.mac.byte02,
-                                            answer.mac.byte03, answer.mac.byte04, answer.mac.byte05);
+            deviceSerial =  answer.mac.ToString();
 
             deviceModel = Encoding.UTF8.GetString(answer.name);
             ip = new IPAddress(answer.ipv4);

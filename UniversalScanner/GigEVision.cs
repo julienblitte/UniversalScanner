@@ -45,6 +45,10 @@ namespace UniversalScanner
             [FieldOffset(0x03)] public byte byte03;
             [FieldOffset(0x04)] public byte byte04;
             [FieldOffset(0x05)] public byte byte05;
+            public override string ToString()
+            {
+                return String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", byte00, byte01, byte02, byte03, byte04, byte05);
+            }
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0x10, CharSet = CharSet.Ansi)]
@@ -307,9 +311,7 @@ namespace UniversalScanner
                 ipv4 = from.Address;
             }
 
-            macAddress = String.Format("{0:X2}:{1:X2}:{2:X2}:{3:X2}:{4:X2}:{5:X2}",
-                answer.plMacAddress.byte00, answer.plMacAddress.byte01, answer.plMacAddress.byte02,
-                answer.plMacAddress.byte03, answer.plMacAddress.byte04, answer.plMacAddress.byte05);
+            macAddress = answer.plMacAddress.ToString();
             serial = Encoding.UTF8.GetString(answer.plSerialNumber);
             if (serial == "")
             {

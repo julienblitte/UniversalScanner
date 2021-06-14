@@ -40,6 +40,10 @@ namespace UniversalScanner
             [FieldOffset(0x03)] public byte byte03;
             [FieldOffset(0x04)] public byte byte04;
             [FieldOffset(0x05)] public byte byte05;
+            public override string ToString()
+            {
+                return String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", byte00, byte01, byte02, byte03, byte04, byte05);
+            }
         };
 
         [StructLayout(LayoutKind.Explicit, Size = 0x20, CharSet = CharSet.Ansi)]
@@ -93,8 +97,7 @@ namespace UniversalScanner
 
                 ip = NetworkUtils.littleEndian32(binary.ipv4);
 
-                deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", binary.mac.byte00, binary.mac.byte01, binary.mac.byte02,
-                                            binary.mac.byte03, binary.mac.byte04, binary.mac.byte05);
+                deviceSerial = binary.mac.ToString();
 
                 deviceModel = name;
 
