@@ -37,7 +37,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Ubiquiti discovery protocol
 * VStarCam discovery protocol
 * Eaton discovery protocol
-* GCE Electronics discovery protocol
+* Microchip discovery protocol
 * Advantech discovery protocol
 
 ## Vendors supported by design
@@ -45,6 +45,8 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Flir: SSDP and GigE Vision
 * Siqura: SSDP and WS-Discovery
 * Mobotix: WS-Discovery
+* GCE Electronics: Microchip (enhanced)
+* ELA Access Control: Microchip
 
 ## Protocols in implementation
 * Foscam discovery protocol
@@ -68,7 +70,7 @@ value                        | description
 If you own some device that are currently in the implementation list, you can contact me if you want to help for technical tests.
 If you want to propose a new protocol, you can send me relevant data following this [procedure](https://github.com/julienblitte/UniversalScanner/blob/master/doc/Collect%20data%20for%20new%20protocol.docx).
 
-**Current helps is wanted for: Foscam cameras, Dlink cameras, Hid access control, Lantronix device (such as Vauban acces control), GCE Electronics**.
+**Current helps is wanted for: Foscam cameras, Dlink cameras, Hid access control, Lantronix device (such as Vauban acces control)**.
 
 If you have such devices, and are happy to help, please contact me.
 
@@ -83,4 +85,5 @@ Thank you to:
 * Brian Rhodes,
 * John Scanlan,
 * Alastair Stevenson,
-* And all other contributors...
+* Patrick Vielle,
+* And all other contributors

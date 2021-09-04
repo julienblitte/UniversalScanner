@@ -35,16 +35,17 @@
             this.rightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openSelectedInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableIPv6ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exhaustiveprotocolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showUnconfiguredDevicesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutButton = new System.Windows.Forms.Button();
             this.broadcastTip = new System.Windows.Forms.ToolTip(this.components);
+            this.newVersion = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.rightClickMenu.SuspendLayout();
             this.SuspendLayout();
@@ -111,6 +112,14 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(246, 6);
             // 
+            // refreshToolStripMenuItem
+            // 
+            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            this.refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.refreshToolStripMenuItem.Text = "&Rescan";
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
             // clearListToolStripMenuItem
             // 
             this.clearListToolStripMenuItem.Name = "clearListToolStripMenuItem";
@@ -131,14 +140,6 @@
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(246, 6);
-            // 
-            // refreshToolStripMenuItem
-            // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
-            this.refreshToolStripMenuItem.Text = "&Rescan";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -186,11 +187,24 @@
             // 
             this.broadcastTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             // 
+            // newVersion
+            // 
+            this.newVersion.AutoSize = true;
+            this.newVersion.Location = new System.Drawing.Point(111, 17);
+            this.newVersion.Name = "newVersion";
+            this.newVersion.Size = new System.Drawing.Size(114, 13);
+            this.newVersion.TabIndex = 31;
+            this.newVersion.TabStop = true;
+            this.newVersion.Text = "New version available!";
+            this.newVersion.Visible = false;
+            this.newVersion.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.newVersion_LinkClicked);
+            // 
             // ScannerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(440, 210);
+            this.Controls.Add(this.newVersion);
             this.Controls.Add(this.aboutButton);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.scanButton);
@@ -205,6 +219,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.rightClickMenu.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -225,6 +240,7 @@
         private System.Windows.Forms.ToolStripMenuItem exhaustiveprotocolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showUnconfiguredDevicesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel newVersion;
     }
 }
 

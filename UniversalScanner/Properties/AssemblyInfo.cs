@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyTrademark("")]                       // LegalTrademarks
 [assembly: NeutralResourcesLanguage("")]                // Language
 
-[assembly: AssemblyVersion("0.3.*")]                    // ProductVersion and FileVersion
+[assembly: AssemblyVersion("0.4.*")]                    // ProductVersion and FileVersion
 
 [assembly: ComVisible(false)]
 [assembly: Guid("6a0eaae3-897b-4472-a692-ca0b08e09cd1")]

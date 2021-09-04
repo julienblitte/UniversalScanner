@@ -1,14 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+
 
 namespace UniversalScanner
 {
     static class Program
     {
+
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr WindowHandle);
+        public const int SW_RESTORE = 9;
+
+        static bool checkAlreadyRunning(bool foregroundExisting = false)
+        {
+            Process[] running;
+            
+            running = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location));
+            
+            if (running.Length <= 1)
+            {
+                return false;
+            }
+            else if (!foregroundExisting)
+            {
+                return true;
+            }
+
+            foreach(Process p in running)
+            {
+                IntPtr hWnd = IntPtr.Zero;
+                hWnd = p.MainWindowHandle;
+                if (hWnd != IntPtr.Zero)
+                {
+                    ShowWindowAsync(new HandleRef(null, hWnd), SW_RESTORE);
+                    SetForegroundWindow(p.MainWindowHandle);
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -17,6 +59,12 @@ namespace UniversalScanner
         {
             ScannerWindow viewer;
             ScanEngine[] engines;
+
+            if (checkAlreadyRunning(true))
+            {
+                Application.Exit();
+                return;
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -47,7 +95,7 @@ namespace UniversalScanner
                 //new Dlink(),
                 //new Hid(),
                 //new Lantronix(),
-                new GCE(),
+                new Microchip(),
                 new Advantech()
                 // further protocol 26
                 // further protocol 27

@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace UniversalScanner
 {
-    class GCE : ScanEngine
+    class Microchip : ScanEngine
     {
         private const int port = 30303;
 
@@ -22,17 +22,17 @@ namespace UniversalScanner
         {
             get
             {
-                return Color.DarkGreen.ToArgb();
+                return Color.Red.ToArgb();
             }
         }
         public override string name
         {
             get
             {
-                return "GCE";
+                return "Microchip";
             }
         }
-        public GCE()
+        public Microchip()
         {
             listenUdpGlobal(port);
             listenUdpInterfaces();
@@ -42,6 +42,7 @@ namespace UniversalScanner
         {
 #if DEBUG
             selfTest();
+            selfTest("GCE.selftest");
 #endif
             sendBroadcast(port);
         }
@@ -56,9 +57,11 @@ namespace UniversalScanner
             string lines_string;
             string[] lines;             //lines: hostname, mac, port, product, other;
             string product, mac;
+            string manufacturer;
 
             product = "";
             mac = "";
+            manufacturer = name;
             try
             {
                 lines_string = Encoding.UTF8.GetString(data);
@@ -70,18 +73,24 @@ namespace UniversalScanner
 
                 lines = Regex.Split(lines_string, "\r\n|\r|\n");
 
-                if (lines.Length >= 3)
+                if (lines.Length >= 4)
                 {
+                    mac = lines[1].Trim();
                     product = lines[3].Trim();
+                    manufacturer = "GCE";
+                }
+                else if (lines.Length >= 2)
+                {
+                    product = lines[0].Trim();
                     mac = lines[1].Trim();
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 product = "Unknown";
             }
 
-            viewer.deviceFound(name, 1, from.Address, product, mac);
+            viewer.deviceFound(manufacturer, 1, from.Address, product, mac);
         }
 
     }

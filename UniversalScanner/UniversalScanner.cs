@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -21,6 +20,8 @@ namespace UniversalScanner
         private DataTable foundDeviceList;
         private BindingSource binding;
         private Dictionary<string, int> protocolFormat;
+
+        private VersionManager localVersion;
 
         enum Columns
         { 
@@ -59,6 +60,8 @@ namespace UniversalScanner
             dataGridView1.Columns[(int)Columns.Version].Visible = false;
 
             protocolFormat = new Dictionary<string, int>();
+
+            localVersion = new VersionManager();
 
             if (Config.getInstance().DebugMode)
             {
@@ -171,10 +174,8 @@ namespace UniversalScanner
             FileVersionInfo versionInfo;
             DateTime buildDate;
 
-            versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-
-            buildDate = new DateTime(2000, 1, 1)
-                                    .AddDays(versionInfo.FileBuildPart).AddSeconds(versionInfo.FilePrivatePart * 2);
+            versionInfo = localVersion.getVersionInfo();
+            buildDate = localVersion.getBuildDate();
 
             MessageBox.Show(this,
                 String.Format("{0} {1}.{2}\nBuild date {3}\n\nCopyright {4}\n\n{5}",
@@ -377,10 +378,20 @@ namespace UniversalScanner
             }
         }
 
+        public void updateAvailable()
+        {
+            this.Invoke(new MethodInvoker(delegate
+            {
+                newVersion.Visible = true;
+            }));
+        }
+
         private void ScannerWindow_Load(object sender, EventArgs e)
         {
+            localVersion.onUpdateAvailable += updateAvailable;
+            localVersion.checkForUpdate();
+
 #if DEBUG
-            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
             if (!Config.getInstance().DebugMode)
             {
                 if (MessageBox.Show(String.Format("This version is a debug version, it can be unstable and with lower performances.\n\n"
@@ -392,7 +403,7 @@ namespace UniversalScanner
                     Application.Exit();
                 }
             }
-            this.Text += " - Debug version " + versionInfo.ProductVersion;
+            this.Text += " - Debug version " + localVersion.getVersionInfo().ProductVersion;
 #endif
         }
 
@@ -452,6 +463,11 @@ namespace UniversalScanner
             enableIPv6ToolStripMenuItem.Checked = Config.getInstance().EnableIPv6;
             exhaustiveprotocolsToolStripMenuItem.Checked = Config.getInstance().ForceGenericProtocols;
             showUnconfiguredDevicesToolStripMenuItem.Checked = Config.getInstance().ForceZeroConf || Config.getInstance().ForceLinkLocal;
+        }
+
+        private void newVersion_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/julienblitte/UniversalScanner/releases/latest");
         }
     }
 }

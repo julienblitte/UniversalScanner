@@ -74,7 +74,7 @@
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Eaton.cs" />
-    <Compile Include="GCE.cs" />
+    <Compile Include="Microchip.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
@@ -100,6 +100,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VersionManager.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Vivotek.cs" />
     <Compile Include="Vstarcam.cs" />
@@ -136,6 +137,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="GCE.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Microchip.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Dahua1.selftest">
