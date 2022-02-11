@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Drawing;
@@ -15,8 +14,10 @@ namespace UniversalScanner
     class Lantronix : ScanEngine
     {
         private const int port = 30718;
-        private const UInt32 requestMagic = 0x000000f6;
-        private const UInt32 answerMagic = 0x000000f7;
+        private const byte messageTypeRequest = 0xf6;
+        private const byte messageTypeReply = 0xf7;
+
+        private readonly byte[] discover = { 0x00, 0x00, 0x00, messageTypeRequest };
 
         public override int color
         {
@@ -44,31 +45,53 @@ namespace UniversalScanner
             [FieldOffset(0x05)] public byte byte05;
         };
 
+        [StructLayout(LayoutKind.Explicit, Size = 0x14, CharSet = CharSet.Ansi)]
+        public struct VaubanPayload
+        {
+            [FieldOffset(0x00)] public UInt32 _uint32_04;
+            [FieldOffset(0x04)] public UInt32 _uint32_08;
+            [FieldOffset(0x08)] public byte modelMajor;
+            [FieldOffset(0x09)] public byte modelMinor;
+            [FieldOffset(0x0A)] public UInt16 version;
+            [FieldOffset(0x0C)] public UInt32 gateway;
+            [FieldOffset(0x10)] public UInt32 _uint32_14;
+        }
+
+
+        [StructLayout(LayoutKind.Explicit, Size = 0x14, CharSet = CharSet.Ansi)]
+        public struct LantronixAnswerPayload
+        {
+            [FieldOffset(0x00)] public byte byte00;
+            [FieldOffset(0x01)] public byte byte01;
+            [FieldOffset(0x02)] public byte byte02;
+            [FieldOffset(0x03)] public byte byte03;
+            [FieldOffset(0x04)] public byte byte04;
+            [FieldOffset(0x05)] public byte byte05;
+            [FieldOffset(0x06)] public byte byte06;
+            [FieldOffset(0x07)] public byte byte07;
+            [FieldOffset(0x08)] public byte byte08;
+            [FieldOffset(0x09)] public byte byte09;
+            [FieldOffset(0x0A)] public byte byte0A;
+            [FieldOffset(0x0B)] public byte byte0B;
+            [FieldOffset(0x0C)] public byte byte0C;
+            [FieldOffset(0x0D)] public byte byte0D;
+            [FieldOffset(0x0E)] public byte byte0E;
+            [FieldOffset(0x0F)] public byte byte0F;
+            [FieldOffset(0x10)] public byte byte10;
+            [FieldOffset(0x11)] public byte byte11;
+            [FieldOffset(0x12)] public byte byte12;
+            [FieldOffset(0x13)] public byte byte13;
+        }
+
+
         [StructLayout(LayoutKind.Explicit, Size = 0x1E, CharSet = CharSet.Ansi)]
         public struct LantronixAnswer
         {
-            [FieldOffset(0x00)] public UInt32 magic;
-            [FieldOffset(0x04)] public byte _byte_04;
-            [FieldOffset(0x05)] public byte _byte_05;
-            [FieldOffset(0x06)] public byte _byte_06;
-            [FieldOffset(0x07)] public byte _byte_07;
-            [FieldOffset(0x08)] public byte _byte_08;
-            [FieldOffset(0x09)] public byte _byte_09;
-            [FieldOffset(0x0A)] public byte _byte_0A;
-            [FieldOffset(0x0B)] public byte _byte_0B;
-            [FieldOffset(0x0C)] public byte _byte_0C;
-            [FieldOffset(0x0D)] public byte _byte_0D;
-            [FieldOffset(0x0E)] public byte _byte_0E;
-            [FieldOffset(0x0F)] public byte _byte_0F;
-            [FieldOffset(0x10)] public byte _byte_10;
-            [FieldOffset(0x11)] public byte _byte_11;
-            [FieldOffset(0x12)] public byte _byte_12;
-            [FieldOffset(0x13)] public byte _byte_13;
-            [FieldOffset(0x14)] public byte _byte_14;
-            [FieldOffset(0x15)] public byte _byte_15;
-            [FieldOffset(0x16)] public byte _byte_16;
-            [FieldOffset(0x17)] public byte _byte_17;
-
+            [FieldOffset(0x00)] public byte _uint32_00;
+            [FieldOffset(0x01)] public byte _uint32_01;
+            [FieldOffset(0x02)] public byte _uint32_03;
+            [FieldOffset(0x03)] public byte messageType;
+            [FieldOffset(0x04)] public LantronixAnswerPayload payload;
             [FieldOffset(0x18)] public MacAddress mac;
         }
 
@@ -82,29 +105,21 @@ namespace UniversalScanner
         {
 #if DEBUG
             selfTest();
+            selfTest("Vauban.selftest");
 #endif
             sendBroadcast(port);
         }
 
         public override byte[] sender(IPEndPoint dest)
         {
-            byte[] result;
-            UInt32 magic;
-
-            magic = NetworkUtils.bigEndian32(requestMagic);
-            result = new byte[4];
-            result[0] = (byte)(magic << 24);
-            result[1] = (byte)(magic << 16);
-            result[2] = (byte)(magic << 8);
-            result[3] = (byte)magic;
-
-            return result;
+            return discover;
         }
 
         public override void reciever(IPEndPoint from, byte[] data)
         {
             LantronixAnswer answer;
-            string deviceSerial;
+            string mac;
+            //VaubanPayload vauban;
 
             if (data.Length != typeof(LantronixAnswer).StructLayoutAttribute.Size)
             {
@@ -113,16 +128,49 @@ namespace UniversalScanner
 
             answer = data.GetStruct<LantronixAnswer>();
 
-            if (NetworkUtils.bigEndian32(answer.magic) != answerMagic)
+            if (answer.messageType != messageTypeReply)
             {
                 Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Warning: Lantroinux.reciever(): Packet with wrong header.");
                 return;
             }
 
-            deviceSerial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", answer.mac.byte00, answer.mac.byte01, answer.mac.byte02,
-                            answer.mac.byte03, answer.mac.byte04, answer.mac.byte05);
+            mac = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}", answer.mac.byte00, answer.mac.byte01, answer.mac.byte02,
+                answer.mac.byte03, answer.mac.byte04, answer.mac.byte05);
 
-            viewer.deviceFound(name, 1, from.Address, "unknown", deviceSerial);
+            // trying vauban
+            var payload = answer.payload.GetBytes();
+            var vauban = payload.GetStruct<VaubanPayload>();
+
+            if (vauban.modelMajor == 02 && vauban.modelMinor < 10)
+            {
+                string model;
+
+                switch (vauban.modelMajor)
+                {
+                    case 02:
+                        model = "Verso+";
+                        break;
+                    default:
+                        model = "unknown";
+                        break;
+                }
+
+                switch (vauban.modelMinor)
+                {
+                    case 02:
+                        model += " 2";
+                        break;
+                    case 04:
+                        model += " 4";
+                        break;
+                }
+
+                viewer.deviceFound("Vauban", 1, from.Address, model, mac);
+            }
+            else
+            {
+                viewer.deviceFound(name, 1, from.Address, "unknown", mac);
+            }
         }
 
     }
