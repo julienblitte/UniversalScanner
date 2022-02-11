@@ -95,10 +95,12 @@ namespace UniversalScanner
                 //new Dlink(),
                 //new Hid(),
                 //new Lantronix(),
+                //	new Vauban(),
+                //	new Eden(),
                 new Microchip(),
-                new Advantech()
-                // further protocol 26
-                // further protocol 27
+                new Advantech(),
+                //new EdenOptima(),
+                //new Microsens()
                 // further protocol 28
                 // further protocol 29
                 // further protocol 30
