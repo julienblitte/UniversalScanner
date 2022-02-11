@@ -74,6 +74,7 @@
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Eaton.cs" />
+    <Compile Include="Eden.cs" />
     <Compile Include="Microchip.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
@@ -134,6 +135,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Eden.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="GCE.selftest">
