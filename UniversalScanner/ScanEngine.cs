@@ -31,6 +31,7 @@ namespace UniversalScanner
         protected bool closing = false;
         public bool isDisposed = false;
 
+        protected uint id;
 
         protected struct networkBundle
         {
@@ -178,11 +179,13 @@ namespace UniversalScanner
         public abstract byte[] sender(IPEndPoint dest);
         public abstract void reciever(IPEndPoint from, byte[] data);
 
-        public void registerViewer(ScannerViewer viewer)
+        public void registerViewer(ScannerViewer viewer, uint id=0)
         {
             this.viewer = viewer;
             viewer.scanEvent += this.scan;
             viewer.formatProtocol(name, color);
+
+            this.id = id;
         }
 
         public bool send(IPEndPoint endpoint)
@@ -349,7 +352,7 @@ namespace UniversalScanner
             }
         }
 
-        public void selfTest(string filename=null)
+        public void selfTest(string filename=null, uint minor=0)
         {
             IPAddress source;
 
@@ -362,7 +365,8 @@ namespace UniversalScanner
             {
                 if (filename.Length > 2)
                 {
-                    source = new IPAddress(new byte[] { 127, 0, (byte)filename[0], (byte)filename[1] });
+                    
+                    source = new IPAddress(new byte[] { 240, 0, (byte)(id & 0xff), (byte)(minor) });
                 }
                 else
                 {

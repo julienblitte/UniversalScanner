@@ -388,9 +388,6 @@ namespace UniversalScanner
 
         private void ScannerWindow_Load(object sender, EventArgs e)
         {
-            localVersion.onUpdateAvailable += updateAvailable;
-            localVersion.checkForUpdate();
-
 #if DEBUG
             if (!Config.getInstance().DebugMode)
             {
@@ -404,6 +401,11 @@ namespace UniversalScanner
                 }
             }
             this.Text += " - Debug version " + localVersion.getVersionInfo().ProductVersion;
+            newVersion.Visible = true;
+            newVersion.Text = "Update to official release";
+#else
+            localVersion.onUpdateAvailable += updateAvailable;
+            localVersion.checkForUpdate();
 #endif
         }
 

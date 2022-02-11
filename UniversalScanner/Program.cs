@@ -72,35 +72,33 @@ namespace UniversalScanner
             viewer = new ScannerWindow();          
 
             engines = new ScanEngine[] {
-                new UPnP(),
-                new Wsdiscovery(),
-                new Dahua1(),
-                new Dahua2(),
-                new Hikvision(),
-                new Axis(),
-                new Bosch(),
-                new GoogleCast(),
-                new Hanwha(),
-                new Vivotek(),
-                new Sony(),
-                new Ubiquiti(),
-                new _360Vision(),
-                new NiceVision(),
-                new Panasonic(),
-                new Arecont(),
-                new GigEVision(),
-                new Vstarcam(),
-                new Eaton(),
-                //new Foscam(),
-                //new Dlink(),
-                //new Hid(),
-                //new Lantronix(),
-                //	new Vauban(),
-                //	new Eden(),
-                new Microchip(),
-                new Advantech(),
-                //new EdenOptima(),
-                //new Microsens()
+                new UPnP(),         //  1
+                new Wsdiscovery(),  //  2
+                new Dahua1(),       //  3
+                new Dahua2(),       //  4
+                new Hikvision(),    //  5
+                new Axis(),         //  6
+                new Bosch(),        //  7
+                new GoogleCast(),   //  8
+                new Hanwha(),       //  9
+                new Vivotek(),      // 10
+                new Sony(),         // 11
+                new Ubiquiti(),     // 12
+                new _360Vision(),   // 13
+                new NiceVision(),   // 14
+                new Panasonic(),    // 15
+                new Arecont(),      // 16
+                new GigEVision(),   // 17
+                new Vstarcam(),     // 18
+                new Eaton(),        // 19
+                null, //new Foscam(),     // 20
+                null, //new Dlink(),      // 21
+                null, //new Hid(),        // 22
+                null, //new Lantronix(),  // 23
+                new Microchip(),    // 24
+                new Advantech(),    // 25
+                null, //new EdenOptima(), // 26
+                null //new Microsens()   // 27
                 // further protocol 28
                 // further protocol 29
                 // further protocol 30
@@ -125,9 +123,12 @@ namespace UniversalScanner
                 // further protocol 49
                 // further protocol 50
             };
-            foreach(var engine in engines)
+            for (uint i= 0; i < engines.Length; i++)
             {
-                engine.registerViewer(viewer);
+                if (engines[i] != null)
+                {
+                    engines[i].registerViewer(viewer, i + 1);
+                }
             }
 
             Application.Run(viewer);
