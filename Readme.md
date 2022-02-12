@@ -39,6 +39,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Eaton discovery protocol
 * Microchip discovery protocol
 * Advantech discovery protocol
+* Lantronix discovery protocol
 
 ## Vendors supported by design
 * Uniview: WS-Discovery
@@ -47,12 +48,13 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Mobotix: WS-Discovery
 * GCE Electronics: Microchip (enhanced)
 * ELA Access Control: Microchip
+* Vauban Access Control: Lantronix
+* Eden Access Control (sub-controller): Lantronix
 
 ## Protocols in implementation
 * Foscam discovery protocol
 * Dlink discovery protocol
 * Hid discovery protocol
-* Lantronix discovery protocol
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```

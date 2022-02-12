@@ -9,8 +9,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
-
 namespace UniversalScanner
 {
     static class Program
@@ -94,11 +92,11 @@ namespace UniversalScanner
                 null, //new Foscam(),     // 20
                 null, //new Dlink(),      // 21
                 null, //new Hid(),        // 22
-                null, //new Lantronix(),  // 23
+                new Lantronix(),    // 23
                 new Microchip(),    // 24
                 new Advantech(),    // 25
                 null, //new EdenOptima(), // 26
-                null //new Microsens()   // 27
+                null  //new Microsens()   // 27
                 // further protocol 28
                 // further protocol 29
                 // further protocol 30
