@@ -95,7 +95,7 @@ namespace UniversalScanner
                 new Lantronix(),    // 23
                 new Microchip(),    // 24
                 new Advantech(),    // 25
-                null, //new EdenOptima(), // 26
+                new EdenOptima(),   // 26
                 null  //new Microsens()   // 27
                 // further protocol 28
                 // further protocol 29

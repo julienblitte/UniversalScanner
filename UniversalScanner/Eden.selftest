@@ -1,0 +1,1 @@
+BOX|<root><serialNumber>00:11:22:33:44:55</serialNumber><network><dhcp>0</dhcp><adresseIP>240.0.26.0</adresseIP><masqueSousReseau>255.255.255.0</masqueSousReseau><passerelle>192.168.1.1</passerelle><DNS1>240.0.0.0</DNS1><DNS2>8.8.8.8</DNS2></network><portWeb>80</portWeb></root>

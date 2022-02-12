@@ -40,6 +40,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Microchip discovery protocol
 * Advantech discovery protocol
 * Lantronix discovery protocol
+* Eden Optima Box discovery protocol
 
 ## Vendors supported by design
 * Uniview: WS-Discovery
