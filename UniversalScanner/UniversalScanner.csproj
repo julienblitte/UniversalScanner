@@ -103,7 +103,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionManager.cs" />
-    <Compile Include="UPnP.cs" />
+    <Compile Include="SSDP.cs" />
     <Compile Include="Vivotek.cs" />
     <Compile Include="Vstarcam.cs" />
     <Compile Include="Wsdiscovery.cs" />
@@ -198,7 +198,7 @@
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UPnP.selftest">
+    <None Include="SSDP.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Vivotek.selftest">

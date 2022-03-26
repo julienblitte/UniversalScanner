@@ -82,7 +82,7 @@ namespace UniversalScanner
                 _reserved_1C = 0
             };
 
-            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\n";
+            bodyStr = "{\"method\":\"DHDiscover.search\",\"params\":{\"mac\":\"\",\"uni\":0}}\n";
             bodyArray = Encoding.UTF8.GetBytes(bodyStr);
 
             headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size; 

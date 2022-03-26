@@ -1,4 +1,4 @@
-# What it is
+# What is Universal Network Scanner
 A tool with flexible framework to ease implementation of any vanilla discovery IP protocol such as SSDP/UPnP, mDNS, proprietary discovery protocols, etc. 
 
 # Licence

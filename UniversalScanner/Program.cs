@@ -70,7 +70,7 @@ namespace UniversalScanner
             viewer = new ScannerWindow();          
 
             engines = new ScanEngine[] {
-                new UPnP(),         //  1
+                new SSDP(),         //  1
                 new Wsdiscovery(),  //  2
                 new Dahua1(),       //  3
                 new Dahua2(),       //  4
