@@ -17,6 +17,8 @@ namespace UniversalScanner
         private const byte messageTypeRequest = 0xf6;
         private const byte messageTypeReply = 0xf7;
 
+        private const byte vaubanMagic = 0x15;
+
         private readonly byte[] discover = { 0x00, 0x00, 0x00, messageTypeRequest };
 
         public override int color
@@ -87,9 +89,9 @@ namespace UniversalScanner
         [StructLayout(LayoutKind.Explicit, Size = 0x1E, CharSet = CharSet.Ansi)]
         public struct LantronixAnswer
         {
-            [FieldOffset(0x00)] public byte _uint32_00;
-            [FieldOffset(0x01)] public byte _uint32_01;
-            [FieldOffset(0x02)] public byte _uint32_03;
+            [FieldOffset(0x00)] public byte _byte_00;
+            [FieldOffset(0x01)] public byte _byte_01;
+            [FieldOffset(0x02)] public byte _byte_03;
             [FieldOffset(0x03)] public byte messageType;
             [FieldOffset(0x04)] public LantronixAnswerPayload payload;
             [FieldOffset(0x18)] public MacAddress mac;
@@ -138,39 +140,42 @@ namespace UniversalScanner
                 answer.mac.byte03, answer.mac.byte04, answer.mac.byte05);
 
             // trying vauban
-            var payload = answer.payload.GetBytes();
-            var vauban = payload.GetStruct<VaubanPayload>();
-
-            if (vauban.modelMajor == 02 && vauban.modelMinor < 10)
+            if (answer._byte_03 == vaubanMagic)
             {
-                string model;
+                var payload = answer.payload.GetBytes();
+                var vauban = payload.GetStruct<VaubanPayload>();
 
-                switch (vauban.modelMajor)
+                if (vauban.modelMajor == 02 && vauban.modelMinor < 10)
                 {
-                    case 02:
-                        model = "Verso+";
-                        break;
-                    default:
-                        model = "unknown";
-                        break;
-                }
+                    string model;
 
-                switch (vauban.modelMinor)
-                {
-                    case 02:
-                        model += " 2";
-                        break;
-                    case 04:
-                        model += " 4";
-                        break;
-                }
+                    switch (vauban.modelMajor)
+                    {
+                        case 02:
+                            model = "Verso+";
+                            break;
+                        default:
+                            model = "unknown";
+                            break;
+                    }
 
-                viewer.deviceFound("Vauban", 1, from.Address, model, mac);
+                    switch (vauban.modelMinor)
+                    {
+                        case 02:
+                            model += " 2";
+                            break;
+                        case 04:
+                            model += " 4";
+                            break;
+                    }
+
+                    viewer.deviceFound("Vauban", 1, from.Address, model, mac);
+
+                    return;
+                }
             }
-            else
-            {
-                viewer.deviceFound(name, 1, from.Address, "unknown", mac);
-            }
+
+            viewer.deviceFound(name, 1, from.Address, "unknown", mac);
         }
 
     }
