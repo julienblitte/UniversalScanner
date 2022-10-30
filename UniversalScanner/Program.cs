@@ -96,8 +96,8 @@ namespace UniversalScanner
                 new Microchip(),    // 24
                 new Advantech(),    // 25
                 new EdenOptima(),   // 26
-                null  //new Microsens()   // 27
-                // further protocol 28
+                null,  //new Microsens()   // 27
+                new CyberPower()        // 28
                 // further protocol 29
                 // further protocol 30
                 // further protocol 31

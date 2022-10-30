@@ -73,6 +73,7 @@
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CyberPower.cs" />
     <Compile Include="Eaton.cs" />
     <Compile Include="EdenOptima.cs" />
     <Compile Include="Microchip.cs" />
@@ -136,6 +137,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CyberPower.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Eden.selftest">

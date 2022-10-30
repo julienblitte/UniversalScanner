@@ -41,6 +41,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Advantech discovery protocol
 * Lantronix discovery protocol
 * Eden Optima Box discovery protocol
+* CyberPower discovery protocol
 
 ## Vendors supported by design
 * Uniview: WS-Discovery
@@ -56,6 +57,9 @@ This tool is delivered as it, without any warranty. If you want specific support
 * Foscam discovery protocol
 * Dlink discovery protocol
 * Hid discovery protocol
+
+## Protocol compare
+Detailed list in the file [doc/protocols.html](https://htmlpreview.github.io/?https://github.com/julienblitte/UniversalScanner/blob/master/doc/protocols.html)
 
 # Advanced tweaking
 Some advanced settings can be changed in the registry on variables under the key ```HKEY_CURRENT_USER\Software\UniversalScanner```
