@@ -1,5 +1,6 @@
 # What is Universal Network Scanner
-A tool with flexible framework to ease implementation of any vanilla discovery IP protocol such as SSDP/UPnP, mDNS, proprietary discovery protocols, etc. 
+*Universal Network Scanner* is a multi-brand ultra-fast network discovery tool based on multicast and broadcast discovery. 
+This network discovery scanner is implemented based on a flexible framework to ease implementation of any vanilla discovery IP protocol such as SSDP/UPnP, mDNS, proprietary discovery protocols, etc. 
 
 # Licence
 This application and all the source code is released under licence LGPL 3.0.
@@ -16,47 +17,50 @@ This tool is delivered as it, without any warranty. If you want specific support
 
 # Protocols supported
 ## Generic protocols
-* SSDP (UPnP)
-* WS-Discovery (ONVIF)
-* DNS-SD (Zeroconf)
-* GigE Vision
+* [x] SSDP (UPnP)
+* [x] WS-Discovery (ONVIF)
+* [x] DNS-SD (Zeroconf)
+* [x] GigE Vision
 
 ## Proprietary protocols
-* Dahua camera discovery protocol
-* Hikvision discovery protocol
-* Axis discovery protocol
-* Bosch discovery protocol
-* Google cast discovery protocol
-* Hanwha (Samsung) discovery protocol
-* Vivotek discovery protocol
-* Sony discovery protocol
-* 360Vision discovery protocol
-* NiceVision discovery protocol
-* Panasonic discovery protocol
-* Arecont discovery protocol
-* Ubiquiti discovery protocol
-* VStarCam discovery protocol
-* Eaton discovery protocol
-* Microchip discovery protocol
-* Advantech discovery protocol
-* Lantronix discovery protocol
-* Eden Optima Box discovery protocol
-* CyberPower discovery protocol
+* [x] Dahua camera discovery protocol
+* [x] Hikvision discovery protocol
+* [x] Axis discovery protocol
+* [x] Bosch discovery protocol
+* [x] Google cast discovery protocol
+* [x] Hanwha (Samsung) discovery protocol
+* [x] Vivotek discovery protocol
+* [x] Sony discovery protocol
+* [x] 360Vision discovery protocol
+* [x] NiceVision discovery protocol
+* [x] Panasonic discovery protocol
+* [x] Arecont discovery protocol
+* [x] Ubiquiti discovery protocol
+* [x] VStarCam discovery protocol
+* [x] Eaton discovery protocol
+* [x] Microchip discovery protocol
+* [x] Advantech discovery protocol
+* [x] Lantronix discovery protocol
+* [x] Eden Optima Box discovery protocol
+* [x] CyberPower discovery protocol
 
 ## Vendors supported by design
-* Uniview: WS-Discovery
-* Flir: SSDP and GigE Vision
-* Siqura: SSDP and WS-Discovery
-* Mobotix: WS-Discovery
-* GCE Electronics: Microchip (enhanced)
-* ELA Access Control: Microchip
-* Vauban Access Control: Lantronix
-* Eden Access Control (sub-controller): Lantronix
+* 👌 Uniview: WS-Discovery
+* 👌 Flir: SSDP and GigE Vision
+* 👌 Siqura: SSDP and WS-Discovery
+* 👌 Mobotix: WS-Discovery
+* 👌 GCE Electronics: Microchip (enhanced)
+* 👌 ELA Access Control: Microchip
+* 👌 Vauban Access Control: Lantronix
+* 👌 Eden Access Control (sub-controller): Lantronix
 
 ## Protocols in implementation
-* Foscam discovery protocol
-* Dlink discovery protocol
-* Hid discovery protocol
+* [ ] Foscam discovery protocol
+* [ ] Dlink discovery protocol
+* [ ] Hid discovery protocol
+
+## Currently looking for
+* 👀 Looking for a 2N device owner
 
 ## Protocol compare
 Detailed list in the file [doc/protocols.html](https://htmlpreview.github.io/?https://github.com/julienblitte/UniversalScanner/blob/master/doc/protocols.html)
