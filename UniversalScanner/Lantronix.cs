@@ -17,7 +17,11 @@ namespace UniversalScanner
         private const byte messageTypeRequest = 0xf6;
         private const byte messageTypeReply = 0xf7;
 
-        private const byte vaubanMagic = 0x15;
+        private enum protocolMagic : byte
+        {
+            vaubanOld = 0x13,
+            vauban = 0x15
+        };
 
         private readonly byte[] discover = { 0x00, 0x00, 0x00, messageTypeRequest };
 
@@ -140,7 +144,7 @@ namespace UniversalScanner
                 answer.mac.byte03, answer.mac.byte04, answer.mac.byte05);
 
             // trying vauban
-            if (answer._byte_03 == vaubanMagic)
+            if (answer._byte_03 == (byte)protocolMagic.vauban)
             {
                 var payload = answer.payload.GetBytes();
                 var vauban = payload.GetStruct<VaubanPayload>();
@@ -173,6 +177,12 @@ namespace UniversalScanner
 
                     return;
                 }
+            }
+            else if (answer._byte_03 == (byte)protocolMagic.vaubanOld)
+            {
+                viewer.deviceFound("Vauban", 1, from.Address, "unknown", mac);
+
+                return;
             }
 
             viewer.deviceFound(name, 1, from.Address, "unknown", mac);
