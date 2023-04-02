@@ -43,6 +43,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * [x] Lantronix discovery protocol
 * [x] Eden Optima Box discovery protocol
 * [x] CyberPower discovery protocol
+* [x] Miscrosoft SQL Server discovery protocol
 
 ## Vendors supported by design
 * 👌 Uniview: WS-Discovery

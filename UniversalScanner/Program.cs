@@ -97,8 +97,8 @@ namespace UniversalScanner
                 new Advantech(),    // 25
                 new EdenOptima(),   // 26
                 null,  //new Microsens()   // 27
-                new CyberPower()        // 28
-                // further protocol 29
+                new CyberPower(),        // 28
+                new MSSQL()         // 29
                 // further protocol 30
                 // further protocol 31
                 // further protocol 32
