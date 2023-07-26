@@ -56,7 +56,7 @@ namespace UniversalScanner
 #endif
             sendMulticast(IPAddress.Parse(multicastIP), port);
             sendBroadcast(port);
-            if (Config.dahuaNetScan)
+            if (Config.getInstance().DahuaNetScan)
             {
                 sendNetScan(port);
             }
@@ -82,7 +82,7 @@ namespace UniversalScanner
                 _reserved_1C = 0
             };
 
-            bodyStr = "{ \"method\" : \"DHDiscover.search\", \"params\" : { \"mac\" : \"\", \"uni\" : 1 } }\n";
+            bodyStr = "{\"method\":\"DHDiscover.search\",\"params\":{\"mac\":\"\",\"uni\":0}}\n";
             bodyArray = Encoding.UTF8.GetBytes(bodyStr);
 
             headerSize = typeof(Dahua2Header).StructLayoutAttribute.Size; 
@@ -179,6 +179,12 @@ namespace UniversalScanner
                 {
                     ip = from.Address;
                     Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Invalid ipv4 format: {0}", deviceIPv4));
+                }
+
+                if (ip.Equals(IPAddress.Parse("0.0.0.0")))
+                {
+                    ip = from.Address;
+                    Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua2.reciever(): Recieved ipv4 is null (from: {0})", from.Address.ToString()));
                 }
                 viewer.deviceFound(name, 2, ip, deviceModel, deviceSerial);
 

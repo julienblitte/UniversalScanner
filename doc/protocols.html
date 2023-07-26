@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Known discovery protocol list</title>
+<style>
+	table, tr, th, td { border: 0.05em black solid; border-collapse: collapse; }
+	th { font-weight: normal; background-color: black; color: white; }
+	.Purple { color: purple;}
+	.DarkCyan	{ color: darkcyan;}
+	.DarkBlue	{ color: darkblue;}
+	.Red	{ color: red;}
+	.DarkRed	{ color: darkred;}
+	.Blue	{ color: blue;}
+	.Red	{ color: red;}
+	.DarkOrange	{ color: darkorange;}
+	.Black	{ color: black;}
+	.DarkGreen	{ color: darkgreen;}
+	._alpha { color: gray; text-decoration: line-through; }
+
+	.clickable	{ cursor: pointer; }
+	.detail { display: none; }
+	.keyOK { color: black; }
+	.keyNOK { color: gray; text-decoration: line-through;  }
+</style>
+<script>
+//★
+function setStars()
+{
+	var p = document.getElementById('protocols');
+	var r = p.rows;
+	
+	for(i=1; i	< r.length; i++)
+	{
+		var c = r[i].cells[8];
+		
+		var note = parseInt(c.innerHTML);
+		c.innerHTML = "★".repeat(note);
+	}
+}
+
+function kpis(e)
+{
+	var kpisBrief = document.getElementById('kpis').children;
+	var kpisValue;
+	
+	if (e == null)
+	{
+		selected.innerHTML = '';
+		for(i=0; i < kpisBrief.length; i++)
+		{
+			document.getElementById('kpis').children.item(i).className = null;
+		}
+		return;
+	}
+	
+    kpisValue = JSON.parse(e.parentNode.cells[e.cellIndex+1].innerHTML);
+	selected.innerHTML = e.parentNode.cells[1].innerHTML;
+	
+	for(i=0; i < kpisValue.length; i++)
+	{
+		if (kpisValue[i])
+		{
+			document.getElementById('kpis').children.item(i).className = 'keyOK';
+		}
+		else
+		{
+			document.getElementById('kpis').children.item(i).className = 'keyNOK';
+		}		
+	}
+}
+</script>
+</head>
+<body onload="setStars();">
+<h1>Protocol list</h1>
+<table id="protocols"><tbody>
+<tr><th>ID</th><th>Protocol Name</th><th>Request addresses</th><th>Request ports</th><th>Reply addresses</th><th>Reply ports</th><th>Integration status</th><th>Protocol detail</th><th onclick="kpis(null);" class="clickable">Protocol quality *</th><th class="detail">Quality detail</th></tr>
+<tr><td class="DarkGreen">1</td><td>SSDP (UPnP)</td><td>239.255.255.250</td><td>1900</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Text based, variable-value, HTTP inspired</td><td onclick="kpis(this);" class="clickable">7</td><td class="detail">[1,1,0,1,1,1,1,0,1]</td></tr>
+<tr style="color: #404040;"><td>2</td><td>WSDiscovery (ONVIF)</td><td>239.255.255.250</td><td>3702</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>SOAP based (XML)</td><td onclick="kpis(this);" class="clickable">6</td><td class="detail">[1,1,0,1,1,1,0,0,1]</td></tr>
+<tr class="DarkRed"><td>3</td><td>Dahua (version 1)</td><td>255.255.255.255</td><td>5050</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">3</td><td class="detail">[1,0,0,0,1,0,0,1,0]</td></tr>
+<tr class="DarkRed"><td>4</td><td>Dahua (version 2)</td><td>239.255.255.251</td><td>37810</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>JSON embedded into binary structure</td><td onclick="kpis(this);" class="clickable">6</td><td class="detail">[1,1,0,1,1,1,1,0,0]</td></tr>
+<tr class="Red"><td>5</td><td>Hikvision</td><td>239.255.255.250</td><td>37020</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>XML based</td><td onclick="kpis(this);" class="clickable">6</td><td class="detail">[1,1,0,1,1,1,1,0,0]</td></tr>
+<tr style="color: #806000;"><td>6</td><td>Axis</td><td>_axis-nvr._tcp.local<br>_axis-video._tcp.local</td><td>5353</td><td>224.0.0.251<br>ff02::fb</td><td>5353</td><td>Supported</td><td>mDNS based</td><td onclick="kpis(this);" class="clickable">8</td><td class="detail">[1,1,1,1,1,1,0,1,1]</td></tr>
+<tr class="Red"><td>7</td><td>Bosch</td><td>255.255.255.255</td><td>1757</td><td>(sender address)</td><td>1758</td><td>Supported</td><td>XML based<br>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,0,1,1,0,0]</td></tr>
+<tr class="DarkBlue"><td>8</td><td>GoogleCast</td><td>_googlecast._tcp.local</td><td>5353</td><td>224.0.0.251<br>ff02::fb</td><td>5353</td><td>Supported</td><td>mDNS based</td><td onclick="kpis(this);" class="clickable">8</td><td class="detail">[1,1,1,1,1,1,0,1,1]</td></tr>
+<tr class="DarkOrange"><td>9</td><td>Hanwha</td><td>255.255.255.255</td><td>7701</td><td>(sender address)</td><td>7711</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">3</td><td class="detail">[1,0,0,1,0,0,0,1,0]</td></tr>
+<tr class="DarkCyan"><td>10</td><td>Vivotek</td><td>255.255.255.255</td><td>10000</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Type-value list</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,0,1,1,1,1,0]</td></tr>
+<tr class="Black"><td>11</td><td>Sony</td><td>255.255.255.255</td><td>2380</td><td>255.255.255.255</td><td>(sender port)</td><td>Supported</td><td>Text based, variable-value</td><td onclick="kpis(this);" class="clickable">6</td><td class="detail">[1,0,1,1,1,1,1,0,0]</td></tr>
+<tr class="DarkCyan"><td>12</td><td>Ubiquiti</td><td>233.89.188.1<br>255.255.255.255</td><td>10001</td><td>233.89.188.1<br>255.255.255.255</td><td>10001</td><td>Supported</td><td>Type-length-value</td><td onclick="kpis(this);" class="clickable">7</td><td class="detail">[1,1,1,0,1,1,1,1,0]</td></tr>
+<tr class="Purple"><td>13</td><td>360Vision</td><td>255.255.255.255</td><td>3600</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Text based, variable-value</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,1,1,1,1,0,0]</td></tr>
+<tr style="color: #0032948E;"><td>14</td><td>NiceVision</td><td>255.255.255.255</td><td>2007</td><td>255.255.255.255</td><td>(sender port)</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,1,1,1,0,0,1,0]</td></tr>
+<tr class="Black"><td>15</td><td>Panasonic</td><td>255.255.255.255</td><td>10669</td><td>255.255.255.255</td><td>10670</td><td>Supported</td><td>Type-length-value</td><td onclick="kpis(this);" class="clickable">6</td><td class="detail">[1,0,1,1,0,1,1,1,0]</td></tr>
+<tr class="DarkBlue"><td>16</td><td>Arecont</td><td>_arec._tcp.local</td><td>5353</td><td>224.0.0.251<br>ff02::fb</td><td>5353</td><td>Supported</td><td>mDNS based</td><td onclick="kpis(this);" class="clickable">8</td><td class="detail">[1,1,1,1,1,1,0,1,1]</td></tr>
+<tr class="Red"><td>17</td><td>GigEVision</td><td>255.255.255.255</td><td>3956</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary struture</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,1,1,0,0,1,1]</td></tr>
+<tr class="DarkBlue"><td>18</td><td>Vstarcam</td><td>255.255.255.255</td><td>8600</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary struture</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,0,1,0]</td></tr>
+<tr class="Blue"><td>19</td><td>Eaton</td><td>255.255.255.255</td><td>4679</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>XML based</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,1,1,1,1,0,0]</td></tr>
+<tr class="_alpha"><td>20</td><td>Foscam</td><td>255.255.255.255</td><td>10000</td><td>?</td><td>?</td><td>Missing test</td><td>Fixed binary structure</td><td>?</td><td class="detail">[1,0,1,0,,,,,]</td></tr>
+<tr class="_alpha"><td>21</td><td>Dlink</td><td>255.255.255.255</td><td>62976</td><td>?</td><td>?</td><td>Missing test</td><td>Fixed binary structure</td><td>?</td><td class="detail">[1,0,1,1,,,,,]</td></tr>
+<tr class="_alpha"><td>22</td><td>Hid</td><td>255.255.255.255</td><td>4070</td><td>?</td><td>?</td><td>Missing info</td><td>(protocol detail)</td><td>?</td><td class="detail">[1,0,1,1,,,,,]</td></tr>
+<tr class="DarkRed"><td>23</td><td>Lantronix</td><td>255.255.255.255</td><td>30718</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,0,1,0]</td></tr>
+<tr class="Red"><td>24</td><td>Microchip</td><td>255.255.255.255</td><td>30303</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Text based, one value per line</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,1,0,0]</td></tr>
+<tr class="DarkCyan"><td>25</td><td>Advantech</td><td>255.255.255.255</td><td>5048</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,0,1,0]</td></tr>
+<tr class="Red"><td>26</td><td>Eden Optima</td><td>255.255.255.255</td><td>8088</td><td>255.255.255.255</td><td>8088</td><td>Supported</td><td>Separated values and XML based</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,1,0,0,1,1,0,0]</td></tr>
+<tr class="_alpha"><td>27</td><td>Microsens</td><td>255.255.255.255</td><td>1025</td><td>255.255.255.255</td><td>8340</td><td>Missing test</td><td>(protocol detail)</td><td>?</td><td class="detail">[1,0,1,0,,,,,]</td></tr>
+<tr class="DarkOrange"><td>28</td><td>CyberPower</td><td>255.255.255.255</td><td>53566</td><td>(sender address)</td><td>53566</td><td>Supported</td><td>Fixed binary structure with xor stegano</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,0,0,1,1,0]</td></tr>
+<tr class="Black"><td>29</td><td>MSSQL</td><td>255.255.255.255</td><td>1434</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Text variables and value in CSV list</td><td>5</td><td class="detail">[1,0,0,1,1,1,1,0,0]</td></tr>
+<!--
+<tr><td>30</td><td>Protocol Name</td><td>(IP request)</td><td>(port request)</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>(protocol detail)</td><td>?</td><td class="detail">[0,0,0,0,0,0,0,0,0]</td></tr>
+-->
+</tbody></table>
+<h2>* Protocol quality evaluation</h2>
+<p id="selected"></p>
+<ol id="kpis">
+<li>Protocol is transport layer independant (IPv4 and IPv6)</li>
+<li>Protocol is Multicast discovery based (contrary to Broadcast)</li>
+<li>Remote device does NOT reply in unicast</li>
+<li>Request port is original (not already used by another protocol, not a round number and not bellow 1024)</li>
+<li>Remote device answer to the requester port or to a dynamic reply port (not a fixed port)</li>
+<li>Protocol support extension to add new values (format likes JSON, TVL, variable-value, XML) contrary to non-extendable format (Binary structure, unnamed variable list)</li>
+<li>Protocol format is efficient (non-heavy and simple protocols)</li>
+<li>Protocol is reliable (non XML scheme dependent, non case sensitive, non charset dependent and not space sensitive)</li>
+<li>Protocol is open source or normalized</li>
+</ol>
+</body>
+</html>

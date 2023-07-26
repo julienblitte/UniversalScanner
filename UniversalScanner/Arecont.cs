@@ -203,14 +203,14 @@ namespace UniversalScanner
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
                     {
-                        if (!hasNonAutoIPv4 || Config.forceZeroConf)
+                        if (!hasNonAutoIPv4 || Config.getInstance().ForceZeroConf)
                         {
                             viewer.deviceFound(protocol, version, ip, deviceModel, serial);
                         }
                     }
                     if (ip.AddressFamily == AddressFamily.InterNetworkV6)
                     {
-                        if (!hasNonAutoIPv6 || Config.forceLinkLocal)
+                        if (!hasNonAutoIPv6 || Config.getInstance().ForceLinkLocal)
                         {
                             viewer.deviceFound(protocol, version, ip, deviceModel, serial);
                         }

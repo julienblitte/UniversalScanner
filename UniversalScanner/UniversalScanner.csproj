@@ -68,21 +68,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="360Vision.cs" />
+    <Compile Include="Advantech.cs" />
     <Compile Include="Arecont.cs" />
     <Compile Include="Axis.cs" />
     <Compile Include="Bosch.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CyberPower.cs" />
     <Compile Include="Eaton.cs" />
     <Compile Include="Foscam.cs" />
+    <Compile Include="EdenOptima.cs" />
+    <Compile Include="Microchip.cs" />
     <Compile Include="GoogleCast.cs" />
     <Compile Include="Dahua1.cs" />
     <Compile Include="Dahua2.cs" />
     <Compile Include="GigEVision.cs" />
     <Compile Include="Hanwha.cs" />
     <Compile Include="Hikvision.cs" />
+    <Compile Include="Lantronix.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="mDNS.cs" />
     <Compile Include="MemoryUtils.cs" />
+    <Compile Include="MSSQL.cs" />
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="NiceVision.cs" />
     <Compile Include="PCapFile.cs" />
@@ -99,7 +105,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UPnP.cs" />
+    <Compile Include="VersionManager.cs" />
+    <Compile Include="SSDP.cs" />
     <Compile Include="Vivotek.cs" />
     <Compile Include="Vstarcam.cs" />
     <Compile Include="Wsdiscovery.cs" />
@@ -119,6 +126,9 @@
     <None Include="360Vision.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Advantech.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Arecont.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -129,6 +139,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Bosch.xml.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CyberPower.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Eden.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="GCE.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Microchip.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Dahua1.selftest">
@@ -150,6 +172,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Hikvision.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Lantronix.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSSQL.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Vauban.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Panasonic.selftest">
@@ -176,7 +207,7 @@
     <None Include="UniversalScanner.iss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UPnP.selftest">
+    <None Include="SSDP.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Vivotek.selftest">

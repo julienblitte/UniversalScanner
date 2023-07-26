@@ -370,45 +370,44 @@ namespace JulienBlitte
             return Crc16.ComputeChecksum(data);
         }
     }
-}
-
-public static class Crc16
-{
-    const ushort polynomial = 0xA001;
-    static readonly ushort[] table = new ushort[256];
-
-    public static ushort ComputeChecksum(byte[] bytes)
+    public static class Crc16
     {
-        ushort crc = 0;
-        for (int i = 0; i < bytes.Length; ++i)
-        {
-            byte index = (byte)(crc ^ bytes[i]);
-            crc = (ushort)((crc >> 8) ^ table[index]);
-        }
-        return crc;
-    }
+        const ushort polynomial = 0xA001;
+        static readonly ushort[] table = new ushort[256];
 
-    static Crc16()
-    {
-        ushort value;
-        ushort temp;
-        for (ushort i = 0; i < table.Length; ++i)
+        public static ushort ComputeChecksum(byte[] bytes)
         {
-            value = 0;
-            temp = i;
-            for (byte j = 0; j < 8; ++j)
+            ushort crc = 0;
+            for (int i = 0; i < bytes.Length; ++i)
             {
-                if (((value ^ temp) & 0x0001) != 0)
-                {
-                    value = (ushort)((value >> 1) ^ polynomial);
-                }
-                else
-                {
-                    value >>= 1;
-                }
-                temp >>= 1;
+                byte index = (byte)(crc ^ bytes[i]);
+                crc = (ushort)((crc >> 8) ^ table[index]);
             }
-            table[i] = value;
+            return crc;
+        }
+
+        static Crc16()
+        {
+            ushort value;
+            ushort temp;
+            for (ushort i = 0; i < table.Length; ++i)
+            {
+                value = 0;
+                temp = i;
+                for (byte j = 0; j < 8; ++j)
+                {
+                    if (((value ^ temp) & 0x0001) != 0)
+                    {
+                        value = (ushort)((value >> 1) ^ polynomial);
+                    }
+                    else
+                    {
+                        value >>= 1;
+                    }
+                    temp >>= 1;
+                }
+                table[i] = value;
+            }
         }
     }
 }

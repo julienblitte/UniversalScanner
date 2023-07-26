@@ -1,7 +1,7 @@
 NOTIFY * HTTP/1.1
 HOST:239.255.255.250:1900
 CACHE-CONTROL:max-age=1810
-LOCATION:http://127.0.0.1/rootDesc.xml
+LOCATION:http://240.0.1.0/rootDesc.xml
 SERVER: Universal Scanner/0.0, Virtual/1.0
 NT:uuid:unique-id-12345678
 USN:uuid:unique-id-12345678

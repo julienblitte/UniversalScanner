@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace UniversalScanner
 {
-    public class UPnP : ScanEngine
+    public class SSDP : ScanEngine
     {
         private readonly string multicastIP = "239.255.255.250";
         private const int port = 1900;
@@ -28,11 +28,11 @@ namespace UniversalScanner
         {
             get
             {
-                return "UPnP";
+                return "SSDP";
             }
         }
 
-        public UPnP()
+        public SSDP()
         {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();

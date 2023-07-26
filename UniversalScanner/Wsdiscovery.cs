@@ -69,7 +69,7 @@ namespace UniversalScanner
 
         public Wsdiscovery()
         {
-            if (Config.onvifVerbatim)
+            if (Config.getInstance().OnvifVerbatim)
             {
                 announce = verbatim;
                 Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Using WSDiscovery ONVIF verbatim payload");
