@@ -23,6 +23,11 @@ namespace UniversalScanner
                 return "Bosch";
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { answerPort };
+        }
+
         public override int color
         {
             get
@@ -72,6 +77,10 @@ namespace UniversalScanner
         };
 
         public Bosch()
+        {
+
+        }
+        public override void listen()
         {
             listenUdpGlobal(answerPort);
             listenUdpInterfaces();

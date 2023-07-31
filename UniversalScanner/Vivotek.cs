@@ -20,6 +20,10 @@ namespace UniversalScanner
                 return Color.DarkCyan.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[0];
+        }
         public override string name
         {
             get
@@ -46,7 +50,9 @@ namespace UniversalScanner
         public Vivotek()
         {
             sessionCounter = 1;
-
+        }
+        public override void listen()
+        {
             listenUdpInterfaces();
         }
 

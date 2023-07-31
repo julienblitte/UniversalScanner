@@ -94,7 +94,7 @@ function kpis(e)
 <tr class="Red"><td>17</td><td>GigEVision</td><td>255.255.255.255</td><td>3956</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary struture</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,1,1,0,0,1,1]</td></tr>
 <tr class="DarkBlue"><td>18</td><td>Vstarcam</td><td>255.255.255.255</td><td>8600</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary struture</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,0,1,0]</td></tr>
 <tr class="Blue"><td>19</td><td>Eaton</td><td>255.255.255.255</td><td>4679</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>XML based</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,0,1,1,1,1,0,0]</td></tr>
-<tr class="_alpha"><td>20</td><td>Foscam</td><td>255.255.255.255</td><td>10000</td><td>?</td><td>?</td><td>Missing test</td><td>Fixed binary structure</td><td>?</td><td class="detail">[1,0,1,0,,,,,]</td></tr>
+<tr class="Red"><td>20</td><td>Foscam</td><td>255.255.255.255</td><td>10000</td><td>255.255.255.255</td><td>10000</td><td>Supported</td><td>Fixed binary structure with optionnal xor stegano</td><td onclick="kpis(this);" class="clickable">5</td><td class="detail">[1,0,1,0,1,0,1,1,0]</td></tr>
 <tr class="_alpha"><td>21</td><td>Dlink</td><td>255.255.255.255</td><td>62976</td><td>?</td><td>?</td><td>Missing test</td><td>Fixed binary structure</td><td>?</td><td class="detail">[1,0,1,1,,,,,]</td></tr>
 <tr class="_alpha"><td>22</td><td>Hid</td><td>255.255.255.255</td><td>4070</td><td>?</td><td>?</td><td>Missing info</td><td>(protocol detail)</td><td>?</td><td class="detail">[1,0,1,1,,,,,]</td></tr>
 <tr class="DarkRed"><td>23</td><td>Lantronix</td><td>255.255.255.255</td><td>30718</td><td>(sender address)</td><td>(sender port)</td><td>Supported</td><td>Fixed binary structure</td><td onclick="kpis(this);" class="clickable">4</td><td class="detail">[1,0,0,1,1,0,0,1,0]</td></tr>
@@ -115,8 +115,8 @@ function kpis(e)
 <li>Protocol is Multicast discovery based (contrary to Broadcast)</li>
 <li>Remote device does NOT reply in unicast</li>
 <li>Request port is original (not already used by another protocol, not a round number and not bellow 1024)</li>
-<li>Remote device answer to the requester port or to a dynamic reply port (not a fixed port)</li>
-<li>Protocol support extension to add new values (format likes JSON, TVL, variable-value, XML) contrary to non-extendable format (Binary structure, unnamed variable list)</li>
+<li>Remote device answers to the requester port or to a dynamic reply port (not a fixed port)</li>
+<li>Protocol supports extension to add new values (format likes JSON, TVL, variable-value, XML) contrary to non-extendable format (Binary structure, unnamed variable list)</li>
 <li>Protocol format is efficient (non-heavy and simple protocols)</li>
 <li>Protocol is reliable (non XML scheme dependent, non case sensitive, non charset dependent and not space sensitive)</li>
 <li>Protocol is open source or normalized</li>

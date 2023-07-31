@@ -22,6 +22,11 @@ namespace UniversalScanner
                 return Color.DarkRed.ToArgb();
             }
         }
+
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
         public override string name
         {
             get
@@ -45,10 +50,13 @@ namespace UniversalScanner
 
         public Dahua2()
         {
+
+        }
+        public override void listen()
+        {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
         }
-
         public override void scan()
         {
 #if DEBUG

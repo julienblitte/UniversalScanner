@@ -19,6 +19,10 @@ namespace UniversalScanner
                 return Color.DarkOrange.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { answerPort };
+        }
         public override string name
         {
             get
@@ -226,6 +230,10 @@ namespace UniversalScanner
         }
 
         public Hanwha()
+        {
+
+        }
+        public override void listen()
         {
             listenUdpGlobal(answerPort);
             listenUdpInterfaces();

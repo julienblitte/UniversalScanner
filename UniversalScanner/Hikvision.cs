@@ -22,6 +22,10 @@ namespace UniversalScanner
                 return Color.Red.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
         public override string name
         {
             get
@@ -32,10 +36,14 @@ namespace UniversalScanner
 
         public Hikvision()
         {
+
+        }
+        public override void listen()
+        {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
         }
-        
+
         public static string getAssemblyUUID()
         {
             var assembly = typeof(Program).Assembly;

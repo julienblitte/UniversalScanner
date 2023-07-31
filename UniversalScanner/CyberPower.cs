@@ -23,6 +23,12 @@ namespace UniversalScanner
                 return Color.DarkOrange.ToArgb();
             }
         }
+
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
+
         public override string name
         {
             get
@@ -31,6 +37,10 @@ namespace UniversalScanner
             }
         }
         public CyberPower()
+        {
+
+        }
+        public override void listen()
         {
             listenUdpGlobal(port);
             listenUdpInterfaces();

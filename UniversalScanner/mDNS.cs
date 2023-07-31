@@ -59,6 +59,10 @@ namespace UniversalScanner
                 return Color.Black.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
         public override string name
         {
             get
@@ -86,10 +90,15 @@ namespace UniversalScanner
 
         private mDNS()
         {
+            resolutionTable = new Dictionary<string, mDNSResponse_Action>();
+
+            listen();
+        }
+
+        public override void listen()
+        {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
-
-            resolutionTable = new Dictionary<string, mDNSResponse_Action>();
         }
 
         public static mDNS getInstance()

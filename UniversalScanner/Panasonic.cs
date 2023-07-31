@@ -84,6 +84,10 @@ namespace UniversalScanner
 
         public Panasonic()
         {
+
+        }
+        public override void listen()
+        {
             listenUdpGlobal(answerPort);
             listenUdpInterfaces();
         }
@@ -94,6 +98,10 @@ namespace UniversalScanner
             {
                 return "Panasonic";
             }
+        }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
         }
         public override int color
         {

@@ -92,6 +92,7 @@
     <Compile Include="NetworkUtils.cs" />
     <Compile Include="NiceVision.cs" />
     <Compile Include="PCapFile.cs" />
+    <Compile Include="PortProvider.cs" />
     <Compile Include="RegistryUtils.cs" />
     <Compile Include="Panasonic.cs" />
     <Compile Include="ScanEngine.cs" />
@@ -145,6 +146,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Eden.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Foscam.selftest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Foscam_cipher.selftest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="GCE.selftest">

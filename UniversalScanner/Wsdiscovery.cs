@@ -59,6 +59,10 @@ namespace UniversalScanner
                 return 0x404040;
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
         public override string name
         {
             get
@@ -74,11 +78,12 @@ namespace UniversalScanner
                 announce = verbatim;
                 Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, "Using WSDiscovery ONVIF verbatim payload");
             }
-
+        }
+        public override void listen()
+        {
             listenMulticast(IPAddress.Parse(multicastIP), port);
             listenUdpInterfaces();
         }
-
         public override void reciever(IPEndPoint from, byte[] data)
         {
             string xml;

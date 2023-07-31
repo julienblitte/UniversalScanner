@@ -23,6 +23,12 @@ namespace UniversalScanner
                 return Color.DarkRed.ToArgb();
             }
         }
+
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
+
         public override string name
         {
             get
@@ -98,9 +104,13 @@ namespace UniversalScanner
 
         public Dahua1()
         {
+
+        }
+        public override void listen()
+        {
             if (listenUdpGlobal(port) == -1)
             {
-               Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
+                Logger.getInstance().WriteLine(Logger.DebugLevel.Warn, String.Format("Warning: Dahua protocol v1: Failed to listen on port {0}", port));
             }
             listenUdpInterfaces();
         }

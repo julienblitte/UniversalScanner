@@ -76,6 +76,10 @@ namespace UniversalScanner
                 return Color.DarkCyan.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[0];
+        }
         public override string name
         {
             get
@@ -84,6 +88,10 @@ namespace UniversalScanner
             }
         }
         public Advantech()
+        {
+
+        }
+        public override void listen()
         {
             listenUdpInterfaces();
         }

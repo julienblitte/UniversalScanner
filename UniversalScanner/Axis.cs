@@ -18,6 +18,10 @@ namespace UniversalScanner
                 return 0x806000;
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return dnsBroker.getUsedPort();
+        }
         public override string name
         {
             get
@@ -29,8 +33,11 @@ namespace UniversalScanner
         public Axis()
         {
             dnsBroker = mDNS.getInstance();
+        }
 
-            foreach(var d in domains)
+        public override void listen()
+        {
+            foreach (var d in domains)
             {
                 dnsBroker.registerDomain(d, axisDeviceFound);
             }

@@ -67,7 +67,7 @@ namespace UniversalScanner
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            viewer = new ScannerWindow();          
+            viewer = new ScannerWindow();
 
             engines = new ScanEngine[] {
                 new SSDP(),         //  1
@@ -89,7 +89,7 @@ namespace UniversalScanner
                 new GigEVision(),   // 17
                 new Vstarcam(),     // 18
                 new Eaton(),        // 19
-                null, //new Foscam(),     // 20
+                new Foscam(),     // 20
                 null, //new Dlink(),      // 21
                 null, //new Hid(),        // 22
                 new Lantronix(),    // 23
@@ -126,6 +126,14 @@ namespace UniversalScanner
                 if (engines[i] != null)
                 {
                     engines[i].registerViewer(viewer, i + 1);
+                    PortProvider.getInstance().reserveUDP(engines[i].getUsedPort());
+                }
+            }
+            for (uint i = 0; i < engines.Length; i++)
+            {
+                if (engines[i] != null)
+                {
+                    engines[i].listen();
                 }
             }
 

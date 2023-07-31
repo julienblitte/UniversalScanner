@@ -54,8 +54,10 @@ namespace UniversalScanner
             multicastListener.inUse = false;
         }
 
-        public abstract void scan();
+        public abstract UInt16[] getUsedPort();
 
+        public abstract void listen();
+        public abstract void scan();
 
         public int listenUdpGlobal(int localPort = 0)
         {
@@ -79,7 +81,7 @@ namespace UniversalScanner
             }
             else
             {
-                localPort = getFreeUdpPort();
+                localPort = PortProvider.getInstance().getFreeUdpPort();
             }
 
             try
@@ -128,7 +130,7 @@ namespace UniversalScanner
 
             for (int i = 0; i < len; i++)
             {
-                int localPort = getFreeUdpPort();
+                int localPort = PortProvider.getInstance().getFreeUdpPort();
                 IPAddress address = addresses[i];
                 try
                 {
@@ -403,35 +405,6 @@ namespace UniversalScanner
                 select used.Port;
 
             return (portsInUse.Count() == 0);
-        }
-
-        protected int getFreeUdpPort()
-        {
-            int[] portRange = { 1024, 65534 };
-            IEnumerable<int> portsUseable, portsInUse, portsFree;
-            int countFree;
-            Random rand;
-
-            portsUseable = Enumerable.Range(portRange[0], portRange[1] - portRange[0]);
-            portsInUse =
-                from p in portsUseable
-                join used in IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners()
-            on p equals used.Port
-                select p;
-
-            portsFree = portsUseable.Except(portsInUse);
-
-            countFree = portsFree.Count();
-            if (countFree == 0)
-            {
-               Logger.getInstance().WriteLine(Logger.DebugLevel.Fatal, "Error: UdpFreePortProvider(): No free UDP port!");
-                throw new OverflowException();
-            }
-
-            rand = new Random();
-            int index = rand.Next(0, countFree);
-
-            return portsFree.ElementAt(index);
         }
 
         protected NetworkInterface[] listActiveInterface()

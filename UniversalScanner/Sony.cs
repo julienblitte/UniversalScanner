@@ -22,6 +22,11 @@ namespace UniversalScanner
                 return "Sony";
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[0];
+        }
+
         public override int color
         {
             get
@@ -31,6 +36,10 @@ namespace UniversalScanner
         }
 
         public Sony()
+        {
+
+        }
+        public override void listen()
         {
             listenUdpInterfaces();
         }

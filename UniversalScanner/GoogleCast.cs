@@ -21,6 +21,10 @@ namespace UniversalScanner
                 return Color.DarkBlue.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return dnsBroker.getUsedPort();
+        }
         public override string name
         {
             get
@@ -32,7 +36,9 @@ namespace UniversalScanner
         public GoogleCast()
         {
             dnsBroker = mDNS.getInstance();
-
+        }
+        public override void listen()
+        {
             dnsBroker.registerDomain(domain, googlecastDeviceFound);
         }
 

@@ -233,6 +233,10 @@ namespace UniversalScanner
                 return Color.Red.ToArgb();
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port }; // not mandatory
+        }
         public override string name
         {
             get
@@ -243,7 +247,9 @@ namespace UniversalScanner
         public GigEVision()
         {
             requestCounter = 0;
-
+        }
+        public override void listen()
+        {
             //listenUdpGlobal(port);
             listenUdpInterfaces();
         }

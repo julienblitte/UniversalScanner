@@ -115,6 +115,10 @@ namespace UniversalScanner
                 return 0x0032948E;
             }
         }
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[0];
+        }
         public override string name
         {
             get
@@ -125,7 +129,10 @@ namespace UniversalScanner
         public NiceVision()
         {
             transactionId = 0;
-
+            answerPort = -1;
+        }
+        public override void listen()
+        {
             listenUdpInterfaces();
             answerPort = listenUdpGlobal();
         }

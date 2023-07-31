@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using System.Text;
@@ -19,6 +20,12 @@ namespace UniversalScanner
                 return "360Vision";
             }
         }
+
+        public override UInt16[] getUsedPort()
+        {
+            return new UInt16[] { port };
+        }
+
         public override int color
         {
             get
@@ -29,9 +36,14 @@ namespace UniversalScanner
 
         public _360Vision()
         {
+
+        }
+        public override void listen()
+        {
             listenUdpGlobal(port);
             listenUdpInterfaces();
         }
+
 
         Dictionary<string, string> readKeyValuePairs(string data)
         {

@@ -44,6 +44,7 @@ This tool is delivered as it, without any warranty. If you want specific support
 * [x] Eden Optima Box discovery protocol
 * [x] CyberPower discovery protocol
 * [x] Miscrosoft SQL Server discovery protocol
+* [x] Foscam discovery protocol
 
 ## Vendors supported by design
 * 👌 Uniview: WS-Discovery
@@ -56,7 +57,6 @@ This tool is delivered as it, without any warranty. If you want specific support
 * 👌 Eden Access Control (sub-controller): Lantronix
 
 ## Protocols in implementation
-* [ ] Foscam discovery protocol
 * [ ] Dlink discovery protocol
 * [ ] Hid discovery protocol
 
@@ -94,6 +94,7 @@ Thank you to:
 * Geza Gyorfi,
 * John Honovich,
 * Nathan Lafontaine,
+* Mickaël Plaza,
 * Brian Rhodes,
 * John Scanlan,
 * Alastair Stevenson,
